@@ -10,15 +10,15 @@ public class SwiftFlutterMapboxNavigationPlugin: NSObject, FlutterPlugin {
     let instance = SwiftFlutterMapboxNavigationPlugin()
     registrar.addMethodCallDelegate(instance, channel: channel)
     
-    let viewFactory = FlutterMapboxNavigationViewFactory()
-    registrar.register(viewFactory, withId: "FlutterMapboxNavigationView")
+    //let viewFactory = FlutterMapboxNavigationViewFactory()
+    //registrar.register(viewFactory, withId: "FlutterMapboxNavigationView")
   }
 
   public func handle(_ call: FlutterMethodCall, result: @escaping FlutterResult) {
     
     let arguments = call.arguments as? NSDictionary
     
-    if(call.method == "getDirections")
+    if(call.method == "startNavigation")
     {
         guard let oName = arguments?["originName"] as? String else {return}
         guard let oLatitude = arguments?["originLatitude"] as? Double else {return}

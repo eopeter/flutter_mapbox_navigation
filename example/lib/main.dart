@@ -13,8 +13,8 @@ class MyApp extends StatefulWidget {
 
 class _MyAppState extends State<MyApp> {
   String _platformVersion = 'Unknown';
-  final _origin = Location(name: "Pick Up", latitude: 42.9755233, longitude: -78.8965816);
-  final _destination = Location(name: "Drop Off", latitude: 42.9278972, longitude: -78.6920296);
+  final _origin = Location(name: "Buffalo, NY", latitude: 42.886448, longitude: -78.878372);
+  final _destination = Location(name: "Boston, MA", latitude: 42.360081, longitude: -71.058884);
 
   @override
   void initState() {
@@ -51,18 +51,19 @@ class _MyAppState extends State<MyApp> {
         ),
         body: Center(
           child: Column(children: <Widget>[
+            SizedBox(height: 30,),
             Text('Running on: $_platformVersion\n'),
             SizedBox(
               height: 60,
             ),
             RaisedButton(
-              child: Text("Directions"),
+              child: Text("Start Navigation"),
               onPressed: () async{
 
-                await FlutterMapboxNavigation.getDirections(_origin, _destination);
+                await FlutterMapboxNavigation.startNavigation(_origin, _destination);
               },
             ),
-            NavigationView(origin: _origin, destination: _destination,)
+
           ]),
         ),
       ),

@@ -12,7 +12,7 @@ class FlutterMapboxNavigation {
     return version;
   }
 
-  static Future getDirections(Location origin, Location destination) async {
+  static Future startNavigation(Location origin, Location destination) async {
     assert(origin != null);
     assert(origin.name != null);
     assert(origin.latitude != null);
@@ -29,7 +29,7 @@ class FlutterMapboxNavigation {
       "destinationLatitude": destination.latitude,
       "destinationLongitude": destination.longitude
     };
-    await _channel.invokeMethod('getDirections', args);
+    await _channel.invokeMethod('startNavigation', args);
   }
 }
 
