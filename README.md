@@ -56,8 +56,8 @@ Add Turn By Turn Navigation to Your Flutter Application Using MapBox. Never leav
 | iOS View | Android View |
 
 ## To Do
-[checkbox:checked] Android Implementation (DONE)
- Add more settings like Navigation Mode (driving, walking, etc)
+* [DONE] Android Implementation
+* Add more settings like Navigation Mode (driving, walking, etc)
 * Provide physical address instead of just coordinates to remove reliance on other geolocation packages
 * Stream Events like relevant navigation notifications, metrics, current location, etc. 
 * Embeddable Navigation View 
