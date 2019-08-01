@@ -68,6 +68,7 @@ class _NavigationViewState extends State<NavigationView>
         "destinationLatitude": widget.destination.latitude,
         "destinationLongitude": widget.destination.longitude
       };
+      super.initState();
     }
 
   @override

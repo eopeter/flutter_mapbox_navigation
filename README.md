@@ -11,7 +11,7 @@ Add Turn By Turn Navigation to Your Flutter Application Using MapBox. Never leav
 * Natural-sounding turn instructions powered by [Amazon Polly](https://aws.amazon.com/polly/) (no configuration needed)
 * [Support for over two dozen languages](https://docs.mapbox.com/ios/navigation/overview/localization-and-internationalization/)
 
-## Configuration
+## IOS Configuration
 
 1. Mapbox APIs and vector tiles require a Mapbox account and API access token. In the project editor, select the application target, then go to the Info tab. Under the “Custom iOS Target Properties” section, set `MGLMapboxAccessToken` to your access token. You can obtain an access token from the [Mapbox account page](https://account.mapbox.com/access-tokens/).
 
@@ -19,6 +19,25 @@ Add Turn By Turn Navigation to Your Flutter Application Using MapBox. Never leav
    > Shows your location on the map and helps improve OpenStreetMap.
 
 1. Users expect the SDK to continue to track the user’s location and deliver audible instructions even while a different application is visible or the device is locked. Go to the Capabilities tab. Under the Background Modes section, enable “Audio, AirPlay, and Picture in Picture” and “Location updates”. (Alternatively, add the `audio` and `location` values to the `UIBackgroundModes` array in the Info tab.)
+
+
+## Android COnfiguration
+
+1. Mapbox APIs and vector tiles require a Mapbox account and API access token. Add your token in strings.xml file of your android apps res/values/ path. The string key should be "mapbox_access_token"
+```xml
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Navigation map</string>
+    <string name="mapbox_access_token" translatable="false">ADD_MAPBOX_ACCESS_TOKEN_HERE</string>
+    <string name="user_location_permission_explanation">This app needs location permissions to show its functionality.</string>
+    <string name="user_location_permission_not_granted">You didn\'t grant location permissions.</string>
+</resources>
+```
+
+1. Add the following permission to the app level Android Manifest
+```xml
+<uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"/>
+```
 
 ## Usage
 
@@ -32,13 +51,13 @@ Add Turn By Turn Navigation to Your Flutter Application Using MapBox. Never leav
 ```
 
 ## Screenshots
-![Navigation View](screenshots/screenshot1.png?raw=true "Navigation View") | ![Instruction View](screenshots/screenshot2.png?raw=true "Instruction View")
+![Navigation View](screenshots/screenshot1.png?raw=true "iOS View") | ![Android View](screenshots/screenshot2.png?raw=true "Android View")
 |:---:|:---:|
-| Navigation View | Instruction View |
+| iOS View | Android View |
 
 ## To Do
-* Android Implementation
-* Add more settings like Navigation Mode (driving, walking, etc)
+[checkbox:checked] Android Implementation (DONE)
+ Add more settings like Navigation Mode (driving, walking, etc)
 * Provide physical address instead of just coordinates to remove reliance on other geolocation packages
 * Stream Events like relevant navigation notifications, metrics, current location, etc. 
 * Embeddable Navigation View 
