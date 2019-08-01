@@ -21,9 +21,9 @@ Add Turn By Turn Navigation to Your Flutter Application Using MapBox. Never leav
 1. Users expect the SDK to continue to track the user’s location and deliver audible instructions even while a different application is visible or the device is locked. Go to the Capabilities tab. Under the Background Modes section, enable “Audio, AirPlay, and Picture in Picture” and “Location updates”. (Alternatively, add the `audio` and `location` values to the `UIBackgroundModes` array in the Info tab.)
 
 
-## Android COnfiguration
+## Android Configuration
 
-1. Mapbox APIs and vector tiles require a Mapbox account and API access token. Add your token in strings.xml file of your android apps res/values/ path. The string key should be "mapbox_access_token"
+1. Mapbox APIs and vector tiles require a Mapbox account and API access token. Add your token in strings.xml file of your android apps res/values/ path. The string key should be "mapbox_access_token". You can obtain an access token from the [Mapbox account page](https://account.mapbox.com/access-tokens/).
 ```xml
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
@@ -58,6 +58,6 @@ Add Turn By Turn Navigation to Your Flutter Application Using MapBox. Never leav
 ## To Do
 * [DONE] Android Implementation
 * Add more settings like Navigation Mode (driving, walking, etc)
-* Provide physical address instead of just coordinates to remove reliance on other geolocation packages
 * Stream Events like relevant navigation notifications, metrics, current location, etc. 
 * Embeddable Navigation View 
+* Provide physical address instead of just coordinates to remove reliance on other geolocation packages
