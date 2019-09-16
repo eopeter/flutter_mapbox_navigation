@@ -1,3 +1,7 @@
+## 0.0.3
+
+* Added AndroidX Support
+
 ## 0.0.2
 
 * Added Android Support
