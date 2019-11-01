@@ -61,7 +61,7 @@ class FlutterMapboxNavigationPlugin: MethodCallHandler, EventChannel.StreamHandl
 
   override fun onMethodCall(call: MethodCall, result: Result) {
 
-    var arguments = call.arguments as? Map<String, Object>
+    var arguments = call.arguments as? Map<String, Any>
     
     if (call.method == "getPlatformVersion") {
       result.success("Android ${android.os.Build.VERSION.RELEASE}")
