@@ -1,3 +1,10 @@
+## 0.0.5
+*[Breaking] Constructor and Name Change. See Example
+* Route Progress And Arrival Events on iOS. Android Pending.
+* Ending Navigation
+* Navigation Modes Support (driving, walking, cycling)
+* Simulation Mode Support
+
 ## 0.0.4
 * Gradle 5.4.1 Support
 * Mapbox Update to Current Versions

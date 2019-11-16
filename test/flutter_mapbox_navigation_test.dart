@@ -16,6 +16,7 @@ void main() {
   });
 
   test('getPlatformVersion', () async {
-    expect(await FlutterMapboxNavigation.platformVersion, '42');
+    MapboxNavigation directions = MapboxNavigation();
+    expect(await directions.platformVersion, '42');
   });
 }

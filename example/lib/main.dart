@@ -13,8 +13,14 @@ class MyApp extends StatefulWidget {
 
 class _MyAppState extends State<MyApp> {
   String _platformVersion = 'Unknown';
-  final _origin = Location(name: "Buffalo, NY", latitude: 42.886448, longitude: -78.878372);
-  final _destination = Location(name: "Boston, MA", latitude: 42.360081, longitude: -71.058884);
+  final _origin =
+      Location(name: "City Hall", latitude: 42.886448, longitude: -78.878372);
+  final _destination = Location(
+      name: "Downtown Buffalo", latitude: 42.8866177, longitude: -78.8814924);
+
+  MapboxNavigation _directions;
+  bool _arrived = false;
+  double _distanceRemaining, _durationRemaining;
 
   @override
   void initState() {
@@ -24,18 +30,28 @@ class _MyAppState extends State<MyApp> {
 
   // Platform messages are asynchronous, so we initialize in an async method.
   Future<void> initPlatformState() async {
-    String platformVersion;
-    // Platform messages may fail, so we use a try/catch PlatformException.
-    try {
-      platformVersion = await FlutterMapboxNavigation.platformVersion;
-    } on PlatformException {
-      platformVersion = 'Failed to get platform version.';
-    }
-
     // If the widget was removed from the tree while the asynchronous platform
     // message was in flight, we want to discard the reply rather than calling
     // setState to update our non-existent appearance.
     if (!mounted) return;
+
+    _directions = MapboxNavigation(onRouteProgress: (arrived) async {
+      _distanceRemaining = await _directions.distanceRemaining;
+      _durationRemaining = await _directions.durationRemaining;
+
+      setState(() {
+        _arrived = arrived;
+      });
+      if (arrived) await _directions.finishNavigation();
+    });
+
+    String platformVersion;
+    // Platform messages may fail, so we use a try/catch PlatformException.
+    try {
+      platformVersion = await _directions.platformVersion;
+    } on PlatformException {
+      platformVersion = 'Failed to get platform version.';
+    }
 
     setState(() {
       _platformVersion = platformVersion;
@@ -51,17 +67,49 @@ class _MyAppState extends State<MyApp> {
         ),
         body: Center(
           child: Column(children: <Widget>[
-            SizedBox(height: 30,),
+            SizedBox(
+              height: 30,
+            ),
             Text('Running on: $_platformVersion\n'),
             SizedBox(
               height: 60,
             ),
             RaisedButton(
               child: Text("Start Navigation"),
-              onPressed: () async{
-
-                await FlutterMapboxNavigation.startNavigation(_origin, _destination);
+              onPressed: () async {
+                await _directions.startNavigation(
+                    origin: _origin,
+                    destination: _destination,
+                    mode: NavigationMode.drivingWithTraffic,
+                    simulateRoute: true);
               },
+            ),
+            SizedBox(
+              height: 60,
+            ),
+            Padding(
+              padding: EdgeInsets.all(20.0),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: <Widget>[
+                  Row(
+                    children: <Widget>[
+                      Text("Distance Remaining: "),
+                      Text(_distanceRemaining != null
+                          ? "${(_distanceRemaining * 0.000621371).toStringAsFixed(1)} miles"
+                          : "---")
+                    ],
+                  ),
+                  Row(
+                    children: <Widget>[
+                      Text("Duration Remaining: "),
+                      Text(_durationRemaining != null
+                          ? "${(_durationRemaining / 60).toStringAsFixed(0)} minutes"
+                          : "---")
+                    ],
+                  )
+                ],
+              ),
             ),
 
           ]),
