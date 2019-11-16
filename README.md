@@ -65,10 +65,10 @@ Add Turn By Turn Navigation to Your Flutter Application Using MapBox. Never leav
           });
     }
 
-      final cityhall = Location(name: "City Hall", latitude: 42.886448, longitude: -78.878372);
-      final downtown = Location(name: "Downtown Buffalo", latitude: 42.8866177, longitude: -78.8814924);
+    final cityhall = Location(name: "City Hall", latitude: 42.886448, longitude: -78.878372);
+    final downtown = Location(name: "Downtown Buffalo", latitude: 42.8866177, longitude: -78.8814924);
             
-      await _directions.startNavigation(
+    await _directions.startNavigation(
                                 origin: cityhall, 
                                 destination: downtown, 
                                 mode: NavigationMode.drivingWithTraffic, 
