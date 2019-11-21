@@ -1,3 +1,6 @@
+## 0.0.6
+* Android Bug Fix
+
 ## 0.0.5
 *[Breaking] Constructor and Name Change. See Example
 * Route Progress And Arrival Events on iOS. Android Pending.

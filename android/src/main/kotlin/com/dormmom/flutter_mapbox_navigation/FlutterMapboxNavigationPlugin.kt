@@ -164,7 +164,9 @@ class FlutterMapboxNavigationPlugin: MethodCallHandler, EventChannel.StreamHandl
         var accessToken = getResourceFromContext(_context, "mapbox_access_token")
         Mapbox.getInstance(_context, accessToken)
 
+        /*
         var navViewOptions = NavigationViewOptions.builder();
+
         navViewOptions.progressChangeListener { location, routeProgress ->
             var currentState = routeProgress?.currentState()
             _distanceRemaining =  routeProgress?.distanceRemaining();
@@ -172,6 +174,7 @@ class FlutterMapboxNavigationPlugin: MethodCallHandler, EventChannel.StreamHandl
 
             _eventSink?.success(currentState == RouteProgressState.ROUTE_ARRIVED);
         }
+         */
 
         var opt = NavigationRoute.builder(_context)
                 .accessToken(accessToken)
