@@ -1,3 +1,6 @@
+## 0.0.7
+* Remove extraneous jars for Kotlin-Reflect Inserted to lib folder by Android Studio
+
 ## 0.0.6
 * Android Bug Fix
 

@@ -93,8 +93,6 @@ class MapboxNavigation {
     if (arrived) _routeProgressSubscription.cancel();
   }
 
-  void _onProgressError() {}
-
   Stream<bool> get _streamRouteProgress {
     if (_onRouteProgress == null) {
       _onRouteProgress = _routeProgressEventchannel
