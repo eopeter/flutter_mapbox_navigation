@@ -1,3 +1,6 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
   package="com.dormmom.flutter_mapbox_navigation">
+    <application>
+        <activity android:name=".RouteMapActivity" />
+    </application>
 </manifest>

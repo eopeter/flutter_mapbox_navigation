@@ -1,6 +1,6 @@
 PODS:
   - Flutter (1.0.0)
-  - flutter_mapbox_navigation (0.0.4):
+  - flutter_mapbox_navigation (0.0.5):
     - Flutter
     - MapboxNavigation (~> 0.38.0)
   - Mapbox-iOS-SDK (5.4.0)
@@ -48,7 +48,7 @@ EXTERNAL SOURCES:
 
 SPEC CHECKSUMS:
   Flutter: 0e3d915762c693b495b44d77113d4970485de6ec
-  flutter_mapbox_navigation: 4f82a99b2fe87b19f0068c168db2d0788d282902
+  flutter_mapbox_navigation: b2a85d2137df7afc2b4a34df873d5512c622836d
   Mapbox-iOS-SDK: 2b58f752d94e57e95b8e54f3b52569199f6efdba
   MapboxCoreNavigation: b62c92175b67bdabc28cf977d1584de2ed40e479
   MapboxDirections.swift: 1c6df988c24b753888ebd9976d7c98632501a413

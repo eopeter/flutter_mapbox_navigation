@@ -1,3 +1,6 @@
+## 0.0.8
+* Plugin upgrade for Flutter 1.12
+
 ## 0.0.7
 * Remove extraneous jars for Kotlin-Reflect Inserted to lib folder by Android Studio
 
