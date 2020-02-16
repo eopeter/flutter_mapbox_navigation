@@ -25,6 +25,7 @@ import okhttp3.Route
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
+import java.util.*
 
 class FlutterMapboxNavigation : MethodChannel.MethodCallHandler, EventChannel.StreamHandler
 {
@@ -37,6 +38,7 @@ class FlutterMapboxNavigation : MethodChannel.MethodCallHandler, EventChannel.St
     var _destination: Point? = null
     var _navigationMode: String? =  "drivingWithTraffic"
     var _simulateRoute: Boolean = false
+    var _language: String? = null
 
     var _distanceRemaining: Double? = null
     var _durationRemaining: Double? = null
@@ -86,6 +88,9 @@ class FlutterMapboxNavigation : MethodChannel.MethodCallHandler, EventChannel.St
             val simulateRoute = arguments?.get("simulateRoute") as Boolean
             _simulateRoute = simulateRoute;
 
+            var language = arguments?.get("language") as? String
+            _language = language
+
             if(originLatitude != null && originLongitude != null && destinationLatitude != null && destinationLongitude != null)
             {
 
@@ -99,13 +104,13 @@ class FlutterMapboxNavigation : MethodChannel.MethodCallHandler, EventChannel.St
                     if(haspermission != PackageManager.PERMISSION_GRANTED) {
                         //_activity.onRequestPermissionsResult((a,b,c) => onRequestPermissionsResult)
                         _activity.requestPermissions(arrayOf(Manifest.permission.ACCESS_FINE_LOCATION), PERMISSION_REQUEST_CODE)
-                        startNavigation(origin, destination, simulateRoute)
+                        startNavigation(origin, destination, simulateRoute, language)
                     }
                     else
-                        startNavigation(origin, destination, simulateRoute)
+                        startNavigation(origin, destination, simulateRoute, language)
                 }
                 else
-                    startNavigation(origin, destination, simulateRoute)
+                    startNavigation(origin, destination, simulateRoute, language)
 
 
             }
@@ -115,7 +120,7 @@ class FlutterMapboxNavigation : MethodChannel.MethodCallHandler, EventChannel.St
         }
     }
 
-    fun startNavigation(origin: Point, destination: Point, simulateRoute: Boolean)
+    fun startNavigation(origin: Point, destination: Point, simulateRoute: Boolean, language: String?)
     {
         var navigationMode = DirectionsCriteria.PROFILE_DRIVING_TRAFFIC;
         if(_navigationMode == "walking")
@@ -139,12 +144,17 @@ class FlutterMapboxNavigation : MethodChannel.MethodCallHandler, EventChannel.St
             _eventSink?.success(currentState == RouteProgressState.ROUTE_ARRIVED);
         }
          */
-
+        
+        var locale: Locale? = null
+        if(language != null)
+            locale =  Locale(language) 
+        
         var opt = NavigationRoute.builder(_context)
                 .accessToken(accessToken)
                 .origin(origin)
                 .destination(destination)
                 .profile(navigationMode)
+                .language(locale)
                 .build()
                 .getRoute(object : Callback<DirectionsResponse> {
                     override fun onResponse(call: Call<DirectionsResponse>, response: Response<DirectionsResponse>) {
@@ -211,7 +221,7 @@ class FlutterMapboxNavigation : MethodChannel.MethodCallHandler, EventChannel.St
                         }
                         if(haspermission == PackageManager.PERMISSION_GRANTED) {
                             if(_origin != null && _destination != null)
-                                startNavigation(_origin!!, _destination!!, _simulateRoute)
+                                startNavigation(_origin!!, _destination!!, _simulateRoute, _language)
                         }
                         // Not all permissions granted. Show some message and return.
                         return

@@ -52,22 +52,24 @@ public class SwiftFlutterMapboxNavigationPlugin: NSObject, FlutterPlugin, Flutte
         guard let dLatitude = arguments?["destinationLatitude"] as? Double else {return}
         guard let dLongitude = arguments?["destinationLongitude"] as? Double else {return}
         
+        let language = arguments?["language"] as? String
+        
         let oMode = arguments?["mode"] as? String ?? "drivingWithTraffic"
         _navigationMode = oMode
         
         let origin = Location(name: oName, latitude: oLatitude, longitude: oLongitude)
         let destination = Location(name: dName, latitude: dLatitude, longitude: dLongitude)
 
-        startNavigation(origin: origin, destination: destination)
+        startNavigation(origin: origin, destination: destination, language: language)
     }
     
     result("iOS " + UIDevice.current.systemVersion)
   }
 
-  func startNavigation(origin: Location, destination: Location, simulationMode: Bool = false)
+    func startNavigation(origin: Location, destination: Location, language: String?, simulationMode: Bool = false)
   {
     var mode: MBDirectionsProfileIdentifier = .automobileAvoidingTraffic
-    
+
     if (_navigationMode == "cycling")
     {
         mode = .cycling
@@ -85,6 +87,10 @@ public class SwiftFlutterMapboxNavigationPlugin: NSObject, FlutterPlugin, Flutte
     let d = Waypoint(coordinate: CLLocationCoordinate2D(latitude: destination.latitude, longitude: destination.longitude), name: destination.name)
 
     let options = NavigationRouteOptions(waypoints: [o, d], profileIdentifier: mode)
+    if(language != nil)
+    {
+        options.locale = Locale(identifier: language!)
+    }
     
     Directions.shared.calculate(options) { (waypoints, routes, error) in
         guard let route = routes?.first else { return }
@@ -93,6 +99,7 @@ public class SwiftFlutterMapboxNavigationPlugin: NSObject, FlutterPlugin, Flutte
         {
             self._navigationViewController = NavigationViewController(for: route)
             self._navigationViewController!.delegate = self
+            //self._navigationViewController?.mapView?.localizeLabels()
         }
         
         let flutterViewController = UIApplication.shared.delegate?.window??.rootViewController as! FlutterViewController

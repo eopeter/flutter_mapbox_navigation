@@ -51,6 +51,7 @@ class MapboxNavigation {
   /// [destination] must not be null. It must have a longitude, latitude and name.
   /// [mode] defaults to drivingWithTraffic
   /// [simulateRoute] if true will simulate the route as if you were driving. Always true on iOS Simulator
+  /// [language] this property affects the sentence contained within the RouteStep.instructions property, but it does not affect any road names contained in that property or other properties such as RouteStep.name. Defaults to "en" if an unsupported language is specified. The languages in this link are supported: https://docs.mapbox.com/android/navigation/overview/localization/ or https://docs.mapbox.com/ios/api/navigation/0.14.1/localization-and-internationalization.html
   ///
   /// Begins to generate Route Progress
   ///
@@ -58,7 +59,7 @@ class MapboxNavigation {
       {Location origin,
       Location destination,
       NavigationMode mode = NavigationMode.drivingWithTraffic,
-      bool simulateRoute = false}) async {
+      bool simulateRoute = false, String language}) async {
     assert(origin != null);
     assert(origin.name != null);
     assert(origin.latitude != null);
@@ -75,7 +76,8 @@ class MapboxNavigation {
       "destinationLatitude": destination.latitude,
       "destinationLongitude": destination.longitude,
       "mode": mode.toString().split('.').last,
-      "simulateRoute": simulateRoute
+      "simulateRoute": simulateRoute,
+      "language" : language
     };
     await _methodChannel.invokeMethod('startNavigation', args);
     _routeProgressSubscription = _streamRouteProgress.listen(_onProgressData);
@@ -122,9 +124,10 @@ class NavigationView extends StatefulWidget {
   final Location origin;
   final Location destination;
   final bool simulateRoute;
+  final String language;
 
   NavigationView(
-      {@required this.origin, @required this.destination, this.simulateRoute});
+      {@required this.origin, @required this.destination, this.simulateRoute, this.language});
 
   _NavigationViewState createState() => _NavigationViewState();
 }
@@ -141,7 +144,8 @@ class _NavigationViewState extends State<NavigationView> {
       "destinationName": widget.destination.name,
       "destinationLatitude": widget.destination.latitude,
       "destinationLongitude": widget.destination.longitude,
-      "simulateRoute": widget.simulateRoute
+      "simulateRoute": widget.simulateRoute,
+      "language" : widget.language
     };
     super.initState();
   }

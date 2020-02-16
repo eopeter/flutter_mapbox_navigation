@@ -1,3 +1,6 @@
+## 0.0.9
+* Added option to change default language. See example in Read Me. This is only the language for the spoken instruction.
+
 ## 0.0.8
 * Plugin upgrade for Flutter 1.12
 

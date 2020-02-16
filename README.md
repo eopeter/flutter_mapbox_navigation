@@ -72,7 +72,8 @@ Add Turn By Turn Navigation to Your Flutter Application Using MapBox. Never leav
                                 origin: cityhall, 
                                 destination: downtown, 
                                 mode: NavigationMode.drivingWithTraffic, 
-                                simulateRoute: false);
+                                simulateRoute: false,
+                                language: "French");
   
 ```
 

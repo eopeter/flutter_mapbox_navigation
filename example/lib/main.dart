@@ -81,7 +81,7 @@ class _MyAppState extends State<MyApp> {
                     origin: _origin,
                     destination: _destination,
                     mode: NavigationMode.drivingWithTraffic,
-                    simulateRoute: true);
+                    simulateRoute: true, language: "French");
               },
             ),
             SizedBox(
