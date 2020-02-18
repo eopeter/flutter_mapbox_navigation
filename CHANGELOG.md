@@ -1,3 +1,6 @@
+## 0.0.10
+* Added ability to override the measurement system used in spoken instructions
+
 ## 0.0.9
 * Added option to change default language. See example in Read Me. This is only the language for the spoken instruction.
 

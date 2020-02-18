@@ -39,6 +39,7 @@ class FlutterMapboxNavigation : MethodChannel.MethodCallHandler, EventChannel.St
     var _navigationMode: String? =  "drivingWithTraffic"
     var _simulateRoute: Boolean = false
     var _language: String? = null
+    var _units: String? = null
 
     var _distanceRemaining: Double? = null
     var _durationRemaining: Double? = null
@@ -91,6 +92,10 @@ class FlutterMapboxNavigation : MethodChannel.MethodCallHandler, EventChannel.St
             var language = arguments?.get("language") as? String
             _language = language
 
+            var units = arguments?.get("units") as? String
+            _units = units
+
+
             if(originLatitude != null && originLongitude != null && destinationLatitude != null && destinationLongitude != null)
             {
 
@@ -104,13 +109,13 @@ class FlutterMapboxNavigation : MethodChannel.MethodCallHandler, EventChannel.St
                     if(haspermission != PackageManager.PERMISSION_GRANTED) {
                         //_activity.onRequestPermissionsResult((a,b,c) => onRequestPermissionsResult)
                         _activity.requestPermissions(arrayOf(Manifest.permission.ACCESS_FINE_LOCATION), PERMISSION_REQUEST_CODE)
-                        startNavigation(origin, destination, simulateRoute, language)
+                        startNavigation(origin, destination, simulateRoute, language, units)
                     }
                     else
-                        startNavigation(origin, destination, simulateRoute, language)
+                        startNavigation(origin, destination, simulateRoute, language, units)
                 }
                 else
-                    startNavigation(origin, destination, simulateRoute, language)
+                    startNavigation(origin, destination, simulateRoute, language, units)
 
 
             }
@@ -120,7 +125,7 @@ class FlutterMapboxNavigation : MethodChannel.MethodCallHandler, EventChannel.St
         }
     }
 
-    fun startNavigation(origin: Point, destination: Point, simulateRoute: Boolean, language: String?)
+    fun startNavigation(origin: Point, destination: Point, simulateRoute: Boolean, language: String?, units: String?)
     {
         var navigationMode = DirectionsCriteria.PROFILE_DRIVING_TRAFFIC;
         if(_navigationMode == "walking")
@@ -148,13 +153,22 @@ class FlutterMapboxNavigation : MethodChannel.MethodCallHandler, EventChannel.St
         var locale: Locale? = null
         if(language != null)
             locale =  Locale(language) 
-        
+
+        var voiceUnits: String? = null
+        if(units != null)
+        {
+            if(units == "imperial")
+                voiceUnits = DirectionsCriteria.IMPERIAL
+            else if(units == "metric")
+                voiceUnits = DirectionsCriteria.METRIC
+        }
         var opt = NavigationRoute.builder(_context)
                 .accessToken(accessToken)
                 .origin(origin)
                 .destination(destination)
                 .profile(navigationMode)
                 .language(locale)
+                .voiceUnits(voiceUnits)
                 .build()
                 .getRoute(object : Callback<DirectionsResponse> {
                     override fun onResponse(call: Call<DirectionsResponse>, response: Response<DirectionsResponse>) {
@@ -221,7 +235,7 @@ class FlutterMapboxNavigation : MethodChannel.MethodCallHandler, EventChannel.St
                         }
                         if(haspermission == PackageManager.PERMISSION_GRANTED) {
                             if(_origin != null && _destination != null)
-                                startNavigation(_origin!!, _destination!!, _simulateRoute, _language)
+                                startNavigation(_origin!!, _destination!!, _simulateRoute, _language, _units)
                         }
                         // Not all permissions granted. Show some message and return.
                         return

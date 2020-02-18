@@ -42,7 +42,11 @@ class _MyAppState extends State<MyApp> {
       setState(() {
         _arrived = arrived;
       });
-      if (arrived) await _directions.finishNavigation();
+      if (arrived)
+        {
+          await Future.delayed(Duration(seconds: 3));
+          await _directions.finishNavigation();
+        }
     });
 
     String platformVersion;
@@ -81,7 +85,7 @@ class _MyAppState extends State<MyApp> {
                     origin: _origin,
                     destination: _destination,
                     mode: NavigationMode.drivingWithTraffic,
-                    simulateRoute: true, language: "French");
+                    simulateRoute: true, language: "German", units: VoiceUnits.metric);
               },
             ),
             SizedBox(

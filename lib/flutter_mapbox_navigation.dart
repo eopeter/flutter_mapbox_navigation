@@ -59,7 +59,7 @@ class MapboxNavigation {
       {Location origin,
       Location destination,
       NavigationMode mode = NavigationMode.drivingWithTraffic,
-      bool simulateRoute = false, String language}) async {
+      bool simulateRoute = false, String language, VoiceUnits units}) async {
     assert(origin != null);
     assert(origin.name != null);
     assert(origin.latitude != null);
@@ -77,7 +77,8 @@ class MapboxNavigation {
       "destinationLongitude": destination.longitude,
       "mode": mode.toString().split('.').last,
       "simulateRoute": simulateRoute,
-      "language" : language
+      "language" : language,
+      "units" : units?.toString()?.split('.')?.last
     };
     await _methodChannel.invokeMethod('startNavigation', args);
     _routeProgressSubscription = _streamRouteProgress.listen(_onProgressData);
@@ -118,16 +119,21 @@ class Location {
       {@required this.name, @required this.latitude, @required this.longitude});
 }
 
+///Option to specify the mode of transportation.
 enum NavigationMode { walking, cycling, driving, drivingWithTraffic }
+
+///Whether or not the units used inside the voice instruction's string are in imperial or metric.
+enum VoiceUnits { imperial, metric}
 
 class NavigationView extends StatefulWidget {
   final Location origin;
   final Location destination;
   final bool simulateRoute;
   final String language;
+  final VoiceUnits units;
 
   NavigationView(
-      {@required this.origin, @required this.destination, this.simulateRoute, this.language});
+      {@required this.origin, @required this.destination, this.simulateRoute, this.language, this.units});
 
   _NavigationViewState createState() => _NavigationViewState();
 }
@@ -145,7 +151,8 @@ class _NavigationViewState extends State<NavigationView> {
       "destinationLatitude": widget.destination.latitude,
       "destinationLongitude": widget.destination.longitude,
       "simulateRoute": widget.simulateRoute,
-      "language" : widget.language
+      "language" : widget.language,
+      "units" : widget.units
     };
     super.initState();
   }

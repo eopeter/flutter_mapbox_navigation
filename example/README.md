@@ -23,6 +23,7 @@ Demonstrates how to use the flutter_mapbox_navigation plugin.
               _arrived = arrived;
             });
             if(arrived)
+              await Task.dnelayed(Duration(seconds: 3));
               await _directions.finishNavigation();
       
           });
@@ -35,6 +36,6 @@ Demonstrates how to use the flutter_mapbox_navigation plugin.
                           origin: cityhall, 
                           destination: downtown, 
                           mode: NavigationMode.drivingWithTraffic, 
-                          simulateRoute: false);
+                          simulateRoute: false, language: "German", units: VoiceUnits.metric);
   
 ```

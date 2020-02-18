@@ -53,6 +53,7 @@ public class SwiftFlutterMapboxNavigationPlugin: NSObject, FlutterPlugin, Flutte
         guard let dLongitude = arguments?["destinationLongitude"] as? Double else {return}
         
         let language = arguments?["language"] as? String
+        let voiceUnits = arguments?["units"] as? String
         
         let oMode = arguments?["mode"] as? String ?? "drivingWithTraffic"
         _navigationMode = oMode
@@ -60,13 +61,13 @@ public class SwiftFlutterMapboxNavigationPlugin: NSObject, FlutterPlugin, Flutte
         let origin = Location(name: oName, latitude: oLatitude, longitude: oLongitude)
         let destination = Location(name: dName, latitude: dLatitude, longitude: dLongitude)
 
-        startNavigation(origin: origin, destination: destination, language: language)
+        startNavigation(origin: origin, destination: destination, language: language, units: voiceUnits)
     }
     
     result("iOS " + UIDevice.current.systemVersion)
   }
 
-    func startNavigation(origin: Location, destination: Location, language: String?, simulationMode: Bool = false)
+    func startNavigation(origin: Location, destination: Location, language: String?, units: String?, simulationMode: Bool = false)
   {
     var mode: MBDirectionsProfileIdentifier = .automobileAvoidingTraffic
 
@@ -87,6 +88,12 @@ public class SwiftFlutterMapboxNavigationPlugin: NSObject, FlutterPlugin, Flutte
     let d = Waypoint(coordinate: CLLocationCoordinate2D(latitude: destination.latitude, longitude: destination.longitude), name: destination.name)
 
     let options = NavigationRouteOptions(waypoints: [o, d], profileIdentifier: mode)
+    
+    if(units != nil)
+    {
+        options.distanceMeasurementSystem = units == "imperial" ? .imperial : .metric
+    }
+    
     if(language != nil)
     {
         options.locale = Locale(identifier: language!)
@@ -99,7 +106,7 @@ public class SwiftFlutterMapboxNavigationPlugin: NSObject, FlutterPlugin, Flutte
         {
             self._navigationViewController = NavigationViewController(for: route)
             self._navigationViewController!.delegate = self
-            //self._navigationViewController?.mapView?.localizeLabels()
+            self._navigationViewController!.mapView?.localizeLabels()
         }
         
         let flutterViewController = UIApplication.shared.delegate?.window??.rootViewController as! FlutterViewController
@@ -200,12 +207,24 @@ public class FlutterMapboxNavigationView : NSObject, FlutterPlatformView
         guard let dLatitude = self.arguments?["destinationLatitude"] as? Double else {return zero}
         guard let dLongitude = self.arguments?["destinationLongitude"] as? Double else {return zero}
         
+        let language = arguments?["language"] as? String
+        let units = arguments?["units"] as? String
+        
         let origin = Location(name: oName, latitude: oLatitude, longitude: oLongitude)
         let destination = Location(name: dName, latitude: dLatitude, longitude: dLongitude)
         let o = Waypoint(coordinate: CLLocationCoordinate2D(latitude: origin.latitude, longitude: origin.longitude), name: origin.name)
         let d = Waypoint(coordinate: CLLocationCoordinate2D(latitude: destination.latitude, longitude: destination.longitude), name: destination.name)
         
         let options = NavigationRouteOptions(waypoints: [o, d])
+        if(units != nil)
+        {
+            options.distanceMeasurementSystem = units == "imperial" ? .imperial : .metric
+        }
+        
+        if(language != nil)
+        {
+            options.locale = Locale(identifier: language!)
+        }
         var navView = UIView(frame: frame)
         Directions.shared.calculate(options) { (waypoints, routes, error) in
             guard let route = routes?.first else { return }
