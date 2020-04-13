@@ -119,8 +119,9 @@ class FlutterMapboxNavigation : MethodChannel.MethodCallHandler, EventChannel.St
 
 
             }
-        }
-        else {
+        } else if(call.method == "finishNavigation") {
+            _activity.finish();
+        } else {
             result.notImplemented()
         }
     }
