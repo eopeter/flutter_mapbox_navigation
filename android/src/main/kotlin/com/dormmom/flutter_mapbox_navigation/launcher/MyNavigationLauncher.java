@@ -8,7 +8,6 @@ import android.preference.PreferenceManager;
 
 import com.google.gson.Gson;
 import com.mapbox.api.directions.v5.models.DirectionsRoute;
-import com.mapbox.services.android.navigation.ui.v5.MapboxNavigationActivity;
 import com.mapbox.services.android.navigation.ui.v5.NavigationLauncherOptions;
 import com.mapbox.services.android.navigation.v5.navigation.NavigationConstants;
 
@@ -51,7 +50,7 @@ public class MyNavigationLauncher {
 
         editor.apply();
 
-        Intent navigationActivity = new Intent(activity, MapboxNavigationActivity.class);
+        Intent navigationActivity = new Intent(activity, MyMapboxNavigationActivity.class);
         storeInitialMapPosition(options, navigationActivity);
         activity.startActivity(navigationActivity);
     }
