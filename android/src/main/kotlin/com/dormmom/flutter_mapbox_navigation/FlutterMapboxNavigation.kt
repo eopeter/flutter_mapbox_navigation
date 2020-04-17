@@ -7,6 +7,7 @@ import android.content.pm.PackageManager
 import android.os.Build
 import android.content.Intent
 import androidx.annotation.NonNull
+import com.dormmom.flutter_mapbox_navigation.launcher.MyNavigationLauncher
 import com.mapbox.api.directions.v5.DirectionsCriteria
 import com.mapbox.api.directions.v5.models.DirectionsResponse
 import com.mapbox.api.directions.v5.models.DirectionsRoute
@@ -119,8 +120,9 @@ class FlutterMapboxNavigation : MethodChannel.MethodCallHandler, EventChannel.St
 
 
             }
-        }
-        else {
+        } else if(call.method == "finishNavigation") {
+            MyNavigationLauncher.stopNavigation(_activity)
+        } else {
             result.notImplemented()
         }
     }
@@ -197,7 +199,7 @@ class FlutterMapboxNavigation : MethodChannel.MethodCallHandler, EventChannel.St
                                         .build()
 
                                 // Call this method with Context from within an Activity
-                                NavigationLauncher.startNavigation(_activity, options);
+                                MyNavigationLauncher.startNavigation(_activity, options)
 
                             }
                         }
