@@ -1,3 +1,8 @@
+## 0.0.11
+* Deprecated NavigationMode. Use MapBoxNavigationMode instead.
+* Upgrade MapBox Libraries
+* Android Gradle Update
+
 ## 0.0.10
 * Added ability to override the measurement system used in spoken instructions
 

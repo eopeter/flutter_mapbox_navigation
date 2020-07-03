@@ -58,7 +58,7 @@ class FlutterMapboxNavigation : MethodChannel.MethodCallHandler, EventChannel.St
         this._activity = activity;
     }
 
-    override fun onMethodCall(call: MethodCall, result: MethodChannel.Result) {
+    override fun onMethodCall(@NonNull call: MethodCall, @NonNull result: MethodChannel.Result) {
 
         var arguments = call.arguments as? Map<String, Any>
 
@@ -152,11 +152,12 @@ class FlutterMapboxNavigation : MethodChannel.MethodCallHandler, EventChannel.St
         }
          */
         
-        var locale: Locale? = null
+        var locale: Locale = Locale("en")
+        
         if(language != null)
             locale =  Locale(language) 
 
-        var voiceUnits: String? = null
+        var voiceUnits: String = DirectionsCriteria.IMPERIAL
         if(units != null)
         {
             if(units == "imperial")

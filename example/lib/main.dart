@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'dart:async';
 
 import 'package:flutter/services.dart';
-import 'package:flutter_mapbox_navigation/flutter_mapbox_navigation.dart';
+import 'package:flutter_mapbox_navigation/library.dart';
 
 void main() => runApp(MyApp());
 
@@ -13,10 +13,8 @@ class MyApp extends StatefulWidget {
 
 class _MyAppState extends State<MyApp> {
   String _platformVersion = 'Unknown';
-  final _origin =
-      Location(name: "City Hall", latitude: 42.886448, longitude: -78.878372);
-  final _destination = Location(
-      name: "Downtown Buffalo", latitude: 42.8866177, longitude: -78.8814924);
+  final _origin = WayPoint(name: "City Hall", latitude: 42.886448, longitude: -78.878372);
+  final _destination = WayPoint(name: "Downtown Buffalo", latitude: 42.8866177, longitude: -78.8814924);
 
   MapboxNavigation _directions;
   bool _arrived = false;
@@ -84,7 +82,7 @@ class _MyAppState extends State<MyApp> {
                 await _directions.startNavigation(
                     origin: _origin,
                     destination: _destination,
-                    mode: NavigationMode.drivingWithTraffic,
+                    mode: MapBoxNavigationMode.drivingWithTraffic,
                     simulateRoute: true, language: "German", units: VoiceUnits.metric);
               },
             ),

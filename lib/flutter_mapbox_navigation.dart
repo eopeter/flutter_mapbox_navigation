@@ -1,7 +1,4 @@
-import 'dart:async';
-
-import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
+part of navigation;
 
 /// Turn-By-Turn Navigation Provider
 class MapboxNavigation {
@@ -56,9 +53,9 @@ class MapboxNavigation {
   /// Begins to generate Route Progress
   ///
   Future startNavigation(
-      {Location origin,
-      Location destination,
-      NavigationMode mode = NavigationMode.drivingWithTraffic,
+      {WayPoint origin,
+      WayPoint destination,
+      MapBoxNavigationMode mode = MapBoxNavigationMode.drivingWithTraffic,
       bool simulateRoute = false, String language, VoiceUnits units}) async {
     assert(origin != null);
     assert(origin.name != null);
@@ -110,24 +107,19 @@ class MapboxNavigation {
   }
 }
 
-class Location {
-  final String name;
-  final double latitude;
-  final double longitude;
-
-  Location(
-      {@required this.name, @required this.latitude, @required this.longitude});
-}
+///Option to specify the mode of transportation.
+@Deprecated("Use MapBoxNavigationMode instead") 
+enum NavigationMode { walking, cycling, driving, drivingWithTraffic }
 
 ///Option to specify the mode of transportation.
-enum NavigationMode { walking, cycling, driving, drivingWithTraffic }
+enum MapBoxNavigationMode { walking, cycling, driving, drivingWithTraffic }
 
 ///Whether or not the units used inside the voice instruction's string are in imperial or metric.
 enum VoiceUnits { imperial, metric}
 
 class NavigationView extends StatefulWidget {
-  final Location origin;
-  final Location destination;
+  final WayPoint origin;
+  final WayPoint destination;
   final bool simulateRoute;
   final String language;
   final VoiceUnits units;

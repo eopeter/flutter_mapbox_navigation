@@ -20,7 +20,7 @@ class CustomNavigationNotification(applicationContext: Context) : NavigationNoti
     private val CUSTOM_CHANNEL_ID = "custom_channel_id"
     private val CUSTOM_CHANNEL_NAME = "custom_channel_name"
 
-    private var customNotification: Notification? = null
+    private var customNotification: Notification
     private var customNotificationBuilder: NotificationCompat.Builder? = null
     private var notificationManager: NotificationManager? = null
     private val stopNavigationReceiver: BroadcastReceiver? = null
@@ -39,10 +39,10 @@ class CustomNavigationNotification(applicationContext: Context) : NavigationNoti
                 .setContentTitle("Custom Navigation Notification")
                 .setContentText("Display your own content here!")
                 .setContentIntent(createPendingStopIntent(applicationContext))
-        customNotification = customNotificationBuilder?.build()
+        customNotification = customNotificationBuilder?.build()!!
     }
 
-    override fun onNavigationStopped(context: Context?) {
+    override fun onNavigationStopped(context: Context): kotlin.Unit {
         context?.unregisterReceiver(stopNavigationReceiver);
         notificationManager?.cancel(CUSTOM_NOTIFICATION_ID);
     }
@@ -51,11 +51,11 @@ class CustomNavigationNotification(applicationContext: Context) : NavigationNoti
         return CUSTOM_NOTIFICATION_ID;
     }
 
-    override fun getNotification(): Notification? {
+    override fun getNotification(): Notification {
         return customNotification;
     }
 
-    override fun updateNotification(routeProgress: RouteProgress?) {
+    override fun updateNotification(routeProgress: RouteProgress) {
         customNotificationBuilder?.setContentText("Number of updates: " + numberOfUpdates++);
         notificationManager?.notify(CUSTOM_NOTIFICATION_ID, customNotificationBuilder?.build());
     }

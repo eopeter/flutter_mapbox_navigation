@@ -62,7 +62,7 @@ class RouteMapActivity : Activity(), Application.ActivityLifecycleCallbacks, OnM
     private var locationEngine: LocationEngine? = null
     private var navigation: MapboxNavigation? = null
     lateinit var routes : List<DirectionsRoute>
-    private var route: DirectionsRoute? = null
+    private lateinit var route: DirectionsRoute
 
     var _distanceRemaining: Double? = null
     var _durationRemaining: Double? = null
@@ -122,7 +122,7 @@ class RouteMapActivity : Activity(), Application.ActivityLifecycleCallbacks, OnM
 
         val context = applicationContext;
         val customNotification = CustomNavigationNotification(this.applicationContext);
-        val options = MapboxNavigationOptions.builder()
+        val options = MapboxNavigationOptions.Builder()
                                               .navigationNotification(customNotification)
                                               .build();
 
@@ -229,7 +229,7 @@ class RouteMapActivity : Activity(), Application.ActivityLifecycleCallbacks, OnM
         return false
     }
 
-    override fun onProgressChange(location: Location?, routeProgress: RouteProgress?) {
+    override fun onProgressChange(location: Location, routeProgress: RouteProgress) {
         mapboxMap?.locationComponent?.forceLocationUpdate(location)
         if(!isRefreshing)
         {
@@ -253,20 +253,20 @@ class RouteMapActivity : Activity(), Application.ActivityLifecycleCallbacks, OnM
         }
     }
 
-    override fun onMilestoneEvent(routeProgress: RouteProgress?, instruction: String?, milestone: Milestone?) {
+    override fun onMilestoneEvent(routeProgress: RouteProgress, instruction: String, milestone: Milestone) {
         print("Voice instruction: " + instruction)
     }
 
-    override fun userOffRoute(location: Location?) {
+    override fun userOffRoute(location: Location) {
         Toast.makeText(this, "off-route called", Toast.LENGTH_LONG).show();
     }
 
-    override fun onRefresh(directionsRoute: DirectionsRoute?) {
+    override fun onRefresh(directionsRoute: DirectionsRoute) {
         directionsRoute?.let { navigation?.startNavigation(it) }
         isRefreshing = false;
     }
 
-    override fun onError(error: RefreshError?) {
+    override fun onError(error: RefreshError) {
         isRefreshing = false
     }
 
