@@ -2,118 +2,13 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="040c80fd-187c-47c9-866a-867a3669b8e3" name="Default Changelist" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/encodings.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/kotlinc.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/libraries/Flutter_for_Android.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/libraries/KotlinJavaRuntime.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/runConfigurations/example_lib_main_dart.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/runConfigurations/example_lib_main_dart.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/vcs.xml" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.metadata" beforeDir="false" afterPath="$PROJECT_DIR$/.metadata" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/CHANGELOG.md" beforeDir="false" afterPath="$PROJECT_DIR$/CHANGELOG.md" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/LICENSE" beforeDir="false" afterPath="$PROJECT_DIR$/LICENSE" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/README.md" beforeDir="false" afterPath="$PROJECT_DIR$/README.md" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/android/build.gradle" beforeDir="false" afterPath="$PROJECT_DIR$/android/build.gradle" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/android/gradle.properties" beforeDir="false" afterPath="$PROJECT_DIR$/android/gradle.properties" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/android/gradle/wrapper/gradle-wrapper.jar" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/android/gradle/wrapper/gradle-wrapper.properties" beforeDir="false" afterPath="$PROJECT_DIR$/android/gradle/wrapper/gradle-wrapper.properties" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/android/gradlew" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/android/gradlew.bat" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/android/src/main/AndroidManifest.xml" beforeDir="false" afterPath="$PROJECT_DIR$/android/src/main/AndroidManifest.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/android/src/main/kotlin/com/dormmom/flutter_mapbox_navigation/CustomNavigationNotification.kt" beforeDir="false" afterPath="$PROJECT_DIR$/android/src/main/kotlin/com/dormmom/flutter_mapbox_navigation/CustomNavigationNotification.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/android/src/main/kotlin/com/dormmom/flutter_mapbox_navigation/FlutterMapboxNavigation.kt" beforeDir="false" afterPath="$PROJECT_DIR$/android/src/main/kotlin/com/dormmom/flutter_mapbox_navigation/FlutterMapboxNavigation.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/android/src/main/kotlin/com/dormmom/flutter_mapbox_navigation/FlutterMapboxNavigationPlugin.kt" beforeDir="false" afterPath="$PROJECT_DIR$/android/src/main/kotlin/com/dormmom/flutter_mapbox_navigation/FlutterMapboxNavigationPlugin.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/android/src/main/kotlin/com/dormmom/flutter_mapbox_navigation/RouteMapActivity.kt" beforeDir="false" afterPath="$PROJECT_DIR$/android/src/main/kotlin/com/dormmom/flutter_mapbox_navigation/RouteMapActivity.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/example/.flutter-plugins-dependencies" beforeDir="false" afterPath="$PROJECT_DIR$/example/.flutter-plugins-dependencies" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/example/.gitignore" beforeDir="false" afterPath="$PROJECT_DIR$/example/.gitignore" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/example/.metadata" beforeDir="false" afterPath="$PROJECT_DIR$/example/.metadata" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/example/README.md" beforeDir="false" afterPath="$PROJECT_DIR$/example/README.md" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/example/android/app/build.gradle" beforeDir="false" afterPath="$PROJECT_DIR$/example/android/app/build.gradle" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/example/android/app/src/debug/AndroidManifest.xml" beforeDir="false" afterPath="$PROJECT_DIR$/example/android/app/src/debug/AndroidManifest.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/example/android/app/src/main/AndroidManifest.xml" beforeDir="false" afterPath="$PROJECT_DIR$/example/android/app/src/main/AndroidManifest.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/example/android/app/src/main/res/values/strings.xml" beforeDir="false" afterPath="$PROJECT_DIR$/example/android/app/src/main/res/values/strings.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/example/android/app/src/main/res/values/styles.xml" beforeDir="false" afterPath="$PROJECT_DIR$/example/android/app/src/main/res/values/styles.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/example/android/build.gradle" beforeDir="false" afterPath="$PROJECT_DIR$/example/android/build.gradle" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/example/android/gradle.properties" beforeDir="false" afterPath="$PROJECT_DIR$/example/android/gradle.properties" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/example/android/gradle/wrapper/gradle-wrapper.properties" beforeDir="false" afterPath="$PROJECT_DIR$/example/android/gradle/wrapper/gradle-wrapper.properties" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/example/android/settings.gradle" beforeDir="false" afterPath="$PROJECT_DIR$/example/android/settings.gradle" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/example/android/settings_aar.gradle" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/example/ios/.symlinks/plugins/flutter_mapbox_navigation/.idea/encodings.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/example/ios/.symlinks/plugins/flutter_mapbox_navigation/.idea/kotlinc.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/example/ios/.symlinks/plugins/flutter_mapbox_navigation/.idea/libraries/Flutter_for_Android.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/example/ios/.symlinks/plugins/flutter_mapbox_navigation/.idea/libraries/KotlinJavaRuntime.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/example/ios/.symlinks/plugins/flutter_mapbox_navigation/.idea/runConfigurations/example_lib_main_dart.xml" beforeDir="false" afterPath="$PROJECT_DIR$/example/ios/.symlinks/plugins/flutter_mapbox_navigation/.idea/runConfigurations/example_lib_main_dart.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/example/ios/.symlinks/plugins/flutter_mapbox_navigation/.idea/vcs.xml" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/example/ios/.symlinks/plugins/flutter_mapbox_navigation/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/example/ios/.symlinks/plugins/flutter_mapbox_navigation/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/example/ios/.symlinks/plugins/flutter_mapbox_navigation/.metadata" beforeDir="false" afterPath="$PROJECT_DIR$/example/ios/.symlinks/plugins/flutter_mapbox_navigation/.metadata" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/example/ios/.symlinks/plugins/flutter_mapbox_navigation/CHANGELOG.md" beforeDir="false" afterPath="$PROJECT_DIR$/example/ios/.symlinks/plugins/flutter_mapbox_navigation/CHANGELOG.md" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/example/ios/.symlinks/plugins/flutter_mapbox_navigation/LICENSE" beforeDir="false" afterPath="$PROJECT_DIR$/example/ios/.symlinks/plugins/flutter_mapbox_navigation/LICENSE" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/example/ios/.symlinks/plugins/flutter_mapbox_navigation/README.md" beforeDir="false" afterPath="$PROJECT_DIR$/example/ios/.symlinks/plugins/flutter_mapbox_navigation/README.md" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/example/ios/.symlinks/plugins/flutter_mapbox_navigation/android/build.gradle" beforeDir="false" afterPath="$PROJECT_DIR$/example/ios/.symlinks/plugins/flutter_mapbox_navigation/android/build.gradle" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/example/ios/.symlinks/plugins/flutter_mapbox_navigation/android/gradle.properties" beforeDir="false" afterPath="$PROJECT_DIR$/example/ios/.symlinks/plugins/flutter_mapbox_navigation/android/gradle.properties" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/example/ios/.symlinks/plugins/flutter_mapbox_navigation/android/gradle/wrapper/gradle-wrapper.jar" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/example/ios/.symlinks/plugins/flutter_mapbox_navigation/android/gradle/wrapper/gradle-wrapper.properties" beforeDir="false" afterPath="$PROJECT_DIR$/example/ios/.symlinks/plugins/flutter_mapbox_navigation/android/gradle/wrapper/gradle-wrapper.properties" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/example/ios/.symlinks/plugins/flutter_mapbox_navigation/android/gradlew" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/example/ios/.symlinks/plugins/flutter_mapbox_navigation/android/gradlew.bat" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/example/ios/.symlinks/plugins/flutter_mapbox_navigation/android/src/main/AndroidManifest.xml" beforeDir="false" afterPath="$PROJECT_DIR$/example/ios/.symlinks/plugins/flutter_mapbox_navigation/android/src/main/AndroidManifest.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/example/ios/.symlinks/plugins/flutter_mapbox_navigation/android/src/main/kotlin/com/dormmom/flutter_mapbox_navigation/CustomNavigationNotification.kt" beforeDir="false" afterPath="$PROJECT_DIR$/example/ios/.symlinks/plugins/flutter_mapbox_navigation/android/src/main/kotlin/com/dormmom/flutter_mapbox_navigation/CustomNavigationNotification.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/example/ios/.symlinks/plugins/flutter_mapbox_navigation/android/src/main/kotlin/com/dormmom/flutter_mapbox_navigation/FlutterMapboxNavigation.kt" beforeDir="false" afterPath="$PROJECT_DIR$/example/ios/.symlinks/plugins/flutter_mapbox_navigation/android/src/main/kotlin/com/dormmom/flutter_mapbox_navigation/FlutterMapboxNavigation.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/example/ios/.symlinks/plugins/flutter_mapbox_navigation/android/src/main/kotlin/com/dormmom/flutter_mapbox_navigation/FlutterMapboxNavigationPlugin.kt" beforeDir="false" afterPath="$PROJECT_DIR$/example/ios/.symlinks/plugins/flutter_mapbox_navigation/android/src/main/kotlin/com/dormmom/flutter_mapbox_navigation/FlutterMapboxNavigationPlugin.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/example/ios/.symlinks/plugins/flutter_mapbox_navigation/android/src/main/kotlin/com/dormmom/flutter_mapbox_navigation/RouteMapActivity.kt" beforeDir="false" afterPath="$PROJECT_DIR$/example/ios/.symlinks/plugins/flutter_mapbox_navigation/android/src/main/kotlin/com/dormmom/flutter_mapbox_navigation/RouteMapActivity.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/example/ios/.symlinks/plugins/flutter_mapbox_navigation/example/.flutter-plugins-dependencies" beforeDir="false" afterPath="$PROJECT_DIR$/example/ios/.symlinks/plugins/flutter_mapbox_navigation/example/.flutter-plugins-dependencies" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/example/ios/.symlinks/plugins/flutter_mapbox_navigation/example/.gitignore" beforeDir="false" afterPath="$PROJECT_DIR$/example/ios/.symlinks/plugins/flutter_mapbox_navigation/example/.gitignore" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/example/ios/.symlinks/plugins/flutter_mapbox_navigation/example/.metadata" beforeDir="false" afterPath="$PROJECT_DIR$/example/ios/.symlinks/plugins/flutter_mapbox_navigation/example/.metadata" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/example/ios/.symlinks/plugins/flutter_mapbox_navigation/example/README.md" beforeDir="false" afterPath="$PROJECT_DIR$/example/ios/.symlinks/plugins/flutter_mapbox_navigation/example/README.md" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/example/ios/.symlinks/plugins/flutter_mapbox_navigation/example/android/app/build.gradle" beforeDir="false" afterPath="$PROJECT_DIR$/example/ios/.symlinks/plugins/flutter_mapbox_navigation/example/android/app/build.gradle" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/example/ios/.symlinks/plugins/flutter_mapbox_navigation/example/android/app/src/debug/AndroidManifest.xml" beforeDir="false" afterPath="$PROJECT_DIR$/example/ios/.symlinks/plugins/flutter_mapbox_navigation/example/android/app/src/debug/AndroidManifest.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/example/ios/.symlinks/plugins/flutter_mapbox_navigation/example/android/app/src/main/AndroidManifest.xml" beforeDir="false" afterPath="$PROJECT_DIR$/example/ios/.symlinks/plugins/flutter_mapbox_navigation/example/android/app/src/main/AndroidManifest.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/example/ios/.symlinks/plugins/flutter_mapbox_navigation/example/android/app/src/main/res/values/strings.xml" beforeDir="false" afterPath="$PROJECT_DIR$/example/ios/.symlinks/plugins/flutter_mapbox_navigation/example/android/app/src/main/res/values/strings.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/example/ios/.symlinks/plugins/flutter_mapbox_navigation/example/android/app/src/main/res/values/styles.xml" beforeDir="false" afterPath="$PROJECT_DIR$/example/ios/.symlinks/plugins/flutter_mapbox_navigation/example/android/app/src/main/res/values/styles.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/example/ios/.symlinks/plugins/flutter_mapbox_navigation/example/android/build.gradle" beforeDir="false" afterPath="$PROJECT_DIR$/example/ios/.symlinks/plugins/flutter_mapbox_navigation/example/android/build.gradle" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/example/ios/.symlinks/plugins/flutter_mapbox_navigation/example/android/gradle.properties" beforeDir="false" afterPath="$PROJECT_DIR$/example/ios/.symlinks/plugins/flutter_mapbox_navigation/example/android/gradle.properties" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/example/ios/.symlinks/plugins/flutter_mapbox_navigation/example/android/gradle/wrapper/gradle-wrapper.properties" beforeDir="false" afterPath="$PROJECT_DIR$/example/ios/.symlinks/plugins/flutter_mapbox_navigation/example/android/gradle/wrapper/gradle-wrapper.properties" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/example/ios/.symlinks/plugins/flutter_mapbox_navigation/example/android/settings.gradle" beforeDir="false" afterPath="$PROJECT_DIR$/example/ios/.symlinks/plugins/flutter_mapbox_navigation/example/android/settings.gradle" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/example/ios/.symlinks/plugins/flutter_mapbox_navigation/example/android/settings_aar.gradle" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/example/ios/.symlinks/plugins/flutter_mapbox_navigation/example/ios/Flutter/flutter_export_environment.sh" beforeDir="false" afterPath="$PROJECT_DIR$/example/ios/.symlinks/plugins/flutter_mapbox_navigation/example/ios/Flutter/flutter_export_environment.sh" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/example/ios/.symlinks/plugins/flutter_mapbox_navigation/example/ios/Podfile" beforeDir="false" afterPath="$PROJECT_DIR$/example/ios/.symlinks/plugins/flutter_mapbox_navigation/example/ios/Podfile" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/example/ios/.symlinks/plugins/flutter_mapbox_navigation/example/ios/Podfile.lock" beforeDir="false" afterPath="$PROJECT_DIR$/example/ios/.symlinks/plugins/flutter_mapbox_navigation/example/ios/Podfile.lock" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/example/ios/.symlinks/plugins/flutter_mapbox_navigation/example/ios/Runner.xcodeproj/project.pbxproj" beforeDir="false" afterPath="$PROJECT_DIR$/example/ios/.symlinks/plugins/flutter_mapbox_navigation/example/ios/Runner.xcodeproj/project.pbxproj" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/example/ios/.symlinks/plugins/flutter_mapbox_navigation/example/ios/Runner/AppDelegate.swift" beforeDir="false" afterPath="$PROJECT_DIR$/example/ios/.symlinks/plugins/flutter_mapbox_navigation/example/ios/Runner/AppDelegate.swift" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/example/ios/.symlinks/plugins/flutter_mapbox_navigation/example/ios/Runner/Assets.xcassets/AppIcon.appiconset/Icon-App-1024x1024@1x.png" beforeDir="false" afterPath="$PROJECT_DIR$/example/ios/.symlinks/plugins/flutter_mapbox_navigation/example/ios/Runner/Assets.xcassets/AppIcon.appiconset/Icon-App-1024x1024@1x.png" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/example/ios/.symlinks/plugins/flutter_mapbox_navigation/example/ios/Runner/Info.plist" beforeDir="false" afterPath="$PROJECT_DIR$/example/ios/.symlinks/plugins/flutter_mapbox_navigation/example/ios/Runner/Info.plist" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/example/ios/.symlinks/plugins/flutter_mapbox_navigation/example/ios/Runner/Runner-Bridging-Header.h" beforeDir="false" afterPath="$PROJECT_DIR$/example/ios/.symlinks/plugins/flutter_mapbox_navigation/example/ios/Runner/Runner-Bridging-Header.h" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/example/ios/.symlinks/plugins/flutter_mapbox_navigation/example/lib/main.dart" beforeDir="false" afterPath="$PROJECT_DIR$/example/ios/.symlinks/plugins/flutter_mapbox_navigation/example/lib/main.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/example/ios/.symlinks/plugins/flutter_mapbox_navigation/example/pubspec.lock" beforeDir="false" afterPath="$PROJECT_DIR$/example/ios/.symlinks/plugins/flutter_mapbox_navigation/example/pubspec.lock" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/example/ios/.symlinks/plugins/flutter_mapbox_navigation/example/pubspec.yaml" beforeDir="false" afterPath="$PROJECT_DIR$/example/ios/.symlinks/plugins/flutter_mapbox_navigation/example/pubspec.yaml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/example/ios/.symlinks/plugins/flutter_mapbox_navigation/flutter_mapbox_navigation.iml" beforeDir="false" afterPath="$PROJECT_DIR$/example/ios/.symlinks/plugins/flutter_mapbox_navigation/flutter_mapbox_navigation.iml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/example/ios/.symlinks/plugins/flutter_mapbox_navigation/ios/.gitignore" beforeDir="false" afterPath="$PROJECT_DIR$/example/ios/.symlinks/plugins/flutter_mapbox_navigation/ios/.gitignore" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/example/ios/.symlinks/plugins/flutter_mapbox_navigation/ios/Classes/FlutterMapboxNavigationPlugin.m" beforeDir="false" afterPath="$PROJECT_DIR$/example/ios/.symlinks/plugins/flutter_mapbox_navigation/ios/Classes/FlutterMapboxNavigationPlugin.m" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/example/ios/.symlinks/plugins/flutter_mapbox_navigation/ios/Classes/SwiftFlutterMapboxNavigationPlugin.swift" beforeDir="false" afterPath="$PROJECT_DIR$/example/ios/.symlinks/plugins/flutter_mapbox_navigation/ios/Classes/SwiftFlutterMapboxNavigationPlugin.swift" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/example/ios/.symlinks/plugins/flutter_mapbox_navigation/ios/flutter_mapbox_navigation.podspec" beforeDir="false" afterPath="$PROJECT_DIR$/example/ios/.symlinks/plugins/flutter_mapbox_navigation/ios/flutter_mapbox_navigation.podspec" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/example/ios/.symlinks/plugins/flutter_mapbox_navigation/lib/flutter_mapbox_navigation.dart" beforeDir="false" afterPath="$PROJECT_DIR$/example/ios/.symlinks/plugins/flutter_mapbox_navigation/lib/flutter_mapbox_navigation.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/example/ios/.symlinks/plugins/flutter_mapbox_navigation/pubspec.lock" beforeDir="false" afterPath="$PROJECT_DIR$/example/ios/.symlinks/plugins/flutter_mapbox_navigation/pubspec.lock" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/example/ios/.symlinks/plugins/flutter_mapbox_navigation/pubspec.yaml" beforeDir="false" afterPath="$PROJECT_DIR$/example/ios/.symlinks/plugins/flutter_mapbox_navigation/pubspec.yaml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/example/ios/.symlinks/plugins/flutter_mapbox_navigation/test/flutter_mapbox_navigation_test.dart" beforeDir="false" afterPath="$PROJECT_DIR$/example/ios/.symlinks/plugins/flutter_mapbox_navigation/test/flutter_mapbox_navigation_test.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/example/ios/Flutter/flutter_export_environment.sh" beforeDir="false" afterPath="$PROJECT_DIR$/example/ios/Flutter/flutter_export_environment.sh" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/example/ios/Podfile" beforeDir="false" afterPath="$PROJECT_DIR$/example/ios/Podfile" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/example/ios/Podfile.lock" beforeDir="false" afterPath="$PROJECT_DIR$/example/ios/Podfile.lock" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/example/ios/Runner.xcodeproj/project.pbxproj" beforeDir="false" afterPath="$PROJECT_DIR$/example/ios/Runner.xcodeproj/project.pbxproj" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/example/ios/Runner/AppDelegate.swift" beforeDir="false" afterPath="$PROJECT_DIR$/example/ios/Runner/AppDelegate.swift" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/example/ios/Runner/Assets.xcassets/AppIcon.appiconset/Icon-App-1024x1024@1x.png" beforeDir="false" afterPath="$PROJECT_DIR$/example/ios/Runner/Assets.xcassets/AppIcon.appiconset/Icon-App-1024x1024@1x.png" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/example/ios/Runner/Info.plist" beforeDir="false" afterPath="$PROJECT_DIR$/example/ios/Runner/Info.plist" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/example/ios/Runner/Runner-Bridging-Header.h" beforeDir="false" afterPath="$PROJECT_DIR$/example/ios/Runner/Runner-Bridging-Header.h" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/example/lib/main.dart" beforeDir="false" afterPath="$PROJECT_DIR$/example/lib/main.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/example/pubspec.lock" beforeDir="false" afterPath="$PROJECT_DIR$/example/pubspec.lock" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/example/pubspec.yaml" beforeDir="false" afterPath="$PROJECT_DIR$/example/pubspec.yaml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/flutter_mapbox_navigation.iml" beforeDir="false" afterPath="$PROJECT_DIR$/flutter_mapbox_navigation.iml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/ios/.gitignore" beforeDir="false" afterPath="$PROJECT_DIR$/ios/.gitignore" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/ios/Classes/FlutterMapboxNavigationPlugin.m" beforeDir="false" afterPath="$PROJECT_DIR$/ios/Classes/FlutterMapboxNavigationPlugin.m" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/ios/Classes/SwiftFlutterMapboxNavigationPlugin.swift" beforeDir="false" afterPath="$PROJECT_DIR$/ios/Classes/SwiftFlutterMapboxNavigationPlugin.swift" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/ios/flutter_mapbox_navigation.podspec" beforeDir="false" afterPath="$PROJECT_DIR$/ios/flutter_mapbox_navigation.podspec" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/flutter_mapbox_navigation.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/flutter_mapbox_navigation.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/pubspec.lock" beforeDir="false" afterPath="$PROJECT_DIR$/pubspec.lock" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/pubspec.yaml" beforeDir="false" afterPath="$PROJECT_DIR$/pubspec.yaml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/test/flutter_mapbox_navigation_test.dart" beforeDir="false" afterPath="$PROJECT_DIR$/test/flutter_mapbox_navigation_test.dart" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -157,61 +52,61 @@
     <servers />
   </component>
   <component name="WindowStateProjectService">
-    <state width="1638" height="360" key="GridCell.Tab.0.bottom" timestamp="1593784654358">
+    <state width="1638" height="360" key="GridCell.Tab.0.bottom" timestamp="1593802889799">
       <screen x="0" y="23" width="2560" height="1340" />
     </state>
     <state width="1702" height="273" key="GridCell.Tab.0.bottom/0.23.2560.1337@0.23.2560.1337" timestamp="1593732022756" />
-    <state width="1638" height="360" key="GridCell.Tab.0.bottom/0.23.2560.1338@0.23.2560.1338" timestamp="1593782095339" />
-    <state width="1638" height="360" key="GridCell.Tab.0.bottom/0.23.2560.1340@0.23.2560.1340" timestamp="1593784654358" />
+    <state width="1638" height="360" key="GridCell.Tab.0.bottom/0.23.2560.1338@0.23.2560.1338" timestamp="1593802293272" />
+    <state width="1638" height="360" key="GridCell.Tab.0.bottom/0.23.2560.1340@0.23.2560.1340" timestamp="1593802889799" />
     <state width="1638" height="251" key="GridCell.Tab.0.bottom/0.23.2560.1342@0.23.2560.1342" timestamp="1593771905644" />
     <state width="1702" height="337" key="GridCell.Tab.0.bottom/0.23.5120.1337@0.23.5120.1337" timestamp="1593729993125" />
-    <state width="1638" height="360" key="GridCell.Tab.0.center" timestamp="1593784654357">
+    <state width="1638" height="360" key="GridCell.Tab.0.center" timestamp="1593802889798">
       <screen x="0" y="23" width="2560" height="1340" />
     </state>
     <state width="1702" height="273" key="GridCell.Tab.0.center/0.23.2560.1337@0.23.2560.1337" timestamp="1593732022756" />
-    <state width="1638" height="360" key="GridCell.Tab.0.center/0.23.2560.1338@0.23.2560.1338" timestamp="1593782095338" />
-    <state width="1638" height="360" key="GridCell.Tab.0.center/0.23.2560.1340@0.23.2560.1340" timestamp="1593784654357" />
+    <state width="1638" height="360" key="GridCell.Tab.0.center/0.23.2560.1338@0.23.2560.1338" timestamp="1593802293272" />
+    <state width="1638" height="360" key="GridCell.Tab.0.center/0.23.2560.1340@0.23.2560.1340" timestamp="1593802889798" />
     <state width="1638" height="251" key="GridCell.Tab.0.center/0.23.2560.1342@0.23.2560.1342" timestamp="1593771905644" />
     <state width="1702" height="337" key="GridCell.Tab.0.center/0.23.5120.1337@0.23.5120.1337" timestamp="1593729993124" />
-    <state width="1638" height="360" key="GridCell.Tab.0.left" timestamp="1593784654357">
+    <state width="1638" height="360" key="GridCell.Tab.0.left" timestamp="1593802889798">
       <screen x="0" y="23" width="2560" height="1340" />
     </state>
     <state width="1702" height="273" key="GridCell.Tab.0.left/0.23.2560.1337@0.23.2560.1337" timestamp="1593732022755" />
-    <state width="1638" height="360" key="GridCell.Tab.0.left/0.23.2560.1338@0.23.2560.1338" timestamp="1593782095338" />
-    <state width="1638" height="360" key="GridCell.Tab.0.left/0.23.2560.1340@0.23.2560.1340" timestamp="1593784654357" />
+    <state width="1638" height="360" key="GridCell.Tab.0.left/0.23.2560.1338@0.23.2560.1338" timestamp="1593802293272" />
+    <state width="1638" height="360" key="GridCell.Tab.0.left/0.23.2560.1340@0.23.2560.1340" timestamp="1593802889798" />
     <state width="1638" height="251" key="GridCell.Tab.0.left/0.23.2560.1342@0.23.2560.1342" timestamp="1593771905643" />
     <state width="1702" height="337" key="GridCell.Tab.0.left/0.23.5120.1337@0.23.5120.1337" timestamp="1593729993124" />
-    <state width="1638" height="360" key="GridCell.Tab.0.right" timestamp="1593784654358">
+    <state width="1638" height="360" key="GridCell.Tab.0.right" timestamp="1593802889798">
       <screen x="0" y="23" width="2560" height="1340" />
     </state>
     <state width="1702" height="273" key="GridCell.Tab.0.right/0.23.2560.1337@0.23.2560.1337" timestamp="1593732022756" />
-    <state width="1638" height="360" key="GridCell.Tab.0.right/0.23.2560.1338@0.23.2560.1338" timestamp="1593782095338" />
-    <state width="1638" height="360" key="GridCell.Tab.0.right/0.23.2560.1340@0.23.2560.1340" timestamp="1593784654358" />
+    <state width="1638" height="360" key="GridCell.Tab.0.right/0.23.2560.1338@0.23.2560.1338" timestamp="1593802293272" />
+    <state width="1638" height="360" key="GridCell.Tab.0.right/0.23.2560.1340@0.23.2560.1340" timestamp="1593802889798" />
     <state width="1638" height="251" key="GridCell.Tab.0.right/0.23.2560.1342@0.23.2560.1342" timestamp="1593771905644" />
     <state width="1702" height="337" key="GridCell.Tab.0.right/0.23.5120.1337@0.23.5120.1337" timestamp="1593729993124" />
-    <state width="1638" height="360" key="GridCell.Tab.1.bottom" timestamp="1593784654306">
+    <state width="1638" height="360" key="GridCell.Tab.1.bottom" timestamp="1593802889799">
       <screen x="0" y="23" width="2560" height="1340" />
     </state>
-    <state width="1638" height="360" key="GridCell.Tab.1.bottom/0.23.2560.1338@0.23.2560.1338" timestamp="1593782095339" />
-    <state width="1638" height="360" key="GridCell.Tab.1.bottom/0.23.2560.1340@0.23.2560.1340" timestamp="1593784654306" />
+    <state width="1638" height="360" key="GridCell.Tab.1.bottom/0.23.2560.1338@0.23.2560.1338" timestamp="1593802293273" />
+    <state width="1638" height="360" key="GridCell.Tab.1.bottom/0.23.2560.1340@0.23.2560.1340" timestamp="1593802889799" />
     <state width="1702" height="337" key="GridCell.Tab.1.bottom/0.23.5120.1337@0.23.5120.1337" timestamp="1593729993126" />
-    <state width="1638" height="360" key="GridCell.Tab.1.center" timestamp="1593784654305">
+    <state width="1638" height="360" key="GridCell.Tab.1.center" timestamp="1593802889799">
       <screen x="0" y="23" width="2560" height="1340" />
     </state>
-    <state width="1638" height="360" key="GridCell.Tab.1.center/0.23.2560.1338@0.23.2560.1338" timestamp="1593782095339" />
-    <state width="1638" height="360" key="GridCell.Tab.1.center/0.23.2560.1340@0.23.2560.1340" timestamp="1593784654305" />
+    <state width="1638" height="360" key="GridCell.Tab.1.center/0.23.2560.1338@0.23.2560.1338" timestamp="1593802293273" />
+    <state width="1638" height="360" key="GridCell.Tab.1.center/0.23.2560.1340@0.23.2560.1340" timestamp="1593802889799" />
     <state width="1702" height="337" key="GridCell.Tab.1.center/0.23.5120.1337@0.23.5120.1337" timestamp="1593729993125" />
-    <state width="1638" height="360" key="GridCell.Tab.1.left" timestamp="1593784654305">
+    <state width="1638" height="360" key="GridCell.Tab.1.left" timestamp="1593802889799">
       <screen x="0" y="23" width="2560" height="1340" />
     </state>
-    <state width="1638" height="360" key="GridCell.Tab.1.left/0.23.2560.1338@0.23.2560.1338" timestamp="1593782095339" />
-    <state width="1638" height="360" key="GridCell.Tab.1.left/0.23.2560.1340@0.23.2560.1340" timestamp="1593784654305" />
+    <state width="1638" height="360" key="GridCell.Tab.1.left/0.23.2560.1338@0.23.2560.1338" timestamp="1593802293273" />
+    <state width="1638" height="360" key="GridCell.Tab.1.left/0.23.2560.1340@0.23.2560.1340" timestamp="1593802889799" />
     <state width="1702" height="337" key="GridCell.Tab.1.left/0.23.5120.1337@0.23.5120.1337" timestamp="1593729993125" />
-    <state width="1638" height="360" key="GridCell.Tab.1.right" timestamp="1593784654305">
+    <state width="1638" height="360" key="GridCell.Tab.1.right" timestamp="1593802889799">
       <screen x="0" y="23" width="2560" height="1340" />
     </state>
-    <state width="1638" height="360" key="GridCell.Tab.1.right/0.23.2560.1338@0.23.2560.1338" timestamp="1593782095339" />
-    <state width="1638" height="360" key="GridCell.Tab.1.right/0.23.2560.1340@0.23.2560.1340" timestamp="1593784654305" />
+    <state width="1638" height="360" key="GridCell.Tab.1.right/0.23.2560.1338@0.23.2560.1338" timestamp="1593802293273" />
+    <state width="1638" height="360" key="GridCell.Tab.1.right/0.23.2560.1340@0.23.2560.1340" timestamp="1593802889799" />
     <state width="1702" height="337" key="GridCell.Tab.1.right/0.23.5120.1337@0.23.5120.1337" timestamp="1593729993126" />
   </component>
 </project>
