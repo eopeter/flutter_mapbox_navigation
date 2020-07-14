@@ -13,21 +13,17 @@ import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 
 import com.dormmom.flutter_mapbox_navigation.R;
-
 import com.mapbox.services.android.navigation.ui.v5.NavigationViewOptions;
 import com.mapbox.services.android.navigation.v5.navigation.NavigationConstants;
 
 
-
-import butterknife.ButterKnife;
-
 public class FragmentNavigationActivity extends AppCompatActivity {
+
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_navigation_fragment);
-        ButterKnife.bind(this);
 
         FragmentManager fragmentManager = getSupportFragmentManager();
         NavigationFragment fragment = new NavigationFragment();
@@ -58,11 +54,11 @@ public class FragmentNavigationActivity extends AppCompatActivity {
         editor.apply();
 
         Intent intent = new Intent(activity, FragmentNavigationActivity.class);
-        activity.startActivity(intent);
+        activity.startActivityForResult(intent,5029);
     }
 
-    public static  void stopNavigation(Activity activity){
-
+    public static void stopNavigation(Activity activity){
+        activity.finishActivity(5029);
     }
 
 
@@ -73,6 +69,5 @@ public class FragmentNavigationActivity extends AppCompatActivity {
     private static void storeConfiguration(NavigationViewOptions options, SharedPreferences.Editor editor) {
         editor.putBoolean(NavigationConstants.NAVIGATION_VIEW_SIMULATE_ROUTE, options.shouldSimulateRoute());
     }
-
 
 }

@@ -3,7 +3,9 @@ package com.dormmom.flutter_mapbox_navigation
 import android.Manifest
 import android.app.Activity
 import android.content.Context
+import android.content.Intent
 import android.content.pm.PackageManager
+import android.location.Location
 import android.os.Build
 import androidx.annotation.NonNull
 import com.dormmom.flutter_mapbox_navigation.launcher.FragmentNavigationActivity
@@ -13,11 +15,10 @@ import com.mapbox.api.directions.v5.models.DirectionsRoute
 import com.mapbox.geojson.Point
 import com.mapbox.mapboxsdk.Mapbox
 import com.mapbox.services.android.navigation.ui.v5.NavigationViewOptions
-
 import com.mapbox.services.android.navigation.v5.navigation.NavigationRoute
-
-import io.flutter.embedding.engine.plugins.activity.ActivityAware
-import io.flutter.embedding.engine.plugins.activity.ActivityPluginBinding
+import com.mapbox.services.android.navigation.v5.routeprogress.ProgressChangeListener
+import com.mapbox.services.android.navigation.v5.routeprogress.RouteProgress
+import com.mapbox.services.android.navigation.v5.routeprogress.RouteProgressState
 import io.flutter.plugin.common.EventChannel
 import io.flutter.plugin.common.MethodCall
 import io.flutter.plugin.common.MethodChannel
@@ -28,8 +29,7 @@ import retrofit2.Response
 import java.util.*
 
 
-class FlutterMapboxNavigation : MethodChannel.MethodCallHandler, EventChannel.StreamHandler {
-
+class FlutterMapboxNavigation : MethodChannel.MethodCallHandler, EventChannel.StreamHandler, PluginRegistry.ActivityResultListener {
 
     var _activity: Activity
     var _context: Context
@@ -47,6 +47,7 @@ class FlutterMapboxNavigation : MethodChannel.MethodCallHandler, EventChannel.St
     var PERMISSION_REQUEST_CODE: Int = 367
 
     lateinit var routes: List<DirectionsRoute>
+    private lateinit var _result: MethodChannel.Result
 
     var _eventSink: EventChannel.EventSink? = null
 
@@ -68,6 +69,8 @@ class FlutterMapboxNavigation : MethodChannel.MethodCallHandler, EventChannel.St
         } else if (call.method == "getDurationRemaining") {
             result.success(_durationRemaining);
         } else if (call.method == "startNavigation") {
+
+            _result = result
             var originName = arguments?.get("originName") as? String
             val originLatitude = arguments?.get("originLatitude") as? Double
             val originLongitude = arguments?.get("originLongitude") as? Double
@@ -106,8 +109,6 @@ class FlutterMapboxNavigation : MethodChannel.MethodCallHandler, EventChannel.St
                         startNavigation(origin, destination, simulateRoute, language, units)
                 } else
                     startNavigation(origin, destination, simulateRoute, language, units)
-
-
             }
         } else if (call.method == "finishNavigation") {
             FragmentNavigationActivity.stopNavigation(_activity)
@@ -141,7 +142,6 @@ class FlutterMapboxNavigation : MethodChannel.MethodCallHandler, EventChannel.St
             else if (units == "metric")
                 voiceUnits = DirectionsCriteria.METRIC
         }
-        print(accessToken);
         var opt = NavigationRoute.builder(_context)
                 .accessToken(accessToken)
                 .origin(origin)
@@ -160,13 +160,12 @@ class FlutterMapboxNavigation : MethodChannel.MethodCallHandler, EventChannel.St
 
                                 val route: DirectionsRoute = routes.get(0)
 
-
                                 val options = NavigationViewOptions.builder()
                                         .directionsRoute(route)
                                         .shouldSimulateRoute(simulateRoute)
                                         .build()
 
-                                startNavigation(route, options)
+                                startNavigation(options)
                             }
                         }
 
@@ -182,18 +181,9 @@ class FlutterMapboxNavigation : MethodChannel.MethodCallHandler, EventChannel.St
 
     }
 
-
-    private fun startNavigation(directionsRoute: DirectionsRoute, options: NavigationViewOptions) {
-        if (directionsRoute == null) {
-            return
-        }
-        val options = NavigationViewOptions.builder()
-                .directionsRoute(directionsRoute)
-                .shouldSimulateRoute(true)
-                .build()
+    private fun startNavigation(options: NavigationViewOptions) {
         FragmentNavigationActivity.startNavigation(_activity, options)
     }
-
 
     override fun onListen(args: Any?, events: EventChannel.EventSink?) {
         _eventSink = events;
@@ -204,4 +194,16 @@ class FlutterMapboxNavigation : MethodChannel.MethodCallHandler, EventChannel.St
     }
 
 
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?): Boolean {
+        if (requestCode == 5029 && resultCode == Activity.RESULT_OK) {
+            _result.success(true);
+            return true;
+        }
+        return false;
+    }
+
+
+
 }
+
+
