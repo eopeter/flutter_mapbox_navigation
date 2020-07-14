@@ -87,6 +87,7 @@ class _MyAppState extends State<MyApp> {
                     simulateRoute: true,
                     language: "es",
                     units: VoiceUnits.metric);
+                print("navigation finished");
               },
             ),
             SizedBox(
