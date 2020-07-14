@@ -4,8 +4,7 @@
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
 
-    <application>
-        <activity android:name=".launcher.MyMapboxNavigationActivity" />
-        <activity android:name=".RouteMapActivity" />
+    <application android:theme="@style/Theme.AppCompat.NoActionBar">
+        <activity android:name=".launcher.FragmentNavigationActivity" />
     </application>
 </manifest>

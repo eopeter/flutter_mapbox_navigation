@@ -5,39 +5,38 @@ import android.app.Activity
 import android.content.Context
 import android.content.pm.PackageManager
 import android.os.Build
-import android.content.Intent
 import androidx.annotation.NonNull
-import com.dormmom.flutter_mapbox_navigation.launcher.MyNavigationLauncher
+import com.dormmom.flutter_mapbox_navigation.launcher.FragmentNavigationActivity
 import com.mapbox.api.directions.v5.DirectionsCriteria
 import com.mapbox.api.directions.v5.models.DirectionsResponse
 import com.mapbox.api.directions.v5.models.DirectionsRoute
 import com.mapbox.geojson.Point
 import com.mapbox.mapboxsdk.Mapbox
-import com.mapbox.services.android.navigation.ui.v5.NavigationLauncher
-import com.mapbox.services.android.navigation.ui.v5.NavigationLauncherOptions
+import com.mapbox.services.android.navigation.ui.v5.NavigationViewOptions
+
 import com.mapbox.services.android.navigation.v5.navigation.NavigationRoute
+
 import io.flutter.embedding.engine.plugins.activity.ActivityAware
 import io.flutter.embedding.engine.plugins.activity.ActivityPluginBinding
 import io.flutter.plugin.common.EventChannel
 import io.flutter.plugin.common.MethodCall
 import io.flutter.plugin.common.MethodChannel
 import io.flutter.plugin.common.PluginRegistry
-import okhttp3.Route
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 import java.util.*
 
-class FlutterMapboxNavigation : MethodChannel.MethodCallHandler, EventChannel.StreamHandler
-{
-    
+
+class FlutterMapboxNavigation : MethodChannel.MethodCallHandler, EventChannel.StreamHandler {
+
 
     var _activity: Activity
     var _context: Context
 
     var _origin: Point? = null
     var _destination: Point? = null
-    var _navigationMode: String? =  "drivingWithTraffic"
+    var _navigationMode: String? = "drivingWithTraffic"
     var _simulateRoute: Boolean = false
     var _language: String? = null
     var _units: String? = null
@@ -47,16 +46,16 @@ class FlutterMapboxNavigation : MethodChannel.MethodCallHandler, EventChannel.St
 
     var PERMISSION_REQUEST_CODE: Int = 367
 
-    lateinit var routes : List<DirectionsRoute>
-    val EXTRA_ROUTES = "com.example.myfirstapp.MESSAGE"
+    lateinit var routes: List<DirectionsRoute>
 
-    var _eventSink:EventChannel.EventSink? = null
+    var _eventSink: EventChannel.EventSink? = null
 
-    
+
     constructor(context: Context, activity: Activity) {
         this._context = context
         this._activity = activity;
     }
+
 
     override fun onMethodCall(@NonNull call: MethodCall, @NonNull result: MethodChannel.Result) {
 
@@ -64,17 +63,11 @@ class FlutterMapboxNavigation : MethodChannel.MethodCallHandler, EventChannel.St
 
         if (call.method == "getPlatformVersion") {
             result.success("Android ${android.os.Build.VERSION.RELEASE}")
-        }
-        else if(call.method == "getDistanceRemaining")
-        {
+        } else if (call.method == "getDistanceRemaining") {
             result.success(_distanceRemaining);
-        }
-        else if(call.method == "getDurationRemaining")
-        {
+        } else if (call.method == "getDurationRemaining") {
             result.success(_durationRemaining);
-        }
-        else if(call.method == "startNavigation")
-        {
+        } else if (call.method == "startNavigation") {
             var originName = arguments?.get("originName") as? String
             val originLatitude = arguments?.get("originLatitude") as? Double
             val originLongitude = arguments?.get("originLongitude") as? Double
@@ -84,7 +77,7 @@ class FlutterMapboxNavigation : MethodChannel.MethodCallHandler, EventChannel.St
             val destinationLongitude = arguments?.get("destinationLongitude") as? Double
 
             val navigationMode = arguments?.get("mode") as? String
-            if(navigationMode != null)
+            if (navigationMode != null)
                 _navigationMode = navigationMode;
 
             val simulateRoute = arguments?.get("simulateRoute") as Boolean
@@ -97,8 +90,7 @@ class FlutterMapboxNavigation : MethodChannel.MethodCallHandler, EventChannel.St
             _units = units
 
 
-            if(originLatitude != null && originLongitude != null && destinationLatitude != null && destinationLongitude != null)
-            {
+            if (originLatitude != null && originLongitude != null && destinationLatitude != null && destinationLongitude != null) {
 
                 val origin = Point.fromLngLat(originLongitude, originLatitude)
                 val destination = Point.fromLngLat(destinationLongitude, destinationLatitude)
@@ -107,64 +99,49 @@ class FlutterMapboxNavigation : MethodChannel.MethodCallHandler, EventChannel.St
 
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
                     var haspermission = _activity.checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION)
-                    if(haspermission != PackageManager.PERMISSION_GRANTED) {
-                        //_activity.onRequestPermissionsResult((a,b,c) => onRequestPermissionsResult)
+                    if (haspermission != PackageManager.PERMISSION_GRANTED) {
                         _activity.requestPermissions(arrayOf(Manifest.permission.ACCESS_FINE_LOCATION), PERMISSION_REQUEST_CODE)
                         startNavigation(origin, destination, simulateRoute, language, units)
-                    }
-                    else
+                    } else
                         startNavigation(origin, destination, simulateRoute, language, units)
-                }
-                else
+                } else
                     startNavigation(origin, destination, simulateRoute, language, units)
 
 
             }
-        } else if(call.method == "finishNavigation") {
-            MyNavigationLauncher.stopNavigation(_activity)
+        } else if (call.method == "finishNavigation") {
+            FragmentNavigationActivity.stopNavigation(_activity)
         } else {
             result.notImplemented()
         }
     }
 
-    fun startNavigation(origin: Point, destination: Point, simulateRoute: Boolean, language: String?, units: String?)
-    {
+    fun startNavigation(origin: Point, destination: Point, simulateRoute: Boolean, language: String?, units: String?) {
         var navigationMode = DirectionsCriteria.PROFILE_DRIVING_TRAFFIC;
-        if(_navigationMode == "walking")
+        if (_navigationMode == "walking")
             navigationMode = DirectionsCriteria.PROFILE_WALKING;
-        else if(_navigationMode == "cycling")
+        else if (_navigationMode == "cycling")
             navigationMode = DirectionsCriteria.PROFILE_CYCLING;
-        else if(_navigationMode == "driving")
+        else if (_navigationMode == "driving")
             navigationMode = DirectionsCriteria.PROFILE_DRIVING;
 
         var accessToken = PluginUtilities.getResourceFromContext(_context, "mapbox_access_token")
         Mapbox.getInstance(_context, accessToken)
 
-        /*
-        var navViewOptions = NavigationViewOptions.builder();
 
-        navViewOptions.progressChangeListener { location, routeProgress ->
-            var currentState = routeProgress?.currentState()
-            _distanceRemaining =  routeProgress?.distanceRemaining();
-            _durationRemaining = routeProgress?.durationRemaining();
-
-            _eventSink?.success(currentState == RouteProgressState.ROUTE_ARRIVED);
-        }
-         */
-        
         var locale: Locale = Locale("en")
-        
-        if(language != null)
-            locale =  Locale(language) 
+
+        if (language != null)
+            locale = Locale(language)
 
         var voiceUnits: String = DirectionsCriteria.IMPERIAL
-        if(units != null)
-        {
-            if(units == "imperial")
+        if (units != null) {
+            if (units == "imperial")
                 voiceUnits = DirectionsCriteria.IMPERIAL
-            else if(units == "metric")
+            else if (units == "metric")
                 voiceUnits = DirectionsCriteria.METRIC
         }
+        print(accessToken);
         var opt = NavigationRoute.builder(_context)
                 .accessToken(accessToken)
                 .origin(origin)
@@ -178,35 +155,24 @@ class FlutterMapboxNavigation : MethodChannel.MethodCallHandler, EventChannel.St
 
                         if (response.body() != null) {
                             if (!response.body()!!.routes().isEmpty()) {
-                                // Route fetched from NavigationRoute
                                 routes = response.body()!!.routes()
-/*
-                                var intent = Intent(_context, RouteMapActivity::class.java).apply{
-                                    putExtra(EXTRA_ROUTES, "Route Count")
-                                }
 
-                                _activity.startActivity(intent)
-
-                                return;
-                                
- */
 
                                 val route: DirectionsRoute = routes.get(0)
 
-                                // Create a NavigationLauncherOptions object to package everything together
-                                val options = NavigationLauncherOptions.builder()
+
+                                val options = NavigationViewOptions.builder()
                                         .directionsRoute(route)
                                         .shouldSimulateRoute(simulateRoute)
                                         .build()
 
-                                // Call this method with Context from within an Activity
-                                MyNavigationLauncher.startNavigation(_activity, options)
-
+                                startNavigation(route, options)
                             }
                         }
 
 
                     }
+
 
                     override fun onFailure(call: Call<DirectionsResponse>, t: Throwable) {
 
@@ -216,6 +182,19 @@ class FlutterMapboxNavigation : MethodChannel.MethodCallHandler, EventChannel.St
 
     }
 
+
+    private fun startNavigation(directionsRoute: DirectionsRoute, options: NavigationViewOptions) {
+        if (directionsRoute == null) {
+            return
+        }
+        val options = NavigationViewOptions.builder()
+                .directionsRoute(directionsRoute)
+                .shouldSimulateRoute(true)
+                .build()
+        FragmentNavigationActivity.startNavigation(_activity, options)
+    }
+
+
     override fun onListen(args: Any?, events: EventChannel.EventSink?) {
         _eventSink = events;
     }
@@ -223,36 +202,6 @@ class FlutterMapboxNavigation : MethodChannel.MethodCallHandler, EventChannel.St
     override fun onCancel(args: Any?) {
         _eventSink = null;
     }
-
-    fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
-        when (requestCode) {
-            367 -> {
-
-                for (permission in permissions) {
-                    if (permission == Manifest.permission.ACCESS_FINE_LOCATION)
-                    {
-                        var haspermission = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                            _activity.checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION)
-                        } else {
-                            TODO("VERSION.SDK_INT < M")
-                        }
-                        if(haspermission == PackageManager.PERMISSION_GRANTED) {
-                            if(_origin != null && _destination != null)
-                                startNavigation(_origin!!, _destination!!, _simulateRoute, _language, _units)
-                        }
-                        // Not all permissions granted. Show some message and return.
-                        return
-                    }
-                }
-
-                // All permissions are granted. Do the work accordingly.
-            }
-        }
-        //super.onRequestPermissionsResult(requestCode, permissions, grantResults)
-
-    }
-
-    
 
 
 }

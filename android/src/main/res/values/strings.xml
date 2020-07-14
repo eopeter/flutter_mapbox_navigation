@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="was_in_tunnel">tunel</string>
+    <string name="was_navigation_stopped">detenido</string>
+</resources>

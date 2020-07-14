@@ -2,13 +2,32 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="040c80fd-187c-47c9-866a-867a3669b8e3" name="Default Changelist" comment="">
+      <change afterPath="$PROJECT_DIR$/android/src/main/kotlin/com/dormmom/flutter_mapbox_navigation/launcher/FragmentNavigationActivity.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/android/src/main/kotlin/com/dormmom/flutter_mapbox_navigation/launcher/NavigationFragment.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/android/src/main/res/layout/activity_navigation_fragment.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/android/src/main/res/layout/navigation_view_fragment_layout.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/android/src/main/res/values/ids.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/android/src/main/res/values/strings.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/libraries/Dart_SDK.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/libraries/Dart_SDK.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/modules.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/modules.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/runConfigurations/example_lib_main_dart.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/vcs.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/vcs.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/CHANGELOG.md" beforeDir="false" afterPath="$PROJECT_DIR$/CHANGELOG.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/android/build.gradle" beforeDir="false" afterPath="$PROJECT_DIR$/android/build.gradle" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/android/gradle/wrapper/gradle-wrapper.properties" beforeDir="false" afterPath="$PROJECT_DIR$/android/gradle/wrapper/gradle-wrapper.properties" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/android/src/main/AndroidManifest.xml" beforeDir="false" afterPath="$PROJECT_DIR$/android/src/main/AndroidManifest.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/android/src/main/kotlin/com/dormmom/flutter_mapbox_navigation/FlutterMapboxNavigation.kt" beforeDir="false" afterPath="$PROJECT_DIR$/android/src/main/kotlin/com/dormmom/flutter_mapbox_navigation/FlutterMapboxNavigation.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/android/src/main/kotlin/com/dormmom/flutter_mapbox_navigation/launcher/MyMapboxNavigationActivity.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/android/src/main/kotlin/com/dormmom/flutter_mapbox_navigation/launcher/MyNavigationLauncher.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/example/.flutter-plugins-dependencies" beforeDir="false" afterPath="$PROJECT_DIR$/example/.flutter-plugins-dependencies" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/example/android/app/build.gradle" beforeDir="false" afterPath="$PROJECT_DIR$/example/android/app/build.gradle" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/example/android/app/src/main/res/values/strings.xml" beforeDir="false" afterPath="$PROJECT_DIR$/example/android/app/src/main/res/values/strings.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/example/ios/.symlinks/plugins/flutter_mapbox_navigation/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/example/ios/.symlinks/plugins/flutter_mapbox_navigation/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/example/ios/.symlinks/plugins/flutter_mapbox_navigation/example/android/app/src/main/res/values/strings.xml" beforeDir="false" afterPath="$PROJECT_DIR$/example/ios/.symlinks/plugins/flutter_mapbox_navigation/example/android/app/src/main/res/values/strings.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/example/ios/.symlinks/plugins/flutter_mapbox_navigation/example/ios/Runner/Info.plist" beforeDir="false" afterPath="$PROJECT_DIR$/example/ios/.symlinks/plugins/flutter_mapbox_navigation/example/ios/Runner/Info.plist" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/example/ios/Runner/Info.plist" beforeDir="false" afterPath="$PROJECT_DIR$/example/ios/Runner/Info.plist" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/example/ios/Flutter/flutter_export_environment.sh" beforeDir="false" afterPath="$PROJECT_DIR$/example/ios/Flutter/flutter_export_environment.sh" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/example/lib/main.dart" beforeDir="false" afterPath="$PROJECT_DIR$/example/lib/main.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/example/pubspec.lock" beforeDir="false" afterPath="$PROJECT_DIR$/example/pubspec.lock" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/flutter_mapbox_navigation.iml" beforeDir="false" afterPath="$PROJECT_DIR$/flutter_mapbox_navigation.iml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pubspec.lock" beforeDir="false" afterPath="$PROJECT_DIR$/pubspec.lock" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -36,7 +55,22 @@
     <property name="dart.analysis.tool.window.force.activate" value="false" />
     <property name="io.flutter.reload.alreadyRun" value="true" />
     <property name="last_opened_file_path" value="$PROJECT_DIR$" />
+    <property name="settings.editor.selected.configurable" value="flutter.settings" />
     <property name="show.migrate.to.gradle.popup" value="false" />
+  </component>
+  <component name="RecentsManager">
+    <key name="MoveFile.RECENT_KEYS">
+      <recent name="C:\Users\wilme\Desktop\desarrollo\Apps\flutter_mapbox_navigation\example\android\app\src\main\res\values" />
+    </key>
+    <key name="CopyFile.RECENT_KEYS">
+      <recent name="C:\Users\wilme\Desktop\desarrollo\Apps\flutter_mapbox_navigation\android\src\main\res\values" />
+    </key>
+  </component>
+  <component name="RunManager">
+    <configuration name="main.dart" type="FlutterRunConfigurationType" factoryName="Flutter">
+      <option name="filePath" value="$PROJECT_DIR$/example/lib/main.dart" />
+      <method v="2" />
+    </configuration>
   </component>
   <component name="SvnConfiguration">
     <configuration />
@@ -52,33 +86,45 @@
     <servers />
   </component>
   <component name="WindowStateProjectService">
-    <state width="1638" height="360" key="GridCell.Tab.0.bottom" timestamp="1593802889799">
-      <screen x="0" y="23" width="2560" height="1340" />
+    <state x="414" y="195" key="#com.intellij.execution.impl.EditConfigurationsDialog" timestamp="1594661651669">
+      <screen x="0" y="0" width="1920" height="1080" />
     </state>
+    <state x="414" y="195" key="#com.intellij.execution.impl.EditConfigurationsDialog/0.0.1920.1080@0.0.1920.1080" timestamp="1594661651669" />
+    <state x="740" y="299" key="FileChooserDialogImpl" timestamp="1594677432192">
+      <screen x="0" y="0" width="1920" height="1080" />
+    </state>
+    <state x="740" y="299" key="FileChooserDialogImpl/0.0.1920.1080@0.0.1920.1080" timestamp="1594677432192" />
+    <state width="1860" height="287" key="GridCell.Tab.0.bottom" timestamp="1594669107639">
+      <screen x="0" y="0" width="1920" height="1080" />
+    </state>
+    <state width="1860" height="287" key="GridCell.Tab.0.bottom/0.0.1920.1080@0.0.1920.1080" timestamp="1594669107639" />
     <state width="1702" height="273" key="GridCell.Tab.0.bottom/0.23.2560.1337@0.23.2560.1337" timestamp="1593732022756" />
     <state width="1638" height="360" key="GridCell.Tab.0.bottom/0.23.2560.1338@0.23.2560.1338" timestamp="1593802293272" />
     <state width="1638" height="360" key="GridCell.Tab.0.bottom/0.23.2560.1340@0.23.2560.1340" timestamp="1593802889799" />
     <state width="1638" height="251" key="GridCell.Tab.0.bottom/0.23.2560.1342@0.23.2560.1342" timestamp="1593771905644" />
     <state width="1702" height="337" key="GridCell.Tab.0.bottom/0.23.5120.1337@0.23.5120.1337" timestamp="1593729993125" />
-    <state width="1638" height="360" key="GridCell.Tab.0.center" timestamp="1593802889798">
-      <screen x="0" y="23" width="2560" height="1340" />
+    <state width="1860" height="287" key="GridCell.Tab.0.center" timestamp="1594669107638">
+      <screen x="0" y="0" width="1920" height="1080" />
     </state>
+    <state width="1860" height="287" key="GridCell.Tab.0.center/0.0.1920.1080@0.0.1920.1080" timestamp="1594669107638" />
     <state width="1702" height="273" key="GridCell.Tab.0.center/0.23.2560.1337@0.23.2560.1337" timestamp="1593732022756" />
     <state width="1638" height="360" key="GridCell.Tab.0.center/0.23.2560.1338@0.23.2560.1338" timestamp="1593802293272" />
     <state width="1638" height="360" key="GridCell.Tab.0.center/0.23.2560.1340@0.23.2560.1340" timestamp="1593802889798" />
     <state width="1638" height="251" key="GridCell.Tab.0.center/0.23.2560.1342@0.23.2560.1342" timestamp="1593771905644" />
     <state width="1702" height="337" key="GridCell.Tab.0.center/0.23.5120.1337@0.23.5120.1337" timestamp="1593729993124" />
-    <state width="1638" height="360" key="GridCell.Tab.0.left" timestamp="1593802889798">
-      <screen x="0" y="23" width="2560" height="1340" />
+    <state width="1860" height="287" key="GridCell.Tab.0.left" timestamp="1594669107638">
+      <screen x="0" y="0" width="1920" height="1080" />
     </state>
+    <state width="1860" height="287" key="GridCell.Tab.0.left/0.0.1920.1080@0.0.1920.1080" timestamp="1594669107638" />
     <state width="1702" height="273" key="GridCell.Tab.0.left/0.23.2560.1337@0.23.2560.1337" timestamp="1593732022755" />
     <state width="1638" height="360" key="GridCell.Tab.0.left/0.23.2560.1338@0.23.2560.1338" timestamp="1593802293272" />
     <state width="1638" height="360" key="GridCell.Tab.0.left/0.23.2560.1340@0.23.2560.1340" timestamp="1593802889798" />
     <state width="1638" height="251" key="GridCell.Tab.0.left/0.23.2560.1342@0.23.2560.1342" timestamp="1593771905643" />
     <state width="1702" height="337" key="GridCell.Tab.0.left/0.23.5120.1337@0.23.5120.1337" timestamp="1593729993124" />
-    <state width="1638" height="360" key="GridCell.Tab.0.right" timestamp="1593802889798">
-      <screen x="0" y="23" width="2560" height="1340" />
+    <state width="1860" height="287" key="GridCell.Tab.0.right" timestamp="1594669107638">
+      <screen x="0" y="0" width="1920" height="1080" />
     </state>
+    <state width="1860" height="287" key="GridCell.Tab.0.right/0.0.1920.1080@0.0.1920.1080" timestamp="1594669107638" />
     <state width="1702" height="273" key="GridCell.Tab.0.right/0.23.2560.1337@0.23.2560.1337" timestamp="1593732022756" />
     <state width="1638" height="360" key="GridCell.Tab.0.right/0.23.2560.1338@0.23.2560.1338" timestamp="1593802293272" />
     <state width="1638" height="360" key="GridCell.Tab.0.right/0.23.2560.1340@0.23.2560.1340" timestamp="1593802889798" />
@@ -108,5 +154,13 @@
     <state width="1638" height="360" key="GridCell.Tab.1.right/0.23.2560.1338@0.23.2560.1338" timestamp="1593802293273" />
     <state width="1638" height="360" key="GridCell.Tab.1.right/0.23.2560.1340@0.23.2560.1340" timestamp="1593802889799" />
     <state width="1702" height="337" key="GridCell.Tab.1.right/0.23.5120.1337@0.23.5120.1337" timestamp="1593729993126" />
+    <state x="461" y="187" key="SettingsEditor" timestamp="1594661670242">
+      <screen x="0" y="0" width="1920" height="1080" />
+    </state>
+    <state x="461" y="187" key="SettingsEditor/0.0.1920.1080@0.0.1920.1080" timestamp="1594661670242" />
+    <state x="656" y="369" key="com.intellij.ide.util.TipDialog" timestamp="1594675848402">
+      <screen x="0" y="0" width="1920" height="1080" />
+    </state>
+    <state x="656" y="369" key="com.intellij.ide.util.TipDialog/0.0.1920.1080@0.0.1920.1080" timestamp="1594675848402" />
   </component>
 </project>
