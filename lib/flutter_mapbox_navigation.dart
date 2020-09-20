@@ -79,10 +79,11 @@ class MapboxNavigation {
       "language": language,
       "units": units?.toString()?.split('.')?.last
     };
+    _routeEventSubscription = _streamRouteEvent.listen(_onProgressData);
     await _methodChannel
         .invokeMethod('startNavigation', args)
         .then<String>((dynamic result) => result);
-    _routeEventSubscription = _streamRouteEvent.listen(_onProgressData);
+
   }
 
   ///Show the Navigation View and Begins Direction Routing
@@ -140,10 +141,11 @@ class MapboxNavigation {
       "allowsUTurnAtWayPoints": allowsUTurnAtWayPoints
     };
 
+    _routeEventSubscription = _streamRouteEvent.listen(_onProgressData);
     await _methodChannel
         .invokeMethod('startNavigationWithWayPoints', args)
         .then<String>((dynamic result) => result);
-    _routeEventSubscription = _streamRouteEvent.listen(_onProgressData);
+
   }
 
   ///Ends Navigation and Closes the Navigation View
@@ -172,7 +174,7 @@ class MapboxNavigation {
     RouteEvent event;
     var map = json.decode(jsonString);
     var progressEvent = RouteProgressEvent.fromJson(map);
-    if (progressEvent != null && progressEvent.arrived != null) {
+    if (progressEvent != null && progressEvent.isProgressEvent) {
       event = RouteEvent(
           eventType: MapBoxEvent.progress_change, data: progressEvent);
     } else

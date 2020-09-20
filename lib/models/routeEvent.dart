@@ -1,5 +1,5 @@
 part of navigation;
-
+/// Represents an event sent by the navigation service
 class RouteEvent {
   MapBoxEvent eventType;
   dynamic data;
@@ -7,7 +7,7 @@ class RouteEvent {
   RouteEvent({this.eventType, this.data});
 
   RouteEvent.fromJson(Map<String, dynamic> json) {
-    if(json['eventType'] is int)
+    if (json['eventType'] is int)
       eventType = MapBoxEvent.values[json['eventType']];
     else
       eventType = json['eventType'];

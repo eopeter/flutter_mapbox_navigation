@@ -1,3 +1,8 @@
+## 0.0.13
+* Apply Dart Formats
+* Added Some Documentation
+* Bug Fixes
+
 ## 0.0.12
 * Added Multi-Stop WayPoint Navigation
 * More Detailed Progress Events like route leg and step details

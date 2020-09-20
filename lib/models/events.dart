@@ -1,5 +1,6 @@
 part of navigation;
 
+///All possible events that could occur in the course of navigation
 enum MapBoxEvent {
   map_ready,
   route_building,

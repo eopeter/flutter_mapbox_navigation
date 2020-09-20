@@ -1,3 +1,4 @@
+///Data associated with a Route Event
 class MapBoxEventData {
   String data;
 

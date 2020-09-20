@@ -12,7 +12,7 @@ class WayPoint {
     return 'WayPoint{latitude: $latitude, longitude: $longitude}';
   }
 
-  WayPoint.fromJson(Map<String, dynamic> json){
+  WayPoint.fromJson(Map<String, dynamic> json) {
     name = json["name"];
     latitude = json["latitude"] as double;
     longitude = json["longitude"] as double;

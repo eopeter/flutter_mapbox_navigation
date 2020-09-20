@@ -38,7 +38,11 @@ public class SwiftFlutterMapboxNavigationPlugin: NSObject, FlutterPlugin, Flutte
         
         let arguments = call.arguments as? NSDictionary
         
-        if(call.method == "getDistanceRemaining")
+        if(call.method == "getPlatformVersion")
+        {
+            result("iOS " + UIDevice.current.systemVersion)
+        }
+        else if(call.method == "getDistanceRemaining")
         {
             result(_distanceRemaining)
         }
@@ -118,7 +122,7 @@ public class SwiftFlutterMapboxNavigationPlugin: NSObject, FlutterPlugin, Flutte
             startNavigationWithWayPoints(wayPoints: wayPoints, language: language, units: voiceUnits, simulateRoute:  _simulateRoute, flutterResult: result)
         }
       
-        result("iOS " + UIDevice.current.systemVersion)
+        
     }
     
     func startNavigation(routeIdentifier: String, flutterResult: @escaping FlutterResult)
@@ -179,7 +183,7 @@ public class SwiftFlutterMapboxNavigationPlugin: NSObject, FlutterPlugin, Flutte
             guard let strongSelf = self else { return }
             switch result {
                 case .failure(let error):
-                    strongSelf.sendEvent(eventType: MapBoxEventType.route_build_failed, data: nil)
+                    strongSelf.sendEvent(eventType: MapBoxEventType.route_build_failed)
                     flutterResult("An error occured while calculating the route \(error.localizedDescription)")
                 case .success(let response):
                     guard let routes = response.routes else { return }
@@ -259,18 +263,21 @@ public class SwiftFlutterMapboxNavigationPlugin: NSObject, FlutterPlugin, Flutte
     
     public func navigationViewController(_ navigationViewController: NavigationViewController, didArriveAt waypoint: Waypoint) -> Bool {
             
-        sendEvent(eventType: MapBoxEventType.on_arrival, data: nil)
+        sendEvent(eventType: MapBoxEventType.on_arrival, data: "true")
         return true
     }
     
-    func sendEvent(eventType: MapBoxEventType, data: String?)
+    func sendEvent(eventType: MapBoxEventType, data: String = "{}")
     {
         let routeEvent = MapBoxRouteEvent(eventType: eventType, data: data)
         
         let jsonEncoder = JSONEncoder()
         let jsonData = try! jsonEncoder.encode(routeEvent)
         let eventJson = String(data: jsonData, encoding: String.Encoding.utf8)
-        _eventSink!(eventJson)
+        if(_eventSink != nil){
+            _eventSink!(eventJson)
+        }
+        
     }
     
     public func navigationViewControllerDidDismiss(_ navigationViewController: NavigationViewController, byCanceling canceled: Bool) {
@@ -291,9 +298,9 @@ public class SwiftFlutterMapboxNavigationPlugin: NSObject, FlutterPlugin, Flutte
 public class MapBoxRouteEvent : Codable
 {
     let eventType: MapBoxEventType
-    let data: String?
+    let data: String
     
-    init(eventType: MapBoxEventType, data: String?  = "{}") {
+    init(eventType: MapBoxEventType, data: String) {
         self.eventType = eventType
         self.data = data
     }
