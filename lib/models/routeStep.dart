@@ -14,8 +14,8 @@ class RouteStep {
   RouteStep.fromJson(Map<String, dynamic> json) {
     name = json["name"];
     instructions = json["instructions"];
-    distance = isNullOrZero(json["distance"]) ? 0.0 : json["distance"] + .0;
-    expectedTravelTime = isNullOrZero(json["expectedTravelTime"])
+    distance = _isNullOrZero(json["distance"]) ? 0.0 : json["distance"] + .0;
+    expectedTravelTime = _isNullOrZero(json["expectedTravelTime"])
         ? 0.0
         : json["expectedTravelTime"] + .0;
   }

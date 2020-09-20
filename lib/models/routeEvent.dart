@@ -1,4 +1,5 @@
 part of navigation;
+
 /// Represents an event sent by the navigation service
 class RouteEvent {
   MapBoxEvent eventType;

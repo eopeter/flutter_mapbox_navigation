@@ -83,7 +83,6 @@ class MapboxNavigation {
     await _methodChannel
         .invokeMethod('startNavigation', args)
         .then<String>((dynamic result) => result);
-
   }
 
   ///Show the Navigation View and Begins Direction Routing
@@ -145,7 +144,6 @@ class MapboxNavigation {
     await _methodChannel
         .invokeMethod('startNavigationWithWayPoints', args)
         .then<String>((dynamic result) => result);
-
   }
 
   ///Ends Navigation and Closes the Navigation View
@@ -193,6 +191,7 @@ enum MapBoxNavigationMode { walking, cycling, driving, drivingWithTraffic }
 ///Whether or not the units used inside the voice instruction's string are in imperial or metric.
 enum VoiceUnits { imperial, metric }
 
+///Embeddable Navigation View.
 class NavigationView extends StatefulWidget {
   final WayPoint origin;
   final WayPoint destination;

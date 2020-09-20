@@ -19,8 +19,8 @@ class RouteLeg {
   RouteLeg.fromJson(Map<String, dynamic> json) {
     profileIdentifier = json["profileIdentifier"];
     name = json["name"];
-    distance = isNullOrZero(json["distance"]) ? 0.0 : json["distance"] + .0;
-    expectedTravelTime = isNullOrZero(json["expectedTravelTime"])
+    distance = _isNullOrZero(json["distance"]) ? 0.0 : json["distance"] + .0;
+    expectedTravelTime = _isNullOrZero(json["expectedTravelTime"])
         ? 0.0
         : json["expectedTravelTime"] + .0;
     source = json['source'] == null

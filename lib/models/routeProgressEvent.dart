@@ -36,17 +36,17 @@ class RouteProgressEvent {
   RouteProgressEvent.fromJson(Map<String, dynamic> json) {
     isProgressEvent = json['arrived'] != null;
     arrived = json['arrived'] == null ? false : json['arrived'] as bool;
-    distance = isNullOrZero(json['distance']) ? 0.0 : json["distance"] + .0;
-    duration = isNullOrZero(json['duration']) ? 0.0 : json["duration"] + .0;
-    distanceTraveled = isNullOrZero(json['distanceTraveled'])
+    distance = _isNullOrZero(json['distance']) ? 0.0 : json["distance"] + .0;
+    duration = _isNullOrZero(json['duration']) ? 0.0 : json["duration"] + .0;
+    distanceTraveled = _isNullOrZero(json['distanceTraveled'])
         ? 0.0
         : json["distanceTraveled"] + .0;
     currentLegDistanceTraveled =
-        isNullOrZero(json['currentLegDistanceTraveled'])
+        _isNullOrZero(json['currentLegDistanceTraveled'])
             ? 0.0
             : json["currentLegDistanceTraveled"] + .0;
     currentLegDistanceRemaining =
-        isNullOrZero(json['currentLegDistanceRemaining'])
+        _isNullOrZero(json['currentLegDistanceRemaining'])
             ? 0.0
             : json["currentLegDistanceRemaining"] + .0;
     currentStepInstruction = json['currentStepInstruction'];

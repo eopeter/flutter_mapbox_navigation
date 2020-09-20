@@ -1,5 +1,6 @@
 part of navigation;
 
+///A Geocoordinate Point used for navigation.
 class WayPoint {
   String name;
   double latitude;

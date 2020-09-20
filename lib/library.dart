@@ -17,6 +17,6 @@ part 'models/routeProgressEvent.dart';
 part 'models/routeEvent.dart';
 part 'models/events.dart';
 
-bool isNullOrZero(dynamic val) {
+bool _isNullOrZero(dynamic val) {
   return val == 0.0 || val == null;
 }
