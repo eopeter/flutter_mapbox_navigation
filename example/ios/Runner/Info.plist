@@ -42,7 +42,7 @@
 	<key>UIViewControllerBasedStatusBarAppearance</key>
 	<false/>
 	<key>MGLMapboxAccessToken</key>
-    <string>pk.eyJ1IjoiZW9wZXRlciIsImEiOiJja2U1bDUxdXEwYzYzMnlyM252Y3Y1b3NvIn0.cGpIWkG-zu7d40jcVo7T7A</string>
+    <string>MAPBOX_ACCESS_TOKEN_HERE</string>
     <key>MGLMapboxMetricsEnabledSettingShownInApp</key>
     <string>YES</string>
     <key>NSLocationWhenInUseUsageDescription</key>
