@@ -121,7 +121,10 @@ public class SwiftFlutterMapboxNavigationPlugin: NSObject, FlutterPlugin, Flutte
             
             startNavigationWithWayPoints(wayPoints: wayPoints, language: language, units: voiceUnits, simulateRoute:  _simulateRoute, flutterResult: result)
         }
-      
+        else
+        {
+            result("Method is Not Implemented");
+        }
         
     }
     
@@ -267,7 +270,7 @@ public class SwiftFlutterMapboxNavigationPlugin: NSObject, FlutterPlugin, Flutte
         return true
     }
     
-    func sendEvent(eventType: MapBoxEventType, data: String = "{}")
+    func sendEvent(eventType: MapBoxEventType, data: String = "")
     {
         let routeEvent = MapBoxRouteEvent(eventType: eventType, data: data)
         

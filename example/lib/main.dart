@@ -52,7 +52,8 @@ class _MyAppState extends State<MyApp> {
           _arrived = progressEvent.arrived;
           _distanceRemaining = progressEvent.distance;
           _durationRemaining = progressEvent.duration;
-          _instruction = progressEvent.currentStepInstruction;
+          if(progressEvent.currentStepInstruction != null)
+            _instruction = progressEvent.currentStepInstruction;
           break;
         case MapBoxEvent.route_build_failed:
           print(e.data);

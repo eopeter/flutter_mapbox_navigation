@@ -55,6 +55,7 @@ public class FlutterMapboxNavigationPlugin: FlutterPlugin, MethodCallHandler, Ev
   // in the same class.
   companion object {
 
+    val allowsUTurnsAtWayPoints = false
     private var currentActivity: Activity? = null
     private lateinit var currentContext: Context
     var eventSink:EventChannel.EventSink? = null

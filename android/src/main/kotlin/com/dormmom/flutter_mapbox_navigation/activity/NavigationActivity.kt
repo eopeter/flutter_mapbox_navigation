@@ -16,6 +16,7 @@ import com.dormmom.flutter_mapbox_navigation.models.MapBoxRouteProgressEvent
 import com.dormmom.flutter_mapbox_navigation.utilities.PluginUtilities
 import com.dormmom.flutter_mapbox_navigation.utilities.PluginUtilities.Companion.sendEvent
 import com.dormmom.flutter_mapbox_navigation.utilities.SimplifiedCallback
+import com.mapbox.api.directions.v5.DirectionsCriteria
 
 import com.mapbox.api.directions.v5.models.BannerInstructions
 import com.mapbox.api.directions.v5.models.DirectionsResponse
@@ -193,6 +194,8 @@ class NavigationActivity : AppCompatActivity(),
     override fun onProgressChange(location: Location, routeProgress: RouteProgress) {
         lastKnownLocation = location
         val progressEvent = MapBoxRouteProgressEvent(routeProgress, location)
+        FlutterMapboxNavigationPlugin.distanceRemaining = routeProgress.distanceRemaining()
+        FlutterMapboxNavigationPlugin.durationRemaining = routeProgress.durationRemaining()
         sendEvent(progressEvent)
     }
 
@@ -224,6 +227,9 @@ class NavigationActivity : AppCompatActivity(),
     override fun onCancelNavigation() {
         sendEvent(MapBoxEvents.NAVIGATION_CANCELLED)
         navigationView?.stopNavigation()
+        FlutterMapboxNavigationPlugin.eventSink = null
+        NavigationLauncher.stopNavigation(this)
+        
     }
 
     override fun onNavigationFinished() {
@@ -240,17 +246,13 @@ class NavigationActivity : AppCompatActivity(),
 
     override fun willVoice(announcement: SpeechAnnouncement?): SpeechAnnouncement? {
         sendEvent(MapBoxEvents.SPEECH_ANNOUNCEMENT,
-                "{" +
-                        "  \"data\": \"${announcement?.announcement()}\"" +
-                        "}")
+                "${announcement?.announcement()}")
         return announcement
     }
 
     override fun willDisplay(instructions: BannerInstructions?): BannerInstructions? {
         sendEvent(MapBoxEvents.BANNER_INSTRUCTION,
-                "{" +
-                        "  \"data\": \"${instructions?.primary()?.text()}\"" +
-                        "}")
+                "${instructions?.primary()?.text()}")
         return instructions
     }
 
@@ -260,6 +262,10 @@ class NavigationActivity : AppCompatActivity(),
             showDropoffDialog()
             dropoffDialogShown = true // Accounts for multiple arrival events
             Toast.makeText(this, "You have arrived!", Toast.LENGTH_SHORT).show()
+        }
+        else
+        {
+            FlutterMapboxNavigationPlugin.eventSink = null
         }
     }
 
@@ -312,6 +318,8 @@ class NavigationActivity : AppCompatActivity(),
                 .profile(FlutterMapboxNavigationPlugin.navigationMode)
                 .language(FlutterMapboxNavigationPlugin.navigationLanguage)
                 .voiceUnits(FlutterMapboxNavigationPlugin.navigationVoiceUnits)
+                .continueStraight(!FlutterMapboxNavigationPlugin.allowsUTurnsAtWayPoints)
+                .annotations(DirectionsCriteria.ANNOTATION_DISTANCE, DirectionsCriteria.ANNOTATION_DURATION, DirectionsCriteria.ANNOTATION_DURATION, DirectionsCriteria.ANNOTATION_CONGESTION)
                 .build()
                 .getRoute(object : SimplifiedCallback() {
                     override fun onResponse(call: Call<DirectionsResponse>, response: Response<DirectionsResponse>) {
