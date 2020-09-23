@@ -15,11 +15,16 @@ public class SwiftFlutterMapboxNavigationPlugin: NSObject, FlutterPlugin, Flutte
     var _durationRemaining: Double?
     var _navigationMode: String?
     var _routes: [Route]?
-
+    var _wayPoints = [Waypoint]()
+    var _lastKnownLocation: CLLocation?
+    
     var _options: NavigationRouteOptions?
     var _simulateRoute = false
+    var _pauseAtWayPoints = false
     var _allowsUTurnAtWayPoints: Bool?
     var _isOptimized = false
+    var _language = "en"
+    var _voiceUnits = "imperial"
     
     public static func register(with registrar: FlutterPluginRegistrar) {
         let channel = FlutterMethodChannel(name: "flutter_mapbox_navigation", binaryMessenger: registrar.messenger())
@@ -69,16 +74,16 @@ public class SwiftFlutterMapboxNavigationPlugin: NSObject, FlutterPlugin, Flutte
             guard let dLatitude = arguments?["destinationLatitude"] as? Double else {return}
             guard let dLongitude = arguments?["destinationLongitude"] as? Double else {return}
             
-            let language = arguments?["language"] as? String
-            let voiceUnits = arguments?["units"] as? String
+            _language = arguments?["language"] as? String ?? _language
+            _voiceUnits = arguments?["units"] as? String ?? _voiceUnits
             _simulateRoute = arguments?["simulateRoute"] as? Bool ?? false
-            let oMode = arguments?["mode"] as? String ?? "drivingWithTraffic"
-            _navigationMode = oMode
+            _navigationMode = arguments?["mode"] as? String ?? "drivingWithTraffic"
+
             
             let origin = Location(name: oName, latitude: oLatitude, longitude: oLongitude)
             let destination = Location(name: dName, latitude: dLatitude, longitude: dLongitude)
             
-            startNavigation(origin: origin, destination: destination, language: language, units: voiceUnits, simulateRoute: _simulateRoute, flutterResult: result)
+            startNavigation(origin: origin, destination: destination, flutterResult: result)
         }
         else if(call.method == "startNavigationWithWayPoints")
         {
@@ -103,23 +108,25 @@ public class SwiftFlutterMapboxNavigationPlugin: NSObject, FlutterPlugin, Flutte
                 locations.sort(by: {$0.order ?? 0 < $1.order ?? 0})
             }
             
-            var wayPoints = [Waypoint]()
+            
             for loc in locations
             {
                 let location = Waypoint(coordinate: CLLocationCoordinate2D(latitude: loc.latitude!, longitude: loc.longitude!), name: loc.name)
-                wayPoints.append(location)
+                _wayPoints.append(location)
             }
             
-            let language = arguments?["language"] as? String
-            let voiceUnits = arguments?["units"] as? String
-            _simulateRoute = arguments?["simulateRoute"] as? Bool ?? false
-            _isOptimized = arguments?["isOptimized"] as? Bool ?? false
+            _language = arguments?["language"] as? String ?? _language
+            _voiceUnits = arguments?["units"] as? String ?? _voiceUnits
+            _simulateRoute = arguments?["simulateRoute"] as? Bool ?? _simulateRoute
+            _isOptimized = arguments?["isOptimized"] as? Bool ?? _isOptimized
             _allowsUTurnAtWayPoints = arguments?["allowsUTurnAtWayPoints"] as? Bool
-            let oMode = arguments?["mode"] as? String ?? "drivingWithTraffic"
-            _navigationMode = oMode
+            _navigationMode = arguments?["mode"] as? String ?? "drivingWithTraffic"
+            _pauseAtWayPoints = arguments?["pauseAtWayPoints"] as? Bool ?? _pauseAtWayPoints
             
-            
-            startNavigationWithWayPoints(wayPoints: wayPoints, language: language, units: voiceUnits, simulateRoute:  _simulateRoute, flutterResult: result)
+            if(_wayPoints.count > 0)
+            {
+                startNavigationWithWayPoints(wayPoints: [_wayPoints.remove(at: 0), _wayPoints.remove(at: 0)], flutterResult: result)
+            }
         }
         else
         {
@@ -139,16 +146,16 @@ public class SwiftFlutterMapboxNavigationPlugin: NSObject, FlutterPlugin, Flutte
     }
     
  
-    func startNavigation(origin: Location, destination: Location, language: String?, units: String?, simulateRoute: Bool = false, flutterResult: @escaping FlutterResult){
+    func startNavigation(origin: Location, destination: Location, flutterResult: @escaping FlutterResult){
         
         let o = Waypoint(coordinate: CLLocationCoordinate2D(latitude: origin.latitude!, longitude: origin.longitude!), name: origin.name)
         let d = Waypoint(coordinate: CLLocationCoordinate2D(latitude: destination.latitude!, longitude: destination.longitude!), name: destination.name)
-        startNavigationWithWayPoints(wayPoints: [o, d], language: language, units: units, simulateRoute: simulateRoute, flutterResult: flutterResult)
+        startNavigationWithWayPoints(wayPoints: [o, d], flutterResult: flutterResult)
     }
     
-    func startNavigationWithWayPoints(wayPoints: [Waypoint], language: String?, units: String?, simulateRoute: Bool = false, flutterResult: @escaping FlutterResult)
+    func startNavigationWithWayPoints(wayPoints: [Waypoint], flutterResult: @escaping FlutterResult)
     {
-        let simulationMode: SimulationMode = simulateRoute ? .always : .never
+        let simulationMode: SimulationMode = _simulateRoute ? .always : .never
         
         var mode: DirectionsProfileIdentifier = .automobileAvoidingTraffic
         
@@ -172,18 +179,12 @@ public class SwiftFlutterMapboxNavigationPlugin: NSObject, FlutterPlugin, Flutte
             options.allowsUTurnAtWaypoint = _allowsUTurnAtWayPoints!
         }
         
-        if(units != nil)
-        {
-            options.distanceMeasurementSystem = units == "imperial" ? .imperial : .metric
-        }
-        
-        if(language != nil)
-        {
-            options.locale = Locale(identifier: language!)
-        }
+        options.distanceMeasurementSystem = _voiceUnits == "imperial" ? .imperial : .metric
+        options.locale = Locale(identifier: _language)
         
         Directions.shared.calculate(options) { [weak self](session, result) in
             guard let strongSelf = self else { return }
+            strongSelf._options = options
             switch result {
                 case .failure(let error):
                     strongSelf.sendEvent(eventType: MapBoxEventType.route_build_failed)
@@ -195,7 +196,6 @@ public class SwiftFlutterMapboxNavigationPlugin: NSObject, FlutterPlugin, Flutte
                     {
                        //show map to select a specific route
                         strongSelf._routes = routes
-                        strongSelf._options = options
                         let routeOptionsView = RouteOptionsViewController(routes: routes, options: options)
                         
                         let flutterViewController = UIApplication.shared.delegate?.window??.rootViewController as! FlutterViewController
@@ -227,6 +227,34 @@ public class SwiftFlutterMapboxNavigationPlugin: NSObject, FlutterPlugin, Flutte
         flutterViewController.present(self._navigationViewController!, animated: true, completion: nil)
     }
     
+    func continueNavigationWithWayPoints(wayPoints: [Waypoint])
+    {
+        _options?.waypoints = wayPoints
+        Directions.shared.calculate(_options!) { [weak self](session, result) in
+            guard let strongSelf = self else { return }
+            switch result {
+                case .failure(let error):
+                    strongSelf.sendEvent(eventType: MapBoxEventType.route_build_failed)
+                    //flutterResult("An error occured while calculating the route \(error.localizedDescription)")
+                case .success(let response):
+                    guard let routes = response.routes else { return }
+                    //TODO: if more than one route found, give user option to select one: DOES NOT WORK
+                    if(routes.count > 1 && strongSelf.ALLOW_ROUTE_SELECTION)
+                    {
+                       //show map to select a specific route
+                       
+                    }
+                    else
+                    {
+                        let route = routes.first!
+                        strongSelf._navigationViewController?.navigationService.route = route
+                        strongSelf._navigationViewController?.navigationService.start()
+                    }
+            }
+        }
+        
+    }
+    
     func endNavigation(result: FlutterResult?)
     {
         if(self._navigationViewController != nil)
@@ -244,6 +272,7 @@ public class SwiftFlutterMapboxNavigationPlugin: NSObject, FlutterPlugin, Flutte
     }
     
     public func navigationViewController(_ navigationViewController: NavigationViewController, didUpdate progress: RouteProgress, with location: CLLocation, rawLocation: CLLocation) {
+        _lastKnownLocation = location
         _distanceRemaining = progress.distanceRemaining
         _durationRemaining = progress.durationRemaining
         //_currentLegDescription =  progress.currentLeg.description
@@ -267,8 +296,39 @@ public class SwiftFlutterMapboxNavigationPlugin: NSObject, FlutterPlugin, Flutte
     public func navigationViewController(_ navigationViewController: NavigationViewController, didArriveAt waypoint: Waypoint) -> Bool {
             
         sendEvent(eventType: MapBoxEventType.on_arrival, data: "true")
+        if(!_wayPoints.isEmpty)
+        {
+            if(_pauseAtWayPoints)
+            {
+                let alert = UIAlertController(title: "Arrived", message: "You have arrived at \(waypoint.name ?? "Way Point"). Would you like to continue?", preferredStyle: .alert)
+                
+                alert.addAction(UIAlertAction(title: "End", style: .destructive, handler: { action in
+                    navigationViewController.navigationService.endNavigation(feedback: nil)
+                    navigationViewController.dismiss(animated: true, completion: nil)
+                }))
+                alert.addAction(UIAlertAction(title: "Continue", style: .default, handler: { action in
+                    self.continueNavigationWithWayPoints(wayPoints: [self.getLastKnownLocation(), self._wayPoints.remove(at: 0)])
+                    //navigationViewController.navigationService.routeProgress.legIndex += 1
+                }))
+                navigationViewController.present(alert, animated: true, completion: nil)
+            }
+            else
+            {
+                continueNavigationWithWayPoints(wayPoints: [getLastKnownLocation(), _wayPoints.remove(at: 0)])
+            }
+            
+            return false
+        }
+
         return true
     }
+    
+    func getLastKnownLocation() -> Waypoint
+    {
+        return Waypoint(coordinate: CLLocationCoordinate2D(latitude: _lastKnownLocation!.coordinate.latitude, longitude: _lastKnownLocation!.coordinate.longitude))
+    }
+    
+    
     
     func sendEvent(eventType: MapBoxEventType, data: String = "")
     {

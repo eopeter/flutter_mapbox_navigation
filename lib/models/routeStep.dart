@@ -1,4 +1,5 @@
 part of navigation;
+
 ///A RouteStep object represents a single distinct maneuver along a route and the approach to the next maneuver.
 ///The route step object corresponds to a single instruction the user must follow to complete a portion of the route.
 ///For example, a step might require the user to turn then follow a road.

@@ -1,3 +1,8 @@
+## 0.0.15
+* Remove Dialog at WayPoint Arrival
+* Tweak iOS WayPoint navigation behavior to match Android
+* Bug Fixes
+
 ## 0.0.14
 * Bug Fixes
 

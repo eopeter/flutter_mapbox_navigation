@@ -93,6 +93,7 @@ class MapboxNavigation {
   /// [language] 2-letter ISO 639-1 code for language. This property affects the sentence contained within the RouteStep.instructions property, but it does not affect any road names contained in that property or other properties such as RouteStep.name. Defaults to "en" if an unsupported language is specified. The languages in this link are supported: https://docs.mapbox.com/android/navigation/overview/localization/ or https://docs.mapbox.com/ios/api/navigation/0.14.1/localization-and-internationalization.html
   /// [isOptimized] if true, will reorder the routes to optimize navigation for time and shortest distance using the Travelling Salesman Algorithm. Always false for now
   /// [allowsUTurnAtWayPoints] If the value of this property is true, a returned route may require an immediate U-turn at an intermediate waypoint. At an intermediate waypoint, if the value of this property is false, each returned route may continue straight ahead or turn to either side but may not U-turn. This property has no effect if only two waypoints are specified.
+  /// [pauseAtWayPoints] indicate if the navigation should pause at wayPoints between the origin and final waypoint. Default is false.
   /// Begins to generate Route Progress
   ///
   Future startNavigationWithWayPoints(
@@ -102,7 +103,7 @@ class MapboxNavigation {
       String language,
       VoiceUnits units,
       bool allowsUTurnAtWayPoints,
-      bool isOptimized = false}) async {
+      bool isOptimized = false, bool pauseAtWayPoints = false}) async {
     assert(wayPoints != null);
     assert(wayPoints.length > 1);
     if (Platform.isIOS && wayPoints.length > 3) {
@@ -137,7 +138,8 @@ class MapboxNavigation {
       "language": language,
       "units": units?.toString()?.split('.')?.last,
       "isOptimized": isOptimized,
-      "allowsUTurnAtWayPoints": allowsUTurnAtWayPoints
+      "allowsUTurnAtWayPoints": allowsUTurnAtWayPoints,
+      "pauseAtWayPoints": pauseAtWayPoints
     };
 
     _routeEventSubscription = _streamRouteEvent.listen(_onProgressData);

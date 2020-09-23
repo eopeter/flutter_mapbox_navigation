@@ -15,15 +15,15 @@ class _MyAppState extends State<MyApp> {
   String _platformVersion = 'Unknown';
   String _instruction = "";
   final _origin =
-      WayPoint(name: "A", latitude: 38.8842107, longitude: -77.000346);
+      WayPoint(name: "Way Point 1", latitude: 38.9111117447887, longitude: -77.04012393951416);
   final _stop1 =
-      WayPoint(name: "B", latitude: 38.883281, longitude: -77.0037567);
+      WayPoint(name: "Way Point 2", latitude: 38.91113678979344, longitude: -77.03847169876099);
   final _stop2 = WayPoint(
-      name: "C", latitude: 38.91040213277608, longitude: -77.03848242759705);
+      name: "Way Point 3", latitude: 38.91040213277608, longitude: -77.03848242759705);
   final _stop3 = WayPoint(
-      name: "D", latitude: 38.909650771013034, longitude: -77.03850388526917);
+      name: "Way Point 4", latitude: 38.909650771013034, longitude: -77.03850388526917);
   final _stop4 = WayPoint(
-      name: "E", latitude: 38.90894949285854, longitude: -77.03651905059814);
+      name: "Way Point 5", latitude: 38.90894949285854, longitude: -77.03651905059814);
   MapboxNavigation _directions;
   bool _arrived = false;
   bool _isMultipleStop = false;
@@ -124,6 +124,7 @@ class _MyAppState extends State<MyApp> {
                 wayPoints.add(_stop1);
                 wayPoints.add(_stop2);
                 wayPoints.add(_stop3);
+                wayPoints.add(_stop4);
                 wayPoints.add(_origin);
 
                 await _directions.startNavigationWithWayPoints(
@@ -132,6 +133,7 @@ class _MyAppState extends State<MyApp> {
                     simulateRoute: true,
                     language: "en",
                     allowsUTurnAtWayPoints: true,
+                    pauseAtWayPoints: false,
                     units: VoiceUnits.metric);
               },
             ),

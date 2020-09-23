@@ -56,7 +56,7 @@ class PluginUtilities
         fun sendEvent(event: MapBoxEvents, data: String = "") {
             val jsonString = "{" +
                     "  \"eventType\": \"${event.value}\"," +
-                    "  \"data\": $data" +
+                    "  \"data\": \"$data\"" +
                     "}"
             FlutterMapboxNavigationPlugin.eventSink?.success(jsonString)
         }

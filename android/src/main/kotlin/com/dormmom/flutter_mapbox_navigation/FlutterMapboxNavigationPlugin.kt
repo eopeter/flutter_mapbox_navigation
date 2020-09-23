@@ -68,6 +68,7 @@ public class FlutterMapboxNavigationPlugin: FlutterPlugin, MethodCallHandler, Ev
 
     var navigationMode =  DirectionsCriteria.PROFILE_DRIVING_TRAFFIC
     var simulateRoute = false
+    var pauseAtWayPoints = false
     var navigationLanguage = Locale("en")
     var navigationVoiceUnits = DirectionsCriteria.IMPERIAL
     var zoom = 15.0
@@ -172,6 +173,11 @@ public class FlutterMapboxNavigationPlugin: FlutterPlugin, MethodCallHandler, Ev
     
     if(isMultiStop)
     {
+      val shouldPause = arguments?.get("pauseAtWayPoints") as? Boolean
+      if (shouldPause != null) {
+        pauseAtWayPoints = shouldPause
+      }
+      
       var points = arguments?.get("wayPoints") as HashMap<Int, Any>
       for (item in points)
       {

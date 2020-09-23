@@ -259,9 +259,12 @@ class NavigationActivity : AppCompatActivity(),
     override fun onArrival() {
         sendEvent(MapBoxEvents.ON_ARRIVAL)
         if (!dropoffDialogShown && points.isNotEmpty()) {
-            showDropoffDialog()
+            if(FlutterMapboxNavigationPlugin.pauseAtWayPoints)
+                showDropoffDialog()
+            else
+                fetchRoute(getLastKnownLocation(), points.removeAt(0))
             dropoffDialogShown = true // Accounts for multiple arrival events
-            Toast.makeText(this, "You have arrived!", Toast.LENGTH_SHORT).show()
+            //Toast.makeText(this, "You have arrived!", Toast.LENGTH_SHORT).show()
         }
         else
         {
@@ -270,10 +273,7 @@ class NavigationActivity : AppCompatActivity(),
     }
 
     override fun onFailedReroute(errorMessage: String?) {
-        sendEvent(MapBoxEvents.FAILED_TO_REROUTE,
-                "{" +
-                        "  \"data\": \"${errorMessage}\"" +
-                        "}")
+        sendEvent(MapBoxEvents.FAILED_TO_REROUTE,"${errorMessage}")
     }
 
     override fun onOffRoute(offRoutePoint: Point?) {
