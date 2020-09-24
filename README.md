@@ -120,9 +120,44 @@ Add Turn By Turn Navigation to Your Flutter Application Using MapBox. Never leav
 
 ```
 
-## Embedding Navigation View
 
-## IOS Configuration
+
+## Embedding Navigation View
+![Navigation View](screenshots/screenshot3.png?raw=true "Embedded Nav View")
+
+```dart
+      MapBoxNavigationViewController _controller;
+```
+
+
+```dart
+            Container(
+                color: Colors.grey,
+                child: MapBoxNavigationView(
+                    options: MapBoxOptions(
+                        initialLatitude: 36.1175275,
+                        initialLongitude: -115.1839524,
+                        zoom: 13.0,
+                        tilt: 0.0,
+                        bearing: 0.0,
+                        enableRefresh: false,
+                        alternatives: true,
+                        voiceInstructionsEnabled: true,
+                        bannerInstructionsEnabled: true,
+                        allowsUTurnAtWayPoints: true,
+                        mode: MapBoxNavigationMode.drivingWithTraffic,
+                        units: VoiceUnits.imperial,
+                        simulateRoute: false,
+                        language: "en"),
+                    onRouteEvent: _onEmbeddedRouteEvent,
+                    onCreated:
+                        (MapBoxNavigationViewController controller) async {
+                      _controller = controller;
+                    }),
+              ),
+```
+
+# IOS Configuration
 Add the following to your `info.plist` file
 
 ```xml
@@ -130,10 +165,32 @@ Add the following to your `info.plist` file
 	<true/>
 ```
 
-## Android Configuration
+# Android Configuration
 Modify your `MainActivity` to instantiate the plugin for native embedding
 
 ```kotlin
+class MainActivity: FlutterActivity() {
+    companion object {
+
+        @JvmStatic
+        var flutterEngineInstance: FlutterEngine? = null
+    }
+
+    override fun configureFlutterEngine(@NonNull flutterEngine: FlutterEngine) {
+        GeneratedPluginRegistrant.registerWith(flutterEngine)
+        flutterEngineInstance = flutterEngine
+    }
+
+    override fun onResume() {
+        super.onResume()
+
+        flutterEngineInstance?.let {
+            FlutterMapboxNavigationPlugin.registerWith(it)
+        }
+    }
+
+ 
+}
 
 ```
 ## Screenshots

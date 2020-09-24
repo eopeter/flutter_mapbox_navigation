@@ -283,7 +283,7 @@ class _MyAppState extends State<MyApp> {
                         allowsUTurnAtWayPoints: true,
                         mode: MapBoxNavigationMode.drivingWithTraffic,
                         units: VoiceUnits.imperial,
-                        simulateRoute: false,
+                        simulateRoute: true,
                         language: "en"),
                     onRouteEvent: _onEmbeddedRouteEvent,
                     onCreated:
