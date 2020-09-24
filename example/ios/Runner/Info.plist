@@ -22,6 +22,18 @@
 	<string>$(FLUTTER_BUILD_NUMBER)</string>
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
+	<key>MGLMapboxAccessToken</key>
+	<string>pk.eyJ1IjoiZW9wZXRlciIsImEiOiJja2ZiZmRsYXYwZ2U5MnlwZG1rZWp1dW1oIn0.w3YFw7G2VD8KcmaI4tv3pw</string>
+	<key>MGLMapboxMetricsEnabledSettingShownInApp</key>
+	<string>YES</string>
+	<key>NSLocationWhenInUseUsageDescription</key>
+	<string>Shows your location on the map and helps improve OpenStreetMap</string>
+	<key>UIBackgroundModes</key>
+	<array>
+		<string>audio</string>
+		<string>location</string>
+		<string>remote-notification</string>
+	</array>
 	<key>UILaunchStoryboardName</key>
 	<string>LaunchScreen</string>
 	<key>UIMainStoryboardFile</key>
@@ -29,8 +41,6 @@
 	<key>UISupportedInterfaceOrientations</key>
 	<array>
 		<string>UIInterfaceOrientationPortrait</string>
-		<string>UIInterfaceOrientationLandscapeLeft</string>
-		<string>UIInterfaceOrientationLandscapeRight</string>
 	</array>
 	<key>UISupportedInterfaceOrientations~ipad</key>
 	<array>
@@ -41,19 +51,7 @@
 	</array>
 	<key>UIViewControllerBasedStatusBarAppearance</key>
 	<false/>
-	<key>MGLMapboxAccessToken</key>
-    <string>pk.eyJ1IjoiZW9wZXRlciIsImEiOiJja2ZiZmRsYXYwZ2U5MnlwZG1rZWp1dW1oIn0.w3YFw7G2VD8KcmaI4tv3pw</string>
-    <key>MGLMapboxMetricsEnabledSettingShownInApp</key>
-    <string>YES</string>
-    <key>NSLocationWhenInUseUsageDescription</key>
-    <string>Shows your location on the map and helps improve OpenStreetMap</string>
-    <key>UIBackgroundModes</key>
-    <array>
-    	<string>audio</string>
-    	<string>location</string>
-    	<string>remote-notification</string>
-    </array>
-    <key>io.flutter.embedded_views_preview</key>
-    <true/>
+	<key>io.flutter.embedded_views_preview</key>
+	<true/>
 </dict>
 </plist>

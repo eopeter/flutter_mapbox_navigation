@@ -89,6 +89,8 @@ public class NavigationFactory : NSObject, FlutterStreamHandler, NavigationViewC
     var _tilt: Double = 0.0
     var _bearing: Double = 0.0
     
+    var navigationDirections: NavigationDirections?
+    
     func startNavigation(arguments: NSDictionary?, result: @escaping FlutterResult)
     {
         guard let oName = arguments?["originName"] as? String else {return}
@@ -319,6 +321,40 @@ public class NavigationFactory : NSObject, FlutterStreamHandler, NavigationViewC
         
     }
     
+    func downloadOfflineRoute()
+    {
+        // Create a directions client and store it as a property on the view controller.
+        self.navigationDirections = NavigationDirections(credentials: Directions.shared.credentials)
+        
+        // Fetch available routing tile versions.
+        _ = self.navigationDirections!.fetchAvailableOfflineVersions { (versions, error) in
+            guard let version = versions?.first else { return }
+            
+            let coordinateBounds = CoordinateBounds(southWest: CLLocationCoordinate2DMake(0, 0), northEast: CLLocationCoordinate2DMake(1, 1))
+            
+            // Download tiles using the most recent version.
+            _ = self.navigationDirections!.downloadTiles(in: coordinateBounds, version: version) { (url, response, error) in
+                guard let url = url else {
+                    preconditionFailure("Unable to locate temporary file.")
+                }
+                
+                guard let outputDirectoryURL = Bundle.mapboxCoreNavigation.suggestedTileURL(version: version) else {
+                    preconditionFailure("No suggested tile URL.")
+                }
+                try? FileManager.default.createDirectory(at: outputDirectoryURL, withIntermediateDirectories: true, attributes: nil)
+                
+                // Unpack downloaded routing tiles.
+                NavigationDirections.unpackTilePack(at: url, outputDirectoryURL: outputDirectoryURL, progressHandler: { (totalBytes, bytesRemaining) in
+                    // Show unpacking progress.
+                }, completionHandler: { (result, error) in
+                    // Configure the offline router with the output directory where the tiles have been unpacked.
+                    self.navigationDirections!.configureRouter(tilesURL: outputDirectoryURL) { (numberOfTiles) in
+                        // Completed, dismiss UI
+                    }
+                })
+            }
+        }
+    }
     //MARK: NavigationViewController Delegates
     public func navigationViewController(_ navigationViewController: NavigationViewController, didUpdate progress: RouteProgress, with location: CLLocation, rawLocation: CLLocation) {
         _lastKnownLocation = location
@@ -404,55 +440,7 @@ enum MapBoxEventType: Int, Codable
     case failed_to_reroute
     case reroute_along
 }
-/*
- extension MapBoxEventType: Codable {
- 
- enum Key: CodingKey {
- case rawValue
- case associatedValue
- }
- 
- enum CodingError: Error {
- case unknownValue
- }
- 
- init(from decoder: Decoder) throws {
- let container = try decoder.container(keyedBy: Key.self)
- let rawValue = try container.decode(Int.self, forKey: .rawValue)
- switch rawValue {
- case 0:
- let map_ready = try container.decode(String.self, forKey: .associatedValue)
- self = .map_ready(map_ready)
- case 1:
- let route_building = try container.decode(String.self, forKey: .associatedValue)
- self = .route_building(route_building)
- case 2:
- let progress_change = try container.decode(String.self, forKey: .associatedValue)
- self = .progress_change(progress_change)
- default:
- throw CodingError.unknownValue
- }
- }
- 
- func encode(to encoder: Encoder) throws {
- var container = encoder.container(keyedBy: Key.self)
- switch self {
- case .map_ready(let map_ready):
- try container.encode(0, forKey: .rawValue)
- try container.encode(map_ready, forKey: .associatedValue)
- case .route_building(let route_building):
- try container.encode(1, forKey: .rawValue)
- try container.encode(route_building, forKey: .associatedValue)
- case .progress_change(let progress_change):
- try container.encode(1, forKey: .rawValue)
- try container.encode(progress_change, forKey: .associatedValue)
- default:
- throw CodingError.unknownValue
- }
- }
- 
- }
- */
+
 
 public class Location : Codable
 {
@@ -582,6 +570,7 @@ public class FlutterMapboxNavigationView : NavigationFactory, MGLMapViewDelegate
     var routeOptions: NavigationRouteOptions?
     
     var _mapInitialized = false;
+    var locationManager = CLLocationManager()
     
     init(messenger: FlutterBinaryMessenger, frame: CGRect, viewId: Int64, args: Any?)
     {
@@ -620,18 +609,9 @@ public class FlutterMapboxNavigationView : NavigationFactory, MGLMapViewDelegate
             {
                 strongSelf.endNavigation(result: result)
             }
-            else if(call.method == "startRoute")
-            {
-                guard let routeIdentifier = arguments?["routeIdentifier"] as? String else {return}
-                strongSelf.startNavigation(routeIdentifier: routeIdentifier, flutterResult: result)
-            }
             else if(call.method == "startNavigation")
             {
-                strongSelf.startNavigation(arguments: arguments, result: result)
-            }
-            else if(call.method == "startNavigationWithWayPoints")
-            {
-                strongSelf.startNavigationWithWayPoints(arguments: arguments, result: result)
+                strongSelf.startEmbeddedNavigation(arguments: arguments, result: result)
             }
             else
             {
@@ -652,6 +632,7 @@ public class FlutterMapboxNavigationView : NavigationFactory, MGLMapViewDelegate
         mapView.delegate = self
         mapView.showsUserLocation = true
         mapView.setUserTrackingMode(.followWithHeading, animated: true, completionHandler: nil)
+        
         if(self.arguments != nil)
         {
             _language = arguments?["language"] as? String ?? _language
@@ -664,119 +645,215 @@ public class FlutterMapboxNavigationView : NavigationFactory, MGLMapViewDelegate
             _zoom = arguments?["zoom"] as? Double ?? _zoom
             _bearing = arguments?["bearing"] as? Double ?? _bearing
             _tilt = arguments?["tilt"] as? Double ?? _tilt
-
+            
             if(_mapStyleURL != nil)
             {
                 mapView.styleURL = URL(string: _mapStyleURL!)
             }
             
-            let initialLatitude = arguments?["initialLatitude"] as? Double
-            let initialLongitude = arguments?["initialLongitude"] as? Double
+            var currentLoc: CLLocation!
+            
+            locationManager.requestWhenInUseAuthorization()
+            
+            if(CLLocationManager.authorizationStatus() == .authorizedWhenInUse ||
+                CLLocationManager.authorizationStatus() == .authorizedAlways) {
+                currentLoc = locationManager.location
+                
+            }
+            
+            let initialLatitude = arguments?["initialLatitude"] as? Double ?? currentLoc?.coordinate.latitude
+            let initialLongitude = arguments?["initialLongitude"] as? Double ?? currentLoc?.coordinate.longitude
             if(initialLatitude != nil && initialLongitude != nil)
             {
                 mapView.setCenter(CLLocationCoordinate2D(latitude: initialLatitude!, longitude: initialLongitude!), zoomLevel: _zoom, animated: true)
             }
             
         }
-
+        let gesture = UILongPressGestureRecognizer(target: self, action: #selector(handleLongPress(_:)))
+        mapView?.addGestureRecognizer(gesture)
         return mapView
     }
     
     func buildRoute(arguments: NSDictionary?, result: @escaping FlutterResult)
     {
-        guard let oName = arguments?["originName"] as? String else {return}
-        guard let oLatitude = arguments?["originLatitude"] as? Double else {return}
-        guard let oLongitude = arguments?["originLongitude"] as? Double else {return}
+        sendEvent(eventType: MapBoxEventType.route_building)
         
-        guard let dName = arguments?["destinationName"] as? String else {return}
-        guard let dLatitude = arguments?["destinationLatitude"] as? Double else {return}
-        guard let dLongitude = arguments?["destinationLongitude"] as? Double else {return}
+        guard let oWayPoints = arguments?["wayPoints"] as? NSDictionary else {return}
+        
+        var locations = [Location]()
+        
+        for item in oWayPoints as NSDictionary
+        {
+            let point = item.value as! NSDictionary
+            guard let oName = point["Name"] as? String else {return}
+            guard let oLatitude = point["Latitude"] as? Double else {return}
+            guard let oLongitude = point["Longitude"] as? Double else {return}
+            let order = point["Order"] as? Int
+            let location = Location(name: oName, latitude: oLatitude, longitude: oLongitude, order: order)
+            locations.append(location)
+        }
+        
+        if(!_isOptimized)
+        {
+            //waypoints must be in the right order
+            locations.sort(by: {$0.order ?? 0 < $1.order ?? 0})
+        }
         
         
-        // Coordinate accuracy is how close the route must come to the waypoint in order to be considered viable. It is measured in meters. A negative value indicates that the route is viable regardless of how far the route is from the waypoint.
-        let origin = Waypoint(coordinate: CLLocationCoordinate2DMake(oLatitude, oLongitude), coordinateAccuracy: -1, name: oName)
-        let destination = Waypoint(coordinate: CLLocationCoordinate2DMake(dLatitude, dLongitude), coordinateAccuracy: -1, name: dName)
+        for loc in locations
+        {
+            let location = Waypoint(coordinate: CLLocationCoordinate2D(latitude: loc.latitude!, longitude: loc.longitude!),
+                                    coordinateAccuracy: -1, name: loc.name)
+            _wayPoints.append(location)
+        }
         
-        // Specify that the route is intended for automobiles avoiding traffic
-        let routeOptions = NavigationRouteOptions(waypoints: [origin, destination], profileIdentifier: .automobileAvoidingTraffic)
+        _language = arguments?["language"] as? String ?? _language
+        _voiceUnits = arguments?["units"] as? String ?? _voiceUnits
+        _simulateRoute = arguments?["simulateRoute"] as? Bool ?? _simulateRoute
+        _isOptimized = arguments?["isOptimized"] as? Bool ?? _isOptimized
+        _allowsUTurnAtWayPoints = arguments?["allowsUTurnAtWayPoints"] as? Bool
+        _navigationMode = arguments?["mode"] as? String ?? "drivingWithTraffic"
+        if(_wayPoints.count > 3 && arguments?["mode"] == nil)
+        {
+            _navigationMode = "driving"
+        }
+        _mapStyleURL = arguments?["mapStyleURL"] as? String
+    
         
+        var mode: DirectionsProfileIdentifier = .automobileAvoidingTraffic
+        
+        if (_navigationMode == "cycling")
+        {
+            mode = .cycling
+        }
+        else if(_navigationMode == "driving")
+        {
+            mode = .automobile
+        }
+        else if(_navigationMode == "walking")
+        {
+            mode = .walking
+        }
+        
+        let routeOptions = NavigationRouteOptions(waypoints: _wayPoints, profileIdentifier: mode)
+        
+        if (_allowsUTurnAtWayPoints != nil)
+        {
+            routeOptions.allowsUTurnAtWaypoint = _allowsUTurnAtWayPoints!
+        }
+        
+        routeOptions.distanceMeasurementSystem = _voiceUnits == "imperial" ? .imperial : .metric
+        routeOptions.locale = Locale(identifier: _language)
+        
+
         // Generate the route object and draw it on the map
         _ = Directions.shared.calculate(routeOptions) { [weak self] (session, result) in
+            
             guard case let .success(response) = result, let route = response.routes?.first, let strongSelf = self else {
+                self?.sendEvent(eventType: MapBoxEventType.route_build_failed)
                 return
             }
+            strongSelf.sendEvent(eventType: MapBoxEventType.route_built)
             strongSelf.route = route
             strongSelf.routeOptions = routeOptions
+            
+            strongSelf.mapView?.show(response.routes!)
+            strongSelf.mapView?.showWaypoints(on: strongSelf.route!)
             // Draw the route on the map after creating it
-            strongSelf.drawRoute(route: route)
+            //strongSelf.drawRoute(route: route)
             
             // Mauna Kea, Hawaii
-            let center = CLLocationCoordinate2D(latitude: oLatitude, longitude: oLongitude)
-             
+            let center = strongSelf._wayPoints.first?.coordinate
+            
             // Optionally set a starting point.
-            strongSelf.mapView.setCenter(center, zoomLevel: 2, direction: 0, animated: false)
+            strongSelf.mapView.setCenter(center!, zoomLevel: 2, direction: 0, animated: false)
             strongSelf.moveCameraToCenter()
-            strongSelf.startEmbeddedNavigation()
+            
+            //strongSelf.startEmbeddedNavigation()
         }
     }
     
-    func startEmbeddedNavigation() {
+    
+    func startEmbeddedNavigation(arguments: NSDictionary?, result: @escaping FlutterResult) {
         
         guard let route = route else { return }
         let navigationService = MapboxNavigationService(route: route, routeOptions: routeOptions!, simulating: self._simulateRoute ? .always : .onPoorGPS)
         let navigationOptions = NavigationOptions(navigationService: navigationService)
         let navigationViewController = NavigationViewController(for: route, routeOptions: routeOptions!, navigationOptions: navigationOptions)
-        
         navigationViewController.delegate = self
-        //addChild(navigationViewController)
+        
+        let flutterViewController = UIApplication.shared.delegate?.window?!.rootViewController as! FlutterViewController
+        flutterViewController.addChild(navigationViewController)
         
         let container = self.view()
         container.addSubview(navigationViewController.view)
         navigationViewController.view.translatesAutoresizingMaskIntoConstraints = false
-        NSLayoutConstraint.activate([
-            navigationViewController.view.leadingAnchor.constraint(equalTo: container.leadingAnchor, constant: 0),
-            navigationViewController.view.trailingAnchor.constraint(equalTo: container.trailingAnchor, constant: 0),
-            navigationViewController.view.topAnchor.constraint(equalTo: container.topAnchor, constant: 0),
-            navigationViewController.view.bottomAnchor.constraint(equalTo: container.bottomAnchor, constant: 0)
-        ])
-        //self.didMove(toParent: self)
- 
+        constraintsWithPaddingBetween(holderView: container, topView: navigationViewController.view, padding: 0.0)
+        //navigationService.start()
+        flutterViewController.didMove(toParent: flutterViewController)
+        
     }
     
-  
-    
-    func drawRoute(route: Route)
-    {
-        guard  let routeShape = route.shape, routeShape.coordinates.count > 0 else {
+    func constraintsWithPaddingBetween(holderView: UIView, topView: UIView, padding: CGFloat) {
+        guard holderView.subviews.contains(topView) else {
             return
         }
+        topView.translatesAutoresizingMaskIntoConstraints = false
+        let pinTop = NSLayoutConstraint(item: topView, attribute: .top, relatedBy: .equal,
+                                        toItem: holderView, attribute: .top, multiplier: 1.0, constant: padding)
+        let pinBottom = NSLayoutConstraint(item: topView, attribute: .bottom, relatedBy: .equal,
+                                           toItem: holderView, attribute: .bottom, multiplier: 1.0, constant: padding)
+        let pinLeft = NSLayoutConstraint(item: topView, attribute: .left, relatedBy: .equal,
+                                         toItem: holderView, attribute: .left, multiplier: 1.0, constant: padding)
+        let pinRight = NSLayoutConstraint(item: topView, attribute: .right, relatedBy: .equal,
+                                          toItem: holderView, attribute: .right, multiplier: 1.0, constant: padding)
+        holderView.addConstraints([pinTop, pinBottom, pinLeft, pinRight])
+    }
+    
+    @objc func handleLongPress(_ gesture: UILongPressGestureRecognizer) {
+        guard gesture.state == .ended else { return }
         
-        //convert the coordinates into a polyline
-        var routeCoordinates = routeShape.coordinates
-        let polyline = MGLPolylineFeature(coordinates: &routeCoordinates, count: UInt(routeCoordinates.count))
+        let spot = gesture.location(in: mapView)
+        guard let location = mapView?.convert(spot, toCoordinateFrom: mapView) else { return }
         
-        //if there is already a route line on the map, reset its shape to the new route
-        if let source = mapView.style?.source(withIdentifier: "route-source") as? MGLShapeSource
-        {
-            source.shape = polyline
-        }
-        else
-        {
-            let source = MGLShapeSource(identifier: "route-source", features: [polyline], options: nil)
-            
-            // customize the route line color and width
-            let lineStyle = MGLLineStyleLayer(identifier: "route-style", source: source)
-            lineStyle.lineColor = NSExpression(forConstantValue: #colorLiteral(red: 0.2392156869, green: 0.6745098233, blue: 0.9686274529, alpha: 1))
-            lineStyle.lineWidth = NSExpression(forConstantValue: 7)
-            mapView.style?.addSource(source)
-            mapView.style?.addLayer(lineStyle)
+        requestRoute(destination: location)
+    }
+    
+    func requestRoute(destination: CLLocationCoordinate2D) {
+        guard let userLocation = mapView?.userLocation!.location else { return }
+        let userWaypoint = Waypoint(location: userLocation, heading: mapView?.userLocation?.heading, name: "Current Location")
+        let destinationWaypoint = Waypoint(coordinate: destination)
+        
+        let routeOptions = NavigationRouteOptions(waypoints: [userWaypoint, destinationWaypoint])
+        
+        Directions.shared.calculate(routeOptions) { [weak self] (session, result) in
+            switch result {
+            case .failure(let error):
+                print(error.localizedDescription)
+            case .success(let response):
+                guard let routes = response.routes, let route = response.routes?.first, let strongSelf = self else {
+                    return
+                }
+                strongSelf.routeOptions = routeOptions
+                strongSelf._routes = routes
+                strongSelf.route = route
+                //strongSelf.startButton?.isHidden = false
+                
+                strongSelf.mapView?.show(routes)
+                strongSelf.mapView?.showWaypoints(on: strongSelf.route!)
+            }
         }
     }
     
     public func mapView(_ mapView: MGLMapView, didFinishLoading style: MGLStyle) {
         _mapInitialized = true
+        sendEvent(eventType: MapBoxEventType.map_ready)
     }
-
+    
+    func navigationMapView(_ mapView: NavigationMapView, didSelect route: Route) {
+        self.route = route
+    }
+    
     public func mapViewDidFinishLoadingMap(_ mapView: MGLMapView) {
         // Wait for the map to load before initiating the first camera movement.
         moveCameraToCenter()
@@ -787,7 +864,7 @@ public class FlutterMapboxNavigationView : NavigationFactory, MGLMapViewDelegate
         // Create a camera that rotates around the same center point, rotating 180°.
         // `fromDistance:` is meters above mean sea level that an eye would have to be in order to see what the map view is showing.
         let camera = MGLMapCamera(lookingAtCenter: mapView.centerCoordinate, altitude: 2500, pitch: 15, heading: 180)
-         
+        
         // Animate the camera movement over 5 seconds.
         mapView.setCamera(camera, withDuration: 5, animationTimingFunction: CAMediaTimingFunction(name: CAMediaTimingFunctionName.easeInEaseOut))
     }

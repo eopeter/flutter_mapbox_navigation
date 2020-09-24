@@ -170,13 +170,7 @@ class FlutterMapViewFactory internal constructor(private val context: Context, m
                 moveCamera(methodCall, result)
             }
             "startNavigation" -> {
-                startNavigation(methodCall, result)
-            }
-            "startEmbeddedNavigation" -> {
                 startEmbeddedNavigation(methodCall, result)
-            }
-            "startNavigationWithWayPoints" -> {
-                startNavigationWithWayPoints(methodCall, result)
             }
             "finishNavigation" -> {
                 cancelEmbeddedNavigation(methodCall, result)
@@ -724,12 +718,12 @@ class FlutterMapViewFactory internal constructor(private val context: Context, m
         language = PluginUtilities.getStringValueById("language", methodCall)
         alternatives = PluginUtilities.getBoolValueById("alternatives", methodCall)
         clientAppName = PluginUtilities.getStringValueById("clientAppName", methodCall)
-        profile = PluginUtilities.getStringValueById("profile", methodCall)
+        profile = PluginUtilities.getStringValueById("mode", methodCall)
         continueStraight = PluginUtilities.getBoolValueById("continueStraight", methodCall)
         enableRefresh = PluginUtilities.getBoolValueById("enableRefresh", methodCall)
         steps = PluginUtilities.getBoolValueById("steps", methodCall)
-        voiceInstructions = PluginUtilities.getBoolValueById("voiceInstructions", methodCall)
-        bannerInstructions = PluginUtilities.getBoolValueById("bannerInstructions", methodCall)
+        voiceInstructions = PluginUtilities.getBoolValueById("voiceInstructionsEnabled", methodCall)
+        bannerInstructions = PluginUtilities.getBoolValueById("bannerInstructionsEnabled", methodCall)
         testRoute = PluginUtilities.getStringValueById("testRoute", methodCall)
         debug = PluginUtilities.getBoolValueById("debug", methodCall)
 

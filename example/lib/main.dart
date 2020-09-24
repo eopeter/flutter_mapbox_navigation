@@ -34,6 +34,9 @@ class _MyAppState extends State<MyApp> {
       name: "Way Point 5",
       latitude: 38.90894949285854,
       longitude: -77.03651905059814);
+  final _farAway = WayPoint(
+      name: "Far Far Away", latitude: 36.1175275, longitude: -115.1839524);
+
   MapBoxNavigation _directions;
   bool _arrived = false;
   bool _isMultipleStop = false;
@@ -104,123 +107,223 @@ class _MyAppState extends State<MyApp> {
         ),
         body: Center(
           child: Column(children: <Widget>[
-            SizedBox(
-              height: 30,
-            ),
-            Text('Running on: $_platformVersion\n'),
-            SizedBox(
-              height: 10,
-            ),
-            RaisedButton(
-              child: Text("Start  Navigation"),
-              onPressed: () async {
-                await _directions.startNavigation(
-                    origin: _origin,
-                    destination: _stop1,
-                    options: MapBoxOptions(
-                        mode: MapBoxNavigationMode.drivingWithTraffic,
-                        simulateRoute: true,
-                        language: "en",
-                        mapStyleURL:
-                            "mapbox://styles/eopeter/ckffcmgtl0car1ap80jhp4hsr",
-                        units: VoiceUnits.metric));
-              },
-            ),
-            SizedBox(
-              height: 20,
-            ),
-            RaisedButton(
-              child: Text("Start Multi Stop Navigation"),
-              onPressed: () async {
-                _isMultipleStop = true;
-                var wayPoints = List<WayPoint>();
-                wayPoints.add(_origin);
-                wayPoints.add(_stop1);
-                wayPoints.add(_stop2);
-                wayPoints.add(_stop3);
-                wayPoints.add(_stop4);
-                wayPoints.add(_origin);
+            Expanded(
+              child: SingleChildScrollView(
+                child: Column(
+                  children: [
+                    SizedBox(
+                      height: 10,
+                    ),
+                    Text('Running on: $_platformVersion\n'),
+                    Container(
+                      color: Colors.grey,
+                      width: double.infinity,
+                      child: Padding(
+                        padding: EdgeInsets.all(10),
+                        child: (Text(
+                          "Full Screen Navigation",
+                          style: TextStyle(color: Colors.white),
+                          textAlign: TextAlign.center,
+                        )),
+                      ),
+                    ),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        RaisedButton(
+                          child: Text("Start A to B"),
+                          onPressed: () async {
+                            await _directions.startNavigation(
+                                origin: _origin,
+                                destination: _stop1,
+                                options: MapBoxOptions(
+                                    mode:
+                                        MapBoxNavigationMode.drivingWithTraffic,
+                                    simulateRoute: true,
+                                    language: "en",
+                                    units: VoiceUnits.metric));
+                          },
+                        ),
+                        SizedBox(
+                          width: 10,
+                        ),
+                        RaisedButton(
+                          child: Text("Start Multi Stop"),
+                          onPressed: () async {
+                            _isMultipleStop = true;
+                            var wayPoints = List<WayPoint>();
+                            wayPoints.add(_origin);
+                            wayPoints.add(_stop1);
+                            wayPoints.add(_stop2);
+                            wayPoints.add(_stop3);
+                            wayPoints.add(_stop4);
+                            wayPoints.add(_origin);
 
-                await _directions.startNavigationWithWayPoints(
-                    wayPoints: wayPoints,
-                    options: MapBoxOptions(
-                        mode: MapBoxNavigationMode.driving,
-                        simulateRoute: true,
-                        language: "en",
-                        allowsUTurnAtWayPoints: true,
-                        units: VoiceUnits.metric));
-              },
-            ),
-            SizedBox(
-              height: 20,
-            ),
-            RaisedButton(
-              child: Text("Start Embedded Navigation"),
-              onPressed: () {
-                _controller.buildRoute(origin: _origin,
-                    destination: _stop4);
-                //_controller.startNavigation();
-              },
-            ),
-            Center(
-              child: Padding(
-                padding: EdgeInsets.all(15),
-                child: Text(
-                  _instruction,
-                  style: TextStyle(fontSize: 20),
-                  textAlign: TextAlign.center,
+                            await _directions.startNavigationWithWayPoints(
+                                wayPoints: wayPoints,
+                                options: MapBoxOptions(
+                                    mode: MapBoxNavigationMode.driving,
+                                    simulateRoute: true,
+                                    language: "en",
+                                    allowsUTurnAtWayPoints: true,
+                                    units: VoiceUnits.metric));
+                          },
+                        )
+                      ],
+                    ),
+                    Container(
+                      color: Colors.grey,
+                      width: double.infinity,
+                      child: Padding(
+                        padding: EdgeInsets.all(10),
+                        child: (Text(
+                          "Embedded Navigation",
+                          style: TextStyle(color: Colors.white),
+                          textAlign: TextAlign.center,
+                        )),
+                      ),
+                    ),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        RaisedButton(
+                          child: Text("Build Route"),
+                          onPressed: () {
+                            var wayPoints = List<WayPoint>();
+                            wayPoints.add(_origin);
+                            wayPoints.add(_stop1);
+                            wayPoints.add(_stop2);
+                            wayPoints.add(_stop3);
+                            wayPoints.add(_stop4);
+                            wayPoints.add(_origin);
+                            _controller.buildRoute(wayPoints: wayPoints);
+                            //_controller.startNavigation();
+                          },
+                        ),
+                        SizedBox(
+                          width: 10,
+                        ),
+                        RaisedButton(
+                          child: Text("Start Navigation"),
+                          onPressed: () {
+                            _controller.startNavigation();
+                            //_controller.startNavigation();
+                          },
+                        )
+                      ],
+                    ),
+                    Center(
+                      child: Padding(
+                        padding: EdgeInsets.all(10),
+                        child: Text(
+                          "Long Press Embedded Map to Set Destination",
+                          textAlign: TextAlign.center,
+                        ),
+                      ),
+                    ),
+                    Container(
+                      color: Colors.grey,
+                      width: double.infinity,
+                      child: Padding(
+                        padding: EdgeInsets.all(10),
+                        child: (Text(
+                          _instruction == null || _instruction.isEmpty
+                              ? "Banner Instruction Here"
+                              : _instruction,
+                          style: TextStyle(color: Colors.white),
+                          textAlign: TextAlign.center,
+                        )),
+                      ),
+                    ),
+                    Padding(
+                      padding: EdgeInsets.only(
+                          left: 20.0, right: 20, top: 20, bottom: 10),
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: <Widget>[
+                          Row(
+                            children: <Widget>[
+                              Text("Distance Remaining: "),
+                              Text(_distanceRemaining != null
+                                  ? "${(_distanceRemaining * 0.000621371).toStringAsFixed(1)} miles"
+                                  : "---")
+                            ],
+                          ),
+                          Row(
+                            children: <Widget>[
+                              Text("Duration Remaining: "),
+                              Text(_durationRemaining != null
+                                  ? "${(_durationRemaining / 60).toStringAsFixed(0)} minutes"
+                                  : "---")
+                            ],
+                          )
+                        ],
+                      ),
+                    ),
+                    Divider()
+                  ],
                 ),
               ),
             ),
-            Padding(
-              padding: EdgeInsets.all(20.0),
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: <Widget>[
-                  Row(
-                    children: <Widget>[
-                      Text("Distance Remaining: "),
-                      Text(_distanceRemaining != null
-                          ? "${(_distanceRemaining * 0.000621371).toStringAsFixed(1)} miles"
-                          : "---")
-                    ],
-                  ),
-                  Row(
-                    children: <Widget>[
-                      Text("Duration Remaining: "),
-                      Text(_durationRemaining != null
-                          ? "${(_durationRemaining / 60).toStringAsFixed(0)} minutes"
-                          : "---")
-                    ],
-                  )
-                ],
+            Expanded(
+              flex: 1,
+              child: Container(
+                color: Colors.grey,
+                child: MapBoxNavigationView(
+                    options: MapBoxOptions(
+                        initialLatitude: 36.1175275,
+                        initialLongitude: -115.1839524,
+                        zoom: 13.0,
+                        tilt: 0.0,
+                        bearing: 0.0,
+                        enableRefresh: false,
+                        alternatives: true,
+                        voiceInstructionsEnabled: true,
+                        bannerInstructionsEnabled: true,
+                        allowsUTurnAtWayPoints: true,
+                        mode: MapBoxNavigationMode.drivingWithTraffic,
+                        units: VoiceUnits.imperial,
+                        simulateRoute: false,
+                        language: "en"),
+                    onRouteEvent: _onEmbeddedRouteEvent,
+                    onCreated:
+                        (MapBoxNavigationViewController controller) async {
+                      _controller = controller;
+                    }),
               ),
-            ),
-            Container(
-              height: 300,
-              color: Colors.grey,
-              child: MapBoxNavigationView(
-                  options: MapBoxOptions(
-                      initialLatitude: 36.1175275,
-                      initialLongitude: -115.1839524,
-                      zoom: 13.0,
-                      tilt: 0.0,
-                      bearing: 0.0,
-                      enableRefresh: false,
-                      alternatives: true,
-                      voiceInstructionsEnabled: true,
-                      bannerInstructionsEnabled: true,
-                      allowsUTurnAtWayPoints: true,
-                      mode: MapBoxNavigationMode.drivingWithTraffic,
-                      units: VoiceUnits.imperial,
-                      language: "en"),
-                  onCreated: (MapBoxNavigationViewController controller) async {
-                    _controller = controller;
-                  }),
             )
           ]),
         ),
       ),
     );
+  }
+
+  Future<void> _onEmbeddedRouteEvent(e) async {
+    _distanceRemaining = await _directions.distanceRemaining;
+    _durationRemaining = await _directions.durationRemaining;
+
+    switch (e.eventType) {
+      case MapBoxEvent.progress_change:
+        var progressEvent = e.data as RouteProgressEvent;
+        _arrived = progressEvent.arrived;
+        _distanceRemaining = progressEvent.distance;
+        _durationRemaining = progressEvent.duration;
+        if (progressEvent.currentStepInstruction != null)
+          _instruction = progressEvent.currentStepInstruction;
+        break;
+      case MapBoxEvent.route_build_failed:
+        print(e.data);
+        break;
+      case MapBoxEvent.on_arrival:
+        _arrived = true;
+        if (!_isMultipleStop) {
+          await Future.delayed(Duration(seconds: 3));
+          await _controller.finishNavigation();
+        }
+        break;
+      default:
+        break;
+    }
+    setState(() {});
   }
 }
