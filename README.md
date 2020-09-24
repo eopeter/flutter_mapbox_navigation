@@ -87,6 +87,7 @@ Add Turn By Turn Navigation to Your Flutter Application Using MapBox. Never leav
                                 destination: downtown, 
                                 mode: MapBoxNavigationMode.drivingWithTraffic, 
                                 simulateRoute: false,
+                                mapStyleURL: "mapbox://styles/eopeter/ckffcmgtl0car1ap80jhp4hsr",
                                 language: "en");
   
 ```
@@ -113,11 +114,28 @@ Add Turn By Turn Navigation to Your Flutter Application Using MapBox. Never leav
                     simulateRoute: true,
                     language: "en", 
                     allowsUTurnAtWayPoints: true, 
-                    isOptimized: false
+                    isOptimized: false,
+                    mapStyleURL: "mapbox://styles/eopeter/ckffcmgtl0car1ap80jhp4hsr",
                     units: VoiceUnits.metric);
 
 ```
 
+## Embedding Navigation View
+
+## IOS Configuration
+Add the following to your `info.plist` file
+
+```xml
+    <key>io.flutter.embedded_views_preview</key>
+	<true/>
+```
+
+## Android Configuration
+Modify your `MainActivity` to instantiate the plugin for native embedding
+
+```kotlin
+
+```
 ## Screenshots
 ![Navigation View](screenshots/screenshot1.png?raw=true "iOS View") | ![Android View](screenshots/screenshot2.png?raw=true "Android View")
 |:---:|:---:|

@@ -1,3 +1,9 @@
+## 0.0.16
+* Refactoring with breaking changes. Sorry :-(
+* Add Embedded Navigation
+* Consolidated Navigation Options
+* Add ability to change map style
+
 ## 0.0.15
 * Remove Dialog at WayPoint Arrival
 * Tweak iOS WayPoint navigation behavior to match Android

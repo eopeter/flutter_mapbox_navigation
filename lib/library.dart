@@ -16,6 +16,11 @@ part 'models/routeStep.dart';
 part 'models/routeProgressEvent.dart';
 part 'models/routeEvent.dart';
 part 'models/events.dart';
+part 'models/options.dart';
+part 'embedded/view.dart';
+part 'embedded/controller.dart';
+part 'factory/navigationFactory.dart';
+part 'factory/interface.dart';
 
 bool _isNullOrZero(dynamic val) {
   return val == 0.0 || val == null;

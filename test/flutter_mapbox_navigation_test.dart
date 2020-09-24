@@ -18,7 +18,7 @@ void main() {
   });
 
   test('getPlatformVersion', () async {
-    MapboxNavigation directions = MapboxNavigation();
+    MapBoxNavigation directions = MapBoxNavigation();
     expect(await directions.platformVersion, '42');
   });
 }

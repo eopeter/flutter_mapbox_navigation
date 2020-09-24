@@ -26,6 +26,7 @@ import com.mapbox.mapboxsdk.Mapbox
 import com.mapbox.mapboxsdk.camera.CameraPosition
 import com.mapbox.mapboxsdk.geometry.LatLng
 import com.mapbox.mapboxsdk.location.modes.RenderMode
+import com.mapbox.mapboxsdk.maps.Style
 import com.mapbox.services.android.navigation.ui.v5.NavigationView
 import com.mapbox.services.android.navigation.ui.v5.NavigationViewOptions
 import com.mapbox.services.android.navigation.ui.v5.OnNavigationReadyCallback
@@ -158,37 +159,12 @@ class NavigationActivity : AppCompatActivity(),
         if (isRunning && ::navigationMapboxMap.isInitialized) {
             return
         }
-        
+
         if(points.count() > 0)
         {
             fetchRoute(points.removeAt(0), points.removeAt(0))
-            return
         }
-        
-        navigationView?.retrieveNavigationMapboxMap()?.let { navMapboxMap ->
-            this.navigationMapboxMap = navMapboxMap
-            this.navigationMapboxMap.updateLocationLayerRenderMode(RenderMode.NORMAL)
-            navigationView?.retrieveMapboxNavigation()?.let {
-                this.mapboxNavigation = it
 
-                mapboxNavigation.addOffRouteListener(this)
-                mapboxNavigation.addFasterRouteListener(this)
-                mapboxNavigation.addNavigationEventListener(this)
-            }
-
-            val optionsBuilder = NavigationViewOptions.builder()
-            optionsBuilder.progressChangeListener(this)
-            optionsBuilder.milestoneEventListener(this)
-            optionsBuilder.navigationListener(this)
-            optionsBuilder.speechAnnouncementListener(this)
-            optionsBuilder.bannerInstructionsListener(this)
-            optionsBuilder.routeListener(this)
-            optionsBuilder.directionsRoute(route)
-            optionsBuilder.shouldSimulateRoute(FlutterMapboxNavigationPlugin.simulateRoute)
-
-            navigationView?.startNavigation(optionsBuilder.build())
-
-        }
     }
 
     override fun onProgressChange(location: Location, routeProgress: RouteProgress) {
@@ -258,11 +234,8 @@ class NavigationActivity : AppCompatActivity(),
 
     override fun onArrival() {
         sendEvent(MapBoxEvents.ON_ARRIVAL)
-        if (!dropoffDialogShown && points.isNotEmpty()) {
-            if(FlutterMapboxNavigationPlugin.pauseAtWayPoints)
-                showDropoffDialog()
-            else
-                fetchRoute(getLastKnownLocation(), points.removeAt(0))
+        if (points.isNotEmpty()) {
+            fetchRoute(getLastKnownLocation(), points.removeAt(0))
             dropoffDialogShown = true // Accounts for multiple arrival events
             //Toast.makeText(this, "You have arrived!", Toast.LENGTH_SHORT).show()
         }
@@ -288,11 +261,44 @@ class NavigationActivity : AppCompatActivity(),
         sendEvent(MapBoxEvents.REROUTE_ALONG, "${directionsRoute?.toJson()}")
     }
 
-    private fun startNavigation(directionsRoute: DirectionsRoute) {
-        val navigationViewOptions: NavigationViewOptions = setupOptions(directionsRoute)!!
-        navigationView!!.startNavigation(navigationViewOptions)
-    }
+    private fun buildAndStartNavigation(directionsRoute: DirectionsRoute) {
 
+        dropoffDialogShown = false
+
+        navigationView?.retrieveNavigationMapboxMap()?.let {navigationMap ->
+
+            if(FlutterMapboxNavigationPlugin.mapStyleURL != null)
+                navigationMap.retrieveMap().setStyle(Style.Builder().fromUri(FlutterMapboxNavigationPlugin.mapStyleURL as String))
+
+            this.navigationMapboxMap = navigationMap
+            this.navigationMapboxMap.updateLocationLayerRenderMode(RenderMode.NORMAL)
+            navigationView?.retrieveMapboxNavigation()?.let {
+                this.mapboxNavigation = it
+
+                mapboxNavigation.addOffRouteListener(this)
+                mapboxNavigation.addFasterRouteListener(this)
+                mapboxNavigation.addNavigationEventListener(this)
+            }
+            
+            // Custom map style has been loaded and map is now ready
+            val options =
+                    NavigationViewOptions.builder()
+                            .progressChangeListener(this)
+                            .milestoneEventListener(this)
+                            .navigationListener(this)
+                            .speechAnnouncementListener(this)
+                            .bannerInstructionsListener(this)
+                            .routeListener(this)
+                            .directionsRoute(directionsRoute)
+                            .shouldSimulateRoute(FlutterMapboxNavigationPlugin.simulateRoute)
+                            .build()
+
+            navigationView?.startNavigation(options)
+
+        }
+        //navigationView!!.startNavigation(navigationViewOptions)
+    }
+    
     private fun showDropoffDialog() {
         val alertDialog = AlertDialog.Builder(this).create()
         alertDialog.setMessage(getString(R.string.dropoff_dialog_text))
@@ -302,14 +308,16 @@ class NavigationActivity : AppCompatActivity(),
         ) { dialogInterface: DialogInterface?, `in`: Int -> }
         alertDialog.show()
     }
-    
+
     private fun fetchRoute(origin: Point, destination: Point) {
+
         val accessToken = Mapbox.getAccessToken()
         if (accessToken == null) {
-            Toast.makeText(this, "You have arrived!", Toast.LENGTH_SHORT).show()
+            Toast.makeText(this, "Access Token is Required", Toast.LENGTH_SHORT).show()
             finish()
             return
         }
+
         NavigationRoute.builder(this)
                 .accessToken(accessToken)
                 .origin(origin)
@@ -325,7 +333,7 @@ class NavigationActivity : AppCompatActivity(),
                     override fun onResponse(call: Call<DirectionsResponse>, response: Response<DirectionsResponse>) {
                         val directionsResponse = response.body()
                         if (directionsResponse != null) {
-                            if (!directionsResponse.routes().isEmpty()) startNavigation(directionsResponse.routes()[0]) else {
+                            if (!directionsResponse.routes().isEmpty()) buildAndStartNavigation(directionsResponse.routes()[0]) else {
                                 val message = directionsResponse.message()
                                 sendEvent(MapBoxEvents.ROUTE_BUILD_FAILED, message!!)
                                 finish()
@@ -338,17 +346,6 @@ class NavigationActivity : AppCompatActivity(),
                         finish()
                     }
                 })
-    }
-
-    private fun setupOptions(directionsRoute: DirectionsRoute): NavigationViewOptions? {
-        dropoffDialogShown = false
-        val options = NavigationViewOptions.builder()
-        options.directionsRoute(directionsRoute)
-                .navigationListener(this)
-                .progressChangeListener(this)
-                .routeListener(this)
-                .shouldSimulateRoute(true)
-        return options.build()
     }
 
     private fun getLastKnownLocation(): Point {

@@ -14,20 +14,31 @@ class MyApp extends StatefulWidget {
 class _MyAppState extends State<MyApp> {
   String _platformVersion = 'Unknown';
   String _instruction = "";
-  final _origin =
-      WayPoint(name: "Way Point 1", latitude: 38.9111117447887, longitude: -77.04012393951416);
-  final _stop1 =
-      WayPoint(name: "Way Point 2", latitude: 38.91113678979344, longitude: -77.03847169876099);
+  final _origin = WayPoint(
+      name: "Way Point 1",
+      latitude: 38.9111117447887,
+      longitude: -77.04012393951416);
+  final _stop1 = WayPoint(
+      name: "Way Point 2",
+      latitude: 38.91113678979344,
+      longitude: -77.03847169876099);
   final _stop2 = WayPoint(
-      name: "Way Point 3", latitude: 38.91040213277608, longitude: -77.03848242759705);
+      name: "Way Point 3",
+      latitude: 38.91040213277608,
+      longitude: -77.03848242759705);
   final _stop3 = WayPoint(
-      name: "Way Point 4", latitude: 38.909650771013034, longitude: -77.03850388526917);
+      name: "Way Point 4",
+      latitude: 38.909650771013034,
+      longitude: -77.03850388526917);
   final _stop4 = WayPoint(
-      name: "Way Point 5", latitude: 38.90894949285854, longitude: -77.03651905059814);
-  MapboxNavigation _directions;
+      name: "Way Point 5",
+      latitude: 38.90894949285854,
+      longitude: -77.03651905059814);
+  MapBoxNavigation _directions;
   bool _arrived = false;
   bool _isMultipleStop = false;
   double _distanceRemaining, _durationRemaining;
+  MapBoxNavigationViewController _controller;
 
   @override
   void initState() {
@@ -42,7 +53,7 @@ class _MyAppState extends State<MyApp> {
     // setState to update our non-existent appearance.
     if (!mounted) return;
 
-    _directions = MapboxNavigation(onRouteEvent: (e) async {
+    _directions = MapBoxNavigation(onRouteEvent: (e) async {
       _distanceRemaining = await _directions.distanceRemaining;
       _durationRemaining = await _directions.durationRemaining;
 
@@ -52,7 +63,7 @@ class _MyAppState extends State<MyApp> {
           _arrived = progressEvent.arrived;
           _distanceRemaining = progressEvent.distance;
           _durationRemaining = progressEvent.duration;
-          if(progressEvent.currentStepInstruction != null)
+          if (progressEvent.currentStepInstruction != null)
             _instruction = progressEvent.currentStepInstruction;
           break;
         case MapBoxEvent.route_build_failed:
@@ -98,7 +109,7 @@ class _MyAppState extends State<MyApp> {
             ),
             Text('Running on: $_platformVersion\n'),
             SizedBox(
-              height: 60,
+              height: 10,
             ),
             RaisedButton(
               child: Text("Start  Navigation"),
@@ -106,14 +117,17 @@ class _MyAppState extends State<MyApp> {
                 await _directions.startNavigation(
                     origin: _origin,
                     destination: _stop1,
-                    mode: MapBoxNavigationMode.drivingWithTraffic,
-                    simulateRoute: true,
-                    language: "en",
-                    units: VoiceUnits.metric);
+                    options: MapBoxOptions(
+                        mode: MapBoxNavigationMode.drivingWithTraffic,
+                        simulateRoute: true,
+                        language: "en",
+                        mapStyleURL:
+                            "mapbox://styles/eopeter/ckffcmgtl0car1ap80jhp4hsr",
+                        units: VoiceUnits.metric));
               },
             ),
             SizedBox(
-              height: 30,
+              height: 20,
             ),
             RaisedButton(
               child: Text("Start Multi Stop Navigation"),
@@ -129,16 +143,22 @@ class _MyAppState extends State<MyApp> {
 
                 await _directions.startNavigationWithWayPoints(
                     wayPoints: wayPoints,
-                    mode: MapBoxNavigationMode.driving,
-                    simulateRoute: true,
-                    language: "en",
-                    allowsUTurnAtWayPoints: true,
-                    pauseAtWayPoints: false,
-                    units: VoiceUnits.metric);
+                    options: MapBoxOptions(
+                        mode: MapBoxNavigationMode.driving,
+                        simulateRoute: true,
+                        language: "en",
+                        allowsUTurnAtWayPoints: true,
+                        units: VoiceUnits.metric));
               },
             ),
             SizedBox(
-              height: 60,
+              height: 20,
+            ),
+            RaisedButton(
+              child: Text("Start Embedded Navigation"),
+              onPressed: () {
+                _controller.startNavigation();
+              },
             ),
             Center(
               child: Padding(
@@ -174,6 +194,28 @@ class _MyAppState extends State<MyApp> {
                 ],
               ),
             ),
+            Container(
+              height: 300,
+              color: Colors.grey,
+              child: MapBoxNavigationView(
+                  onCreated: (MapBoxNavigationViewController controller) async {
+                _controller = controller;
+                await controller.showMap(MapBoxOptions(
+                    initialLatitude: 33.569126,
+                    initialLongitude: 73.1231471,
+                    zoom: 13.0,
+                    tilt: 0.0,
+                    bearing: 0.0,
+                    enableRefresh: false,
+                    alternatives: true,
+                    voiceInstructionsEnabled: true,
+                    bannerInstructionsEnabled: true,
+                    allowsUTurnAtWayPoints: true,
+                    mode: MapBoxNavigationMode.drivingWithTraffic,
+                    units: VoiceUnits.imperial,
+                    language: "en"));
+              }),
+            )
           ]),
         ),
       ),

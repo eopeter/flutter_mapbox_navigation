@@ -76,7 +76,7 @@ import retrofit2.Response
 import timber.log.Timber
 import java.util.*
 
-class FlutterMapViewFactory internal constructor(private val context: Context, messenger: BinaryMessenger, id: Int, private val activity: Activity) :
+class FlutterMapViewFactory internal constructor(private val context: Context, messenger: BinaryMessenger, accessToken: String, id: Int, private val activity: Activity) :
         PlatformView,
         MethodCallHandler,
         Application.ActivityLifecycleCallbacks,
@@ -106,7 +106,7 @@ class FlutterMapViewFactory internal constructor(private val context: Context, m
             .build()
     private var navigation: MapboxNavigation = MapboxNavigation(
             context,
-            Mapbox.getAccessToken()!!,
+            accessToken,
             navigationOptions
     )
     private var mapReady = false

@@ -1,28 +1,20 @@
 part of navigation;
 
-/// Turn-By-Turn Navigation Provider
-class MapBoxNavigation implements IMapBoxNavigation {
-  factory MapBoxNavigation({ValueSetter<RouteEvent> onRouteEvent}) {
-    if (_instance == null) {
-      final MethodChannel methodChannel =
-      const MethodChannel('flutter_mapbox_navigation');
-      final EventChannel eventChannel =
-      const EventChannel('flutter_mapbox_navigation/events');
-      _instance =
-          MapBoxNavigation.private(methodChannel, eventChannel, onRouteEvent);
-    }
-    return _instance;
+/// Controller for a single MapBox Navigation instance running on the host platform.
+class MapBoxNavigationViewController implements IMapBoxNavigation {
+  MethodChannel _methodChannel;
+  EventChannel _eventChannel;
+
+  ValueSetter<RouteEvent> _routeEventNotifier;
+
+  MapBoxNavigationViewController(
+      int id, ValueSetter<RouteEvent> eventNotifier) {
+    _methodChannel = new MethodChannel('flutter_mapbox_navigation/$id');
+    _methodChannel.setMethodCallHandler(_handleMethod);
+
+    _eventChannel = EventChannel('flutter_mapbox_navigation/events');
+    _routeEventNotifier = eventNotifier;
   }
-
-  @visibleForTesting
-  MapBoxNavigation.private(
-      this._methodChannel, this._routeEventchannel, this._routeEventNotifier);
-
-  static MapBoxNavigation _instance;
-
-  final MethodChannel _methodChannel;
-  final EventChannel _routeEventchannel;
-  final ValueSetter<RouteEvent> _routeEventNotifier;
 
   Stream<RouteEvent> _onRouteEvent;
   StreamSubscription<RouteEvent> _routeEventSubscription;
@@ -52,8 +44,8 @@ class MapBoxNavigation implements IMapBoxNavigation {
   ///
   Future startNavigation(
       {WayPoint origin,
-        WayPoint destination,
-        MapBoxOptions options}) async {
+      WayPoint destination,
+      MapBoxOptions options}) async {
     assert(origin != null);
     assert(origin.name != null);
     assert(origin.latitude != null);
@@ -93,7 +85,7 @@ class MapBoxNavigation implements IMapBoxNavigation {
     assert(wayPoints.length > 1);
     if (Platform.isIOS && wayPoints.length > 3) {
       assert(options.mode != MapBoxNavigationMode.drivingWithTraffic,
-      "Error: Cannot use drivingWithTraffic Mode when you have more than 3 Stops");
+          "Error: Cannot use drivingWithTraffic Mode when you have more than 3 Stops");
     }
     var pointList = List<Map<String, Object>>();
 
@@ -114,7 +106,7 @@ class MapBoxNavigation implements IMapBoxNavigation {
     }
     var i = 0;
     var wayPointMap =
-    Map.fromIterable(pointList, key: (e) => i++, value: (e) => e);
+        Map.fromIterable(pointList, key: (e) => i++, value: (e) => e);
 
     var  args = options.toMap();
     args["wayPoints"] = wayPointMap;
@@ -131,6 +123,34 @@ class MapBoxNavigation implements IMapBoxNavigation {
     return success;
   }
 
+  Future<String> showMap(MapBoxOptions options) async {
+    assert(options != null);
+    return _methodChannel.invokeMethod('showMapView', options.toMap());
+  }
+
+  Future<String> startEmbeddedNavigation(MapBoxOptions options) async {
+    return _methodChannel.invokeMethod(
+        'startEmbeddedNavigation', options.toMap());
+  }
+
+  Future<dynamic> _handleMethod(MethodCall call) async {
+    switch (call.method) {
+      case 'sendFromNative':
+        String text = call.arguments as String;
+        return new Future.value("Text from native: $text");
+    }
+  }
+
+  Future<void> _receiveFromFlutter(String text) async {
+    try {
+      final String result = await _methodChannel
+          .invokeMethod('receiveFromFlutter', {"text": text});
+      print("Result from native: $result");
+    } on PlatformException catch (e) {
+      print("Error from native: $e.message");
+    }
+  }
+
   void _onProgressData(RouteEvent event) {
     if (_routeEventNotifier != null) _routeEventNotifier(event);
 
@@ -140,7 +160,7 @@ class MapBoxNavigation implements IMapBoxNavigation {
 
   Stream<RouteEvent> get _streamRouteEvent {
     if (_onRouteEvent == null) {
-      _onRouteEvent = _routeEventchannel
+      _onRouteEvent = _eventChannel
           .receiveBroadcastStream()
           .map((dynamic event) => _parseRouteEvent(event));
     }
@@ -159,13 +179,3 @@ class MapBoxNavigation implements IMapBoxNavigation {
     return event;
   }
 }
-
-///Option to specify the mode of transportation.
-@Deprecated("Use MapBoxNavigationMode instead")
-enum NavigationMode { walking, cycling, driving, drivingWithTraffic }
-
-///Option to specify the mode of transportation.
-enum MapBoxNavigationMode { walking, cycling, driving, drivingWithTraffic }
-
-///Whether or not the units used inside the voice instruction's string are in imperial or metric.
-enum VoiceUnits { imperial, metric }

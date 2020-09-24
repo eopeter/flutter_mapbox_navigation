@@ -1,28 +1,13 @@
 part of navigation;
 
-/// Turn-By-Turn Navigation Provider
-class MapBoxNavigation implements IMapBoxNavigation {
-  factory MapBoxNavigation({ValueSetter<RouteEvent> onRouteEvent}) {
-    if (_instance == null) {
-      final MethodChannel methodChannel =
-      const MethodChannel('flutter_mapbox_navigation');
-      final EventChannel eventChannel =
-      const EventChannel('flutter_mapbox_navigation/events');
-      _instance =
-          MapBoxNavigation.private(methodChannel, eventChannel, onRouteEvent);
-    }
-    return _instance;
-  }
-
-  @visibleForTesting
-  MapBoxNavigation.private(
-      this._methodChannel, this._routeEventchannel, this._routeEventNotifier);
-
-  static MapBoxNavigation _instance;
-
+@visibleForTesting
+class MapBoxNavigationFactory {
   final MethodChannel _methodChannel;
   final EventChannel _routeEventchannel;
   final ValueSetter<RouteEvent> _routeEventNotifier;
+
+  MapBoxNavigationFactory(
+      this._methodChannel, this._routeEventchannel, this._routeEventNotifier);
 
   Stream<RouteEvent> _onRouteEvent;
   StreamSubscription<RouteEvent> _routeEventSubscription;
@@ -46,14 +31,21 @@ class MapBoxNavigation implements IMapBoxNavigation {
   ///
   /// [origin] must not be null. It must have a longitude, latitude and name.
   /// [destination] must not be null. It must have a longitude, latitude and name.
-  /// [options] options used to generate the route and used while navigating
+  /// [mode] defaults to drivingWithTraffic
+  /// [simulateRoute] if true will simulate the route as if you were driving. Always true on iOS Simulator
+  /// [language] 2-letter ISO 639-1 code for language. This property affects the sentence contained within the RouteStep.instructions property, but it does not affect any road names contained in that property or other properties such as RouteStep.name. Defaults to "en" if an unsupported language is specified. The languages in this link are supported: https://docs.mapbox.com/android/navigation/overview/localization/ or https://docs.mapbox.com/ios/api/navigation/0.14.1/localization-and-internationalization.html
+  ////// [mapStyleURL] The Url of the style the Navigation MapView should use
   ///
   /// Begins to generate Route Progress
   ///
   Future startNavigation(
       {WayPoint origin,
-        WayPoint destination,
-        MapBoxOptions options}) async {
+      WayPoint destination,
+      MapBoxNavigationMode mode = MapBoxNavigationMode.drivingWithTraffic,
+      bool simulateRoute = false,
+      String language,
+      VoiceUnits units,
+      String mapStyleURL}) async {
     assert(origin != null);
     assert(origin.name != null);
     assert(origin.latitude != null);
@@ -62,19 +54,19 @@ class MapBoxNavigation implements IMapBoxNavigation {
     assert(destination.name != null);
     assert(destination.latitude != null);
     assert(destination.longitude != null);
-    final Map<String, Object> wayPointMap = <String, dynamic>{
+    final Map<String, Object> args = <String, dynamic>{
       "originName": origin.name,
       "originLatitude": origin.latitude,
       "originLongitude": origin.longitude,
       "destinationName": destination.name,
       "destinationLatitude": destination.latitude,
-      "destinationLongitude": destination.longitude
+      "destinationLongitude": destination.longitude,
+      "mode": mode.toString().split('.').last,
+      "simulateRoute": simulateRoute,
+      "language": language,
+      "units": units?.toString()?.split('.')?.last,
+      "mapStyleURL": mapStyleURL
     };
-
-    var args = {};
-    args.addAll(wayPointMap);
-    args.addAll(options.toMap());
-
     _routeEventSubscription = _streamRouteEvent.listen(_onProgressData);
     await _methodChannel
         .invokeMethod('startNavigation', args)
@@ -83,17 +75,29 @@ class MapBoxNavigation implements IMapBoxNavigation {
 
   ///Show the Navigation View and Begins Direction Routing
   ///
-  /// [wayPoints] must not be null. A collection of [WayPoint](longitude, latitude and name). Must be at least 2 or at most 25. Cannot use drivingWithTraffic mode if more than 3-waypoints.
-  /// [options] options used to generate the route and used while navigating
+  /// [WayPoints] must not be null. A collection of [WayPoint](longitude, latitude and name). Must be at least 2 or at most 25. Cannot use drivingWithTraffic mode if more than 3-waypoints.
+  /// [mode] defaults to drivingWithTraffic
+  /// [simulateRoute] if true will simulate the route as if you were driving. Always true on iOS Simulator
+  /// [language] 2-letter ISO 639-1 code for language. This property affects the sentence contained within the RouteStep.instructions property, but it does not affect any road names contained in that property or other properties such as RouteStep.name. Defaults to "en" if an unsupported language is specified. The languages in this link are supported: https://docs.mapbox.com/android/navigation/overview/localization/ or https://docs.mapbox.com/ios/api/navigation/0.14.1/localization-and-internationalization.html
+  /// [isOptimized] if true, will reorder the routes to optimize navigation for time and shortest distance using the Travelling Salesman Algorithm. Always false for now
+  /// [allowsUTurnAtWayPoints] If the value of this property is true, a returned route may require an immediate U-turn at an intermediate waypoint. At an intermediate waypoint, if the value of this property is false, each returned route may continue straight ahead or turn to either side but may not U-turn. This property has no effect if only two waypoints are specified.
+  /// [mapStyleURL] The Url of the style the Navigation MapView should use
   /// Begins to generate Route Progress
   ///
   Future startNavigationWithWayPoints(
-      {List<WayPoint> wayPoints, MapBoxOptions options}) async {
+      {List<WayPoint> wayPoints,
+      MapBoxNavigationMode mode = MapBoxNavigationMode.drivingWithTraffic,
+      bool simulateRoute = false,
+      String language,
+      VoiceUnits units,
+      String mapStyleURL,
+      bool allowsUTurnAtWayPoints,
+      bool isOptimized = false}) async {
     assert(wayPoints != null);
     assert(wayPoints.length > 1);
     if (Platform.isIOS && wayPoints.length > 3) {
-      assert(options.mode != MapBoxNavigationMode.drivingWithTraffic,
-      "Error: Cannot use drivingWithTraffic Mode when you have more than 3 Stops");
+      assert(mode != MapBoxNavigationMode.drivingWithTraffic,
+          "Error: Cannot use drivingWithTraffic Mode when you have more than 3 Stops");
     }
     var pointList = List<Map<String, Object>>();
 
@@ -114,10 +118,18 @@ class MapBoxNavigation implements IMapBoxNavigation {
     }
     var i = 0;
     var wayPointMap =
-    Map.fromIterable(pointList, key: (e) => i++, value: (e) => e);
+        Map.fromIterable(pointList, key: (e) => i++, value: (e) => e);
 
-    var  args = options.toMap();
-    args["wayPoints"] = wayPointMap;
+    final Map<String, Object> args = <String, dynamic>{
+      "wayPoints": wayPointMap,
+      "mode": mode.toString().split('.').last,
+      "simulateRoute": simulateRoute,
+      "language": language,
+      "units": units?.toString()?.split('.')?.last,
+      "isOptimized": isOptimized,
+      "allowsUTurnAtWayPoints": allowsUTurnAtWayPoints,
+      "mapStyleURL": mapStyleURL
+    };
 
     _routeEventSubscription = _streamRouteEvent.listen(_onProgressData);
     await _methodChannel
@@ -159,13 +171,3 @@ class MapBoxNavigation implements IMapBoxNavigation {
     return event;
   }
 }
-
-///Option to specify the mode of transportation.
-@Deprecated("Use MapBoxNavigationMode instead")
-enum NavigationMode { walking, cycling, driving, drivingWithTraffic }
-
-///Option to specify the mode of transportation.
-enum MapBoxNavigationMode { walking, cycling, driving, drivingWithTraffic }
-
-///Whether or not the units used inside the voice instruction's string are in imperial or metric.
-enum VoiceUnits { imperial, metric }
