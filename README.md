@@ -123,9 +123,9 @@ Add Turn By Turn Navigation to Your Flutter Application Using MapBox. Never leav
 
 
 ## Embedding Navigation View
-![Navigation View](screenshots/screenshot3.png?raw=true "Embedded Nav View") | ![Navigation View](screenshots/screenshot3.png?raw=true "Embedded Nav View")
+![Navigation View](screenshots/screenshot3.png?raw=true "Embedded iOS View") | ![Navigation View](screenshots/screenshot4.png?raw=true "Embedded Android View")
 |:---:|:---:|
-| Embedded Nav View | Embedded Nav View |
+| Embedded iOS View | Embedded Android View |
 
 
 ## Embedded Sample Code
