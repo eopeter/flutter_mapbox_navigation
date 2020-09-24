@@ -130,11 +130,13 @@ Add Turn By Turn Navigation to Your Flutter Application Using MapBox. Never leav
 
 ## Embedded Sample Code
 
+
+#### Declare Controller
 ```dart
       MapBoxNavigationViewController _controller;
 ```
 
-
+#### Navigation View As Widget
 ```dart
             Container(
                 color: Colors.grey,
@@ -161,8 +163,26 @@ Add Turn By Turn Navigation to Your Flutter Application Using MapBox. Never leav
                     }),
               ),
 ```
+#### Build Route
 
-# IOS Configuration
+```dart
+        var wayPoints = List<WayPoint>();
+                            wayPoints.add(_origin);
+                            wayPoints.add(_stop1);
+                            wayPoints.add(_stop2);
+                            wayPoints.add(_stop3);
+                            wayPoints.add(_stop4);
+                            wayPoints.add(_origin);
+                            _controller.buildRoute(wayPoints: wayPoints);
+```
+
+#### Start Navigation
+
+```dart
+    _controller.startNavigation();
+```
+
+### IOS Configuration
 Add the following to your `info.plist` file
 
 ```xml
@@ -170,7 +190,7 @@ Add the following to your `info.plist` file
 	<true/>
 ```
 
-# Android Configuration
+### Android Configuration
 Modify your `MainActivity` to instantiate the plugin for native embedding
 
 ```kotlin
@@ -207,5 +227,4 @@ class MainActivity: FlutterActivity() {
 * [DONE] Android Implementation
 * [DONE] Add more settings like Navigation Mode (driving, walking, etc)
 * [DONE] Stream Events like relevant navigation notifications, metrics, current location, etc. 
-* Embeddable Navigation View 
-* Provide physical address instead of just coordinates to remove reliance on other geolocation packages
+* [DONE] Embeddable Navigation View 
