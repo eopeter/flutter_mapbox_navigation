@@ -117,15 +117,42 @@ class MapBoxNavigationViewController implements IMapBoxNavigation {
         .then<String>((dynamic result) => result);
   }
 
+  Future buildRoute(
+      {WayPoint origin,
+        WayPoint destination,
+        MapBoxOptions options}) async {
+    assert(origin != null);
+    assert(origin.name != null);
+    assert(origin.latitude != null);
+    assert(origin.longitude != null);
+    assert(destination != null);
+    assert(destination.name != null);
+    assert(destination.latitude != null);
+    assert(destination.longitude != null);
+    final Map<String, Object> wayPointMap = <String, dynamic>{
+      "originName": origin.name,
+      "originLatitude": origin.latitude,
+      "originLongitude": origin.longitude,
+      "destinationName": destination.name,
+      "destinationLatitude": destination.latitude,
+      "destinationLongitude": destination.longitude
+    };
+
+    var args = {};
+    args.addAll(wayPointMap);
+    if(options != null)
+      args.addAll(options.toMap());
+
+    _routeEventSubscription = _streamRouteEvent.listen(_onProgressData);
+    await _methodChannel
+        .invokeMethod('buildRoute', args)
+        .then<String>((dynamic result) => result);
+  }
+
   ///Ends Navigation and Closes the Navigation View
   Future<bool> finishNavigation() async {
     var success = await _methodChannel.invokeMethod('finishNavigation', null);
     return success;
-  }
-
-  Future<String> showMap(MapBoxOptions options) async {
-    assert(options != null);
-    return _methodChannel.invokeMethod('showMapView', options.toMap());
   }
 
   Future<String> startEmbeddedNavigation(MapBoxOptions options) async {

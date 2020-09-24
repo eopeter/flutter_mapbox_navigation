@@ -157,7 +157,9 @@ class _MyAppState extends State<MyApp> {
             RaisedButton(
               child: Text("Start Embedded Navigation"),
               onPressed: () {
-                _controller.startNavigation();
+                _controller.buildRoute(origin: _origin,
+                    destination: _stop4);
+                //_controller.startNavigation();
               },
             ),
             Center(
@@ -198,23 +200,23 @@ class _MyAppState extends State<MyApp> {
               height: 300,
               color: Colors.grey,
               child: MapBoxNavigationView(
+                  options: MapBoxOptions(
+                      initialLatitude: 36.1175275,
+                      initialLongitude: -115.1839524,
+                      zoom: 13.0,
+                      tilt: 0.0,
+                      bearing: 0.0,
+                      enableRefresh: false,
+                      alternatives: true,
+                      voiceInstructionsEnabled: true,
+                      bannerInstructionsEnabled: true,
+                      allowsUTurnAtWayPoints: true,
+                      mode: MapBoxNavigationMode.drivingWithTraffic,
+                      units: VoiceUnits.imperial,
+                      language: "en"),
                   onCreated: (MapBoxNavigationViewController controller) async {
-                _controller = controller;
-                await controller.showMap(MapBoxOptions(
-                    initialLatitude: 33.569126,
-                    initialLongitude: 73.1231471,
-                    zoom: 13.0,
-                    tilt: 0.0,
-                    bearing: 0.0,
-                    enableRefresh: false,
-                    alternatives: true,
-                    voiceInstructionsEnabled: true,
-                    bannerInstructionsEnabled: true,
-                    allowsUTurnAtWayPoints: true,
-                    mode: MapBoxNavigationMode.drivingWithTraffic,
-                    units: VoiceUnits.imperial,
-                    language: "en"));
-              }),
+                    _controller = controller;
+                  }),
             )
           ]),
         ),
