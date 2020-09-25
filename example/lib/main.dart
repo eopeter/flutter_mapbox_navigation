@@ -42,6 +42,8 @@ class _MyAppState extends State<MyApp> {
   bool _isMultipleStop = false;
   double _distanceRemaining, _durationRemaining;
   MapBoxNavigationViewController _controller;
+  bool _routeBuilt = false;
+  bool _isNavigating = false;
 
   @override
   void initState() {
@@ -188,7 +190,8 @@ class _MyAppState extends State<MyApp> {
                       children: [
                         RaisedButton(
                           child: Text("Build Route"),
-                          onPressed: () {
+                          onPressed: _routeBuilt ? null : () {
+
                             var wayPoints = List<WayPoint>();
                             wayPoints.add(_origin);
                             wayPoints.add(_stop1);
@@ -196,19 +199,27 @@ class _MyAppState extends State<MyApp> {
                             wayPoints.add(_stop3);
                             wayPoints.add(_stop4);
                             wayPoints.add(_origin);
+                            _isMultipleStop = wayPoints.length > 2;
                             _controller.buildRoute(wayPoints: wayPoints);
-                            //_controller.startNavigation();
                           },
                         ),
                         SizedBox(
                           width: 10,
                         ),
                         RaisedButton(
-                          child: Text("Start Navigation"),
-                          onPressed: () {
+                          child: Text("Start "),
+                          onPressed:  _routeBuilt && !_isNavigating ?  () {
                             _controller.startNavigation();
-                            //_controller.startNavigation();
-                          },
+                          } : null,
+                        ),
+                        SizedBox(
+                          width: 10,
+                        ),
+                        RaisedButton(
+                          child: Text("Cancel "),
+                          onPressed: _isNavigating ? () {
+                            _controller.finishNavigation();
+                          } : null,
                         )
                       ],
                     ),
@@ -216,7 +227,7 @@ class _MyAppState extends State<MyApp> {
                       child: Padding(
                         padding: EdgeInsets.all(10),
                         child: Text(
-                          "Long Press Embedded Map to Set Destination",
+                          "Long-Press Embedded Map to Set Destination",
                           textAlign: TextAlign.center,
                         ),
                       ),
@@ -243,20 +254,21 @@ class _MyAppState extends State<MyApp> {
                         children: <Widget>[
                           Row(
                             children: <Widget>[
+                              Text("Duration Remaining: "),
+                              Text(_durationRemaining != null
+                                  ? "${(_durationRemaining / 60).toStringAsFixed(0)} minutes"
+                                  : "---")
+                            ],
+                          ),
+                          Row(
+                            children: <Widget>[
                               Text("Distance Remaining: "),
                               Text(_distanceRemaining != null
                                   ? "${(_distanceRemaining * 0.000621371).toStringAsFixed(1)} miles"
                                   : "---")
                             ],
                           ),
-                          Row(
-                            children: <Widget>[
-                              Text("Duration Remaining: "),
-                              Text(_durationRemaining != null
-                                  ? "${(_durationRemaining / 60).toStringAsFixed(0)} minutes"
-                                  : "---")
-                            ],
-                          )
+
                         ],
                       ),
                     ),
@@ -311,15 +323,39 @@ class _MyAppState extends State<MyApp> {
         if (progressEvent.currentStepInstruction != null)
           _instruction = progressEvent.currentStepInstruction;
         break;
+      case MapBoxEvent.route_building:
+      case MapBoxEvent.route_built:
+        setState(() {
+          _routeBuilt = true;
+        });
+        break;
       case MapBoxEvent.route_build_failed:
-        print(e.data);
+        setState(() {
+          _routeBuilt = false;
+        });
+        break;
+      case MapBoxEvent.navigation_running:
+        setState(() {
+          _isNavigating = true;
+        });
         break;
       case MapBoxEvent.on_arrival:
+
         _arrived = true;
         if (!_isMultipleStop) {
           await Future.delayed(Duration(seconds: 3));
           await _controller.finishNavigation();
         }
+        else{
+
+        }
+        break;
+      case MapBoxEvent.navigation_finished:
+      case MapBoxEvent.navigation_cancelled:
+        setState(() {
+          _routeBuilt = false;
+          _isNavigating = false;
+        });
         break;
       default:
         break;

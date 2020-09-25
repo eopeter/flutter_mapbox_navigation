@@ -70,6 +70,7 @@ public class NavigationFactory : NSObject, FlutterStreamHandler, NavigationViewC
     
     let ALLOW_ROUTE_SELECTION = false
     let IsMultipleUniqueRoutes = false
+    var isEmbeddedNavigation = false
     
     var _distanceRemaining: Double?
     var _durationRemaining: Double?
@@ -246,6 +247,7 @@ public class NavigationFactory : NSObject, FlutterStreamHandler, NavigationViewC
     
     func startNavigation(route: Route, options: NavigationRouteOptions, navOptions: NavigationOptions)
     {
+        isEmbeddedNavigation = false
         if(self._navigationViewController == nil)
         {
             self._navigationViewController = NavigationViewController(for: route, routeOptions: options, navigationOptions: navOptions)
@@ -267,6 +269,7 @@ public class NavigationFactory : NSObject, FlutterStreamHandler, NavigationViewC
                 strongSelf.sendEvent(eventType: MapBoxEventType.route_build_failed)
             //flutterResult("An error occured while calculating the route \(error.localizedDescription)")
             case .success(let response):
+                strongSelf.sendEvent(eventType: MapBoxEventType.route_built)
                 guard let routes = response.routes else { return }
                 //TODO: if more than one route found, give user option to select one: DOES NOT WORK
                 if(routes.count > 1 && strongSelf.ALLOW_ROUTE_SELECTION)
@@ -287,16 +290,25 @@ public class NavigationFactory : NSObject, FlutterStreamHandler, NavigationViewC
     
     func endNavigation(result: FlutterResult?)
     {
+        sendEvent(eventType: MapBoxEventType.navigation_finished)
         if(self._navigationViewController != nil)
         {
             self._navigationViewController?.navigationService.endNavigation(feedback: nil)
-            self._navigationViewController?.dismiss(animated: true, completion: {
+            if(isEmbeddedNavigation)
+            {
+                self._navigationViewController?.view.removeFromSuperview()
                 self._navigationViewController = nil
-                if(result != nil)
-                {
-                    result!(true)
-                }
-            })
+            }
+            else
+            {
+                self._navigationViewController?.dismiss(animated: true, completion: {
+                    self._navigationViewController = nil
+                    if(result != nil)
+                    {
+                        result!(true)
+                    }
+                })
+            }
         }
         
     }
@@ -360,6 +372,7 @@ public class NavigationFactory : NSObject, FlutterStreamHandler, NavigationViewC
         _lastKnownLocation = location
         _distanceRemaining = progress.distanceRemaining
         _durationRemaining = progress.durationRemaining
+        sendEvent(eventType: MapBoxEventType.navigation_running)
         //_currentLegDescription =  progress.currentLeg.description
         if(_eventSink != nil)
         {
@@ -393,6 +406,10 @@ public class NavigationFactory : NSObject, FlutterStreamHandler, NavigationViewC
     
     
     public func navigationViewControllerDidDismiss(_ navigationViewController: NavigationViewController, byCanceling canceled: Bool) {
+        if(canceled)
+        {
+            sendEvent(eventType: MapBoxEventType.navigation_cancelled)
+        }
         endNavigation(result: nil)
     }
     
@@ -561,8 +578,10 @@ public class FlutterMapboxNavigationView : NavigationFactory, MGLMapViewDelegate
 {
     let frame: CGRect
     let viewId: Int64
+    
     let messenger: FlutterBinaryMessenger
     let channel: FlutterMethodChannel
+    let eventChannel: FlutterEventChannel
     
     var mapView: NavigationMapView!
     var arguments: NSDictionary?
@@ -580,8 +599,11 @@ public class FlutterMapboxNavigationView : NavigationFactory, MGLMapViewDelegate
         
         self.messenger = messenger
         self.channel = FlutterMethodChannel(name: "flutter_mapbox_navigation/\(viewId)", binaryMessenger: messenger)
+        self.eventChannel = FlutterEventChannel(name: "flutter_mapbox_navigation/\(viewId)/events", binaryMessenger: messenger)
         
         super.init()
+        
+        self.eventChannel.setStreamHandler(self)
         
         self.channel.setMethodCallHandler { [weak self](call, result) in
             
@@ -676,6 +698,7 @@ public class FlutterMapboxNavigationView : NavigationFactory, MGLMapViewDelegate
     
     func buildRoute(arguments: NSDictionary?, result: @escaping FlutterResult)
     {
+        isEmbeddedNavigation = true
         sendEvent(eventType: MapBoxEventType.route_building)
         
         guard let oWayPoints = arguments?["wayPoints"] as? NSDictionary else {return}
@@ -779,16 +802,16 @@ public class FlutterMapboxNavigationView : NavigationFactory, MGLMapViewDelegate
         guard let route = route else { return }
         let navigationService = MapboxNavigationService(route: route, routeOptions: routeOptions!, simulating: self._simulateRoute ? .always : .onPoorGPS)
         let navigationOptions = NavigationOptions(navigationService: navigationService)
-        let navigationViewController = NavigationViewController(for: route, routeOptions: routeOptions!, navigationOptions: navigationOptions)
-        navigationViewController.delegate = self
+        _navigationViewController = NavigationViewController(for: route, routeOptions: routeOptions!, navigationOptions: navigationOptions)
+        _navigationViewController!.delegate = self
         
         let flutterViewController = UIApplication.shared.delegate?.window?!.rootViewController as! FlutterViewController
-        flutterViewController.addChild(navigationViewController)
+        flutterViewController.addChild(_navigationViewController!)
         
         let container = self.view()
-        container.addSubview(navigationViewController.view)
-        navigationViewController.view.translatesAutoresizingMaskIntoConstraints = false
-        constraintsWithPaddingBetween(holderView: container, topView: navigationViewController.view, padding: 0.0)
+        container.addSubview(_navigationViewController!.view)
+        _navigationViewController!.view.translatesAutoresizingMaskIntoConstraints = false
+        constraintsWithPaddingBetween(holderView: container, topView: _navigationViewController!.view, padding: 0.0)
         //navigationService.start()
         flutterViewController.didMove(toParent: flutterViewController)
         
