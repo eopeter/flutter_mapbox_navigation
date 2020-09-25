@@ -15,7 +15,6 @@ import android.widget.ImageView
 import androidx.annotation.DrawableRes
 import androidx.annotation.NonNull
 
-import com.dormmom.flutter_mapbox_navigation.FlutterMapboxNavigationPlugin
 import com.dormmom.flutter_mapbox_navigation.activity.NavigationActivity
 import com.dormmom.flutter_mapbox_navigation.utilities.PluginUtilities
 import com.dormmom.flutter_mapbox_navigation.R
@@ -76,7 +75,7 @@ import retrofit2.Response
 import timber.log.Timber
 import java.util.*
 
-class FlutterMapViewFactory internal constructor(private val context: Context, messenger: BinaryMessenger, accessToken: String, id: Int, private val activity: Activity) :
+class FlutterMapViewFactory  :
         PlatformView,
         MethodCallHandler,
         Application.ActivityLifecycleCallbacks,
@@ -92,23 +91,43 @@ class FlutterMapViewFactory internal constructor(private val context: Context, m
         RouteListener,
         RefreshCallback {
 
-    private val methodChannel: MethodChannel = MethodChannel(messenger, FlutterMapboxNavigationPlugin.view_name + id)
-    private val options: MapboxMapOptions = MapboxMapOptions.createFromAttributes(context)
-            .compassEnabled(false)
-            .logoEnabled(true)
+    constructor(cxt: Context, messenger: BinaryMessenger, accessToken: String, viewId: Int,  act: Activity,  args: Any?)
+    {
+        context = cxt
+        activity = act
+        val arguments = args as? Map<String, Any>
+        if(arguments != null)
+            setOptions(arguments)
+
+        methodChannel = MethodChannel(messenger, "flutter_mapbox_navigation/${viewId}")
+        options = MapboxMapOptions.createFromAttributes(context)
+                .compassEnabled(false)
+                .logoEnabled(true)
+        mapView = MapView(context, options)
+        navigation = MapboxNavigation(
+                context,
+                accessToken,
+                navigationOptions
+        )
+
+        activity.application.registerActivityLifecycleCallbacks(this)
+        methodChannel.setMethodCallHandler(this)
+        mapView.getMapAsync(this)
+    }
+
+    private val activity: Activity
+    private val context: Context
+    private val methodChannel: MethodChannel
+    private val options: MapboxMapOptions
     private var locationEngine: LocationEngine? = null
-    private var mapView = MapView(context, options)
+    private var mapView: MapView
     private var mapBoxMap: MapboxMap? = null
     private var currentRoute: DirectionsRoute? = null
     private val routeRefresh = RouteRefresh(Mapbox.getAccessToken()!!)
     private var navigationMapRoute: NavigationMapRoute? = null
     private val navigationOptions = MapboxNavigationOptions.Builder()
             .build()
-    private var navigation: MapboxNavigation = MapboxNavigation(
-            context,
-            accessToken,
-            navigationOptions
-    )
+    private var navigation: MapboxNavigation
     private var mapReady = false
     private lateinit var markerViewManager: MarkerViewManager
     private var initialMarkerView: MarkerView? = null
@@ -119,36 +138,35 @@ class FlutterMapViewFactory internal constructor(private val context: Context, m
     private var isBuildingRoute = false
     private var isNavigationInProgress = false
     private var isNavigationCanceled = false
-    private var activityHashCode = activity.hashCode()
 
     companion object {
 
         //Config
         var initialLat = 0.0
         var initialLong = 0.0
-        var originLat = 0.0
-        var originLong = 0.0
-        var destinationLat = 0.0
-        var destinationLong = 0.0
-        var shouldSimulateRoute = false
-        var language = "en"
-        var locale = Locale.US
+
+        val wayPoints: MutableList<Point> = mutableListOf()
+        var navigationMode =  DirectionsCriteria.PROFILE_DRIVING_TRAFFIC
+        var simulateRoute = false
+        var mapStyleURL: String? = null
+        var navigationLanguage = Locale("en")
+        var navigationVoiceUnits = DirectionsCriteria.IMPERIAL
         var zoom = 15.0
         var bearing = 0.0
         var tilt = 0.0
+        var distanceRemaining: Double? = null
+        var durationRemaining: Double? = null
+
+        var shouldSimulateRoute = false
         var alternatives = false
-        var clientAppName = "MapBox Client"
-        var profile = "driving"
+
         var continueStraight = false
         var enableRefresh = false
-        var steps = true
         var voiceInstructions = true
         var bannerInstructions = true
-        var testRoute = ""
-        var debug = true
 
-        private var destinationPoint: Point? = null
-        private var originPoint: Point? = null
+        var originPoint: Point? = null
+        var destinationPoint: Point? = null
     }
 
     override fun getView(): View {
@@ -157,9 +175,7 @@ class FlutterMapViewFactory internal constructor(private val context: Context, m
 
     override fun onMethodCall(methodCall: MethodCall, result: MethodChannel.Result) {
         when (methodCall.method) {
-            "showMapView" -> {
-                showMapView(methodCall, result)
-            }
+
             "buildRoute" -> {
                 buildRoute(methodCall, result)
             }
@@ -190,19 +206,72 @@ class FlutterMapViewFactory internal constructor(private val context: Context, m
         mapReady = false
         mapView.onStop()
         mapView.onDestroy()
-        if (debug)
-            Timber.i(String.format("dispose, %s", ""))
     }
 
-    init {
-        activity.application.registerActivityLifecycleCallbacks(this)
-        methodChannel.setMethodCallHandler(this)
-        mapView.getMapAsync(this)
+
+    private fun buildRoute(methodCall: MethodCall, result: MethodChannel.Result) {
+        isNavigationCanceled = false
+        isNavigationInProgress = false
+        val arguments = methodCall.arguments as? Map<String, Any>
+        if(arguments != null)
+            setOptions(arguments)
+
+        if (mapReady) {
+            wayPoints.clear()
+
+            mapStyleURL = arguments?.get("mapStyleURL") as? String
+
+            var points = arguments?.get("wayPoints") as HashMap<Int, Any>
+            for (item in points)
+            {
+                val point = item.value as HashMap<*, *>
+                val latitude = point["Latitude"] as Double
+                val longitude = point["Longitude"] as Double
+                wayPoints.add(Point.fromLngLat(longitude, latitude))
+            }
+            getRoute(context)
+            result.success("Building route.")
+        } else {
+            result.success("Unable to build route, map is not ready. Try again.")
+        }
+    }
+
+    private fun setOptions(arguments: Map<String, Any>)
+    {
+        val navMode = arguments?.get("mode") as? String
+        if(navMode != null)
+        {
+            if(navMode == "walking")
+                navigationMode = DirectionsCriteria.PROFILE_WALKING;
+            else if(navMode == "cycling")
+                navigationMode = DirectionsCriteria.PROFILE_CYCLING;
+            else if(navMode == "driving")
+                navigationMode = DirectionsCriteria.PROFILE_DRIVING;
+        }
+
+        val simulated = arguments?.get("simulateRoute") as? Boolean
+        if (simulated != null) {
+            simulateRoute = simulated
+        }
+
+        var language = arguments?.get("language") as? String
+        if(language != null)
+            navigationLanguage = Locale(language)
+
+        var units = arguments?.get("units") as? String
+
+        if(units != null)
+        {
+            if(units == "imperial")
+                navigationVoiceUnits = DirectionsCriteria.IMPERIAL
+            else if(units == "metric")
+                navigationVoiceUnits = DirectionsCriteria.METRIC
+        }
+
+        mapStyleURL = arguments?.get("mapStyleURL") as? String
     }
 
     override fun onMapReady(mapboxMap1: MapboxMap) {
-        if (debug)
-            Timber.i(String.format("onMapReady, %s", "Map is ready."))
 
         this.mapReady = true
         this.mapBoxMap = mapboxMap1
@@ -252,27 +321,6 @@ class FlutterMapViewFactory internal constructor(private val context: Context, m
 
         mapBoxMap?.animateCamera(CameraUpdateFactory
                 .newCameraPosition(cameraPosition), 3000)
-    }
-
-    private fun isLocationValid(): Boolean {
-        return destinationLong != 0.0 && destinationLat != 0.0 && originLong != 0.0 && originLat != 0.0
-    }
-
-    private fun buildRoute(result: MethodChannel.Result) {
-        if (mapReady) {
-            if (isLocationValid()) {
-                destinationPoint = Point.fromLngLat(destinationLong, destinationLat)
-                originPoint = Point.fromLngLat(originLong, originLat)
-                val source = mapBoxMap?.style?.getSourceAs<GeoJsonSource>("destination-source-id")
-                source?.setGeoJson(Feature.fromGeometry(destinationPoint))
-                getRoute(context)
-                result.success("Building route.")
-            } else {
-                result.success("Unable to build route, Invalid location provided.")
-            }
-        } else {
-            result.success("Unable to build route, map is not ready. Try again.")
-        }
     }
 
     private fun addCustomMarker(location: LatLng, @DrawableRes markerIcon: Int, rotationFrom: Double? = null, rotationTo: Double? = null) {
@@ -328,76 +376,64 @@ class FlutterMapViewFactory internal constructor(private val context: Context, m
             return
         }
 
-        originPoint?.let { originPoint ->
-            destinationPoint?.let { destinationPoint ->
+        PluginUtilities.sendEvent(MapBoxEvents.ROUTE_BUILDING)
+        originPoint = Point.fromLngLat(wayPoints[0].longitude(), wayPoints[0].latitude())
+        destinationPoint = Point.fromLngLat(wayPoints[1].longitude(), wayPoints[1].latitude())
 
-                PluginUtilities.sendEvent(MapBoxEvents.ROUTE_BUILDING)
+        NavigationRoute.builder(context)
+                .accessToken(Mapbox.getAccessToken()!!)
+                .origin(originPoint!!)
+                .destination(destinationPoint!!)
+                .language(navigationLanguage)
+                .alternatives(alternatives)
+                .profile(navigationMode)
+                .continueStraight(continueStraight)
+                .enableRefresh(enableRefresh)
+                .voiceUnits(DirectionsCriteria.METRIC)
+                .annotations(DirectionsCriteria.ANNOTATION_DISTANCE, DirectionsCriteria.ANNOTATION_DURATION, DirectionsCriteria.ANNOTATION_DURATION, DirectionsCriteria.ANNOTATION_CONGESTION)
+                .build()
+                .getRoute(object : Callback<DirectionsResponse> {
+                    override fun onResponse(call: Call<DirectionsResponse?>, response: Response<DirectionsResponse?>) {
 
-                if (debug)
-                    Timber.i("Building new route..")
+                        if (response.body() == null) {
+                            doOnRouteBuildFailed("No routes found, make sure you set the right user and access token.")
+                            return
+                        } else if (response.body()!!.routes().size < 1) {
+                            doOnRouteBuildFailed("No routes found.")
+                            return
+                        }
 
-                NavigationRoute.builder(context)
-                        .accessToken(Mapbox.getAccessToken()!!)
-                        .origin(originPoint)
-                        .destination(destinationPoint)
-                        .language(locale)
-                        .alternatives(alternatives)
-                        .clientAppName(clientAppName)
-                        .profile(profile)
-                        .continueStraight(continueStraight)
-                        .enableRefresh(enableRefresh)
-                        .voiceUnits(DirectionsCriteria.METRIC)
-                        .annotations(DirectionsCriteria.ANNOTATION_DISTANCE, DirectionsCriteria.ANNOTATION_DURATION, DirectionsCriteria.ANNOTATION_DURATION, DirectionsCriteria.ANNOTATION_CONGESTION)
-                        .build()
-                        .getRoute(object : Callback<DirectionsResponse> {
-                            override fun onResponse(call: Call<DirectionsResponse?>, response: Response<DirectionsResponse?>) {
+                        currentRoute = response.body()!!.routes()[0]
+                        PluginUtilities.sendEvent(MapBoxEvents.ROUTE_BUILT, data = "${response.body()?.toJson()}")
 
-                                if (debug)
-                                    Timber.i(String.format("Response code, %s", response.code()))
+                        moveCameraToOriginOfRoute()
 
-                                if (response.body() == null) {
-                                    doOnRouteBuildFailed("No routes found, make sure you set the right user and access token.")
-                                    return
-                                } else if (response.body()!!.routes().size < 1) {
-                                    doOnRouteBuildFailed("No routes found.")
-                                    return
-                                }
+                        // Draw the route on the map
+                        if (navigationMapRoute != null) {
+                            navigationMapRoute?.removeRoute()
+                        } else {
+                            navigationMapRoute = NavigationMapRoute(navigation, mapView, mapBoxMap!!, R.style.NavigationMapRoute)
+                        }
+                        navigationMapRoute?.addRoute(currentRoute)
+                        isBuildingRoute = false
 
-                                currentRoute = response.body()!!.routes()[0]
-                                PluginUtilities.sendEvent(MapBoxEvents.ROUTE_BUILT, data = "${response.body()?.toJson()}")
+                        //Start Navigation again from new Point, if it was already in Progress
+                        if (isNavigationInProgress) {
+                            startEmbeddedNavigation()
+                        }
+                    }
 
-                                moveCameraToOriginOfRoute()
-
-                                // Draw the route on the map
-                                if (navigationMapRoute != null) {
-                                    navigationMapRoute?.removeRoute()
-                                } else {
-                                    navigationMapRoute = NavigationMapRoute(navigation, mapView, mapBoxMap!!, R.style.NavigationMapRoute)
-                                }
-                                navigationMapRoute?.addRoute(currentRoute)
-                                isBuildingRoute = false
-
-                                //Start Navigation again from new Point, if it was already in Progress
-                                if (isNavigationInProgress) {
-                                    startEmbeddedNavigation()
-                                }
-                            }
-
-                            override fun onFailure(call: Call<DirectionsResponse?>, throwable: Throwable) {
-                                Timber.e(String.format("getRoute: Error, %s", throwable.message))
-                                isBuildingRoute = false
-                                PluginUtilities.sendEvent(MapBoxEvents.ROUTE_BUILD_FAILED)
-                            }
-                        })
-            }
-                    ?: doOnRouteBuildFailed("Destination point not set.")
-        } ?: doOnRouteBuildFailed("Origin point not set.")
+                    override fun onFailure(call: Call<DirectionsResponse?>, throwable: Throwable) {
+                        Timber.e(String.format("getRoute: Error, %s", throwable.message))
+                        isBuildingRoute = false
+                        PluginUtilities.sendEvent(MapBoxEvents.ROUTE_BUILD_FAILED)
+                    }
+                })
     }
 
     private fun doOnRouteBuildFailed(message: String) {
         isBuildingRoute = false
         PluginUtilities.sendEvent(MapBoxEvents.ROUTE_BUILD_FAILED, data = message)
-        Timber.e(String.format("getRoute: Unable to build route, %s", message))
         isNavigationInProgress = false
         moveCameraToOriginOfRoute()
         cancelEmbeddedNavigation()
@@ -459,8 +495,7 @@ class FlutterMapViewFactory internal constructor(private val context: Context, m
     }
 
     override fun onError(error: RefreshError) {
-        if (debug)
-            Timber.i(String.format("onRefresh, %s", "Error: ${error.message}"))
+
     }
 
     override fun onProgressChange(location: Location, routeProgress: RouteProgress) {
@@ -502,13 +537,6 @@ class FlutterMapViewFactory internal constructor(private val context: Context, m
                             legIndex = routeProgress.legIndex,
                             stepIndex = routeProgress.stepIndex
                     ).toString())
-
-            if (debug)
-                Timber.i(String.format("onMilestoneEvent, %s, %s, %s",
-                        "Distance Remaining: ${routeProgress.currentLegProgress?.distanceRemaining}",
-                        "Instruction: $instruction",
-                        "Milestone: ${milestone.instruction}"
-                ))
         }
     }
 
@@ -517,8 +545,6 @@ class FlutterMapViewFactory internal constructor(private val context: Context, m
         if (!isNavigationCanceled) {
             PluginUtilities.sendEvent(MapBoxEvents.NAVIGATION_RUNNING)
 
-            if (debug)
-                Timber.i(String.format("onRunning, %s", "$running"))
         }
     }
 
@@ -526,23 +552,17 @@ class FlutterMapViewFactory internal constructor(private val context: Context, m
         PluginUtilities.sendEvent(MapBoxEvents.NAVIGATION_CANCELLED)
 
         navigation.stopNavigation()
-        if (debug)
-            Timber.i(String.format("onCancelNavigation, %s", ""))
+
     }
 
     override fun onNavigationFinished() {
         PluginUtilities.sendEvent(MapBoxEvents.NAVIGATION_FINISHED)
-
-        if (debug)
-            Timber.i(String.format("onNavigationFinished, %s", ""))
     }
 
     override fun onNavigationRunning() {
         if (!isNavigationCanceled) {
             PluginUtilities.sendEvent(MapBoxEvents.NAVIGATION_RUNNING)
 
-            if (debug)
-                Timber.i(String.format("onNavigationRunning, %s", ""))
         }
     }
 
@@ -551,17 +571,12 @@ class FlutterMapViewFactory internal constructor(private val context: Context, m
 
         refreshNavigation(directionsRoute)
 
-        if (debug)
-            Timber.i(String.format("fasterRouteFound, %s", "New Route Distance: ${directionsRoute.distance()}"))
     }
 
     private fun refreshNavigation(directionsRoute: DirectionsRoute?, shouldCancel: Boolean = true) {
         directionsRoute?.let {
 
             if (shouldCancel) {
-
-                if (debug)
-                    Timber.e(String.format("refreshNavigation: Building new route, %s", directionsRoute.distance()))
 
                 currentRoute = directionsRoute
                 cancelEmbeddedNavigation()
@@ -576,9 +591,6 @@ class FlutterMapViewFactory internal constructor(private val context: Context, m
                     "{" +
                             "  \"data\": \"${announcement?.announcement()}\"" +
                             "}")
-
-            if (debug)
-                Timber.i(String.format("willVoice, %s", "SpeechAnnouncement: ${announcement?.announcement()}"))
             announcement
         } else {
             null
@@ -592,8 +604,6 @@ class FlutterMapViewFactory internal constructor(private val context: Context, m
                             "  \"data\": \"${instructions?.primary()?.text()}\"" +
                             "}")
 
-            if (debug)
-                Timber.i(String.format("willDisplay, %s", "Instructions: ${instructions?.primary()?.text()}"))
             return instructions
         } else {
             null
@@ -602,9 +612,6 @@ class FlutterMapViewFactory internal constructor(private val context: Context, m
 
     override fun onArrival() {
         PluginUtilities.sendEvent(MapBoxEvents.ON_ARRIVAL)
-
-        if (debug)
-            Timber.i(String.format("onArrival, %s", "Arrived"))
     }
 
     override fun onFailedReroute(errorMessage: String?) {
@@ -613,8 +620,6 @@ class FlutterMapViewFactory internal constructor(private val context: Context, m
                         "  \"data\": \"${errorMessage}\"" +
                         "}")
 
-        if (debug)
-            Timber.i(String.format("onFailedReroute, %s", errorMessage))
     }
 
     override fun onOffRoute(offRoutePoint: Point?) {
@@ -624,9 +629,6 @@ class FlutterMapViewFactory internal constructor(private val context: Context, m
     private fun doOnNewRoute(offRoutePoint: Point?) {
         if (!isBuildingRoute) {
             isBuildingRoute = true
-
-            if (debug)
-                Timber.e(String.format("doOnNewRoute: Building new route.."))
 
             offRoutePoint?.let {
 
@@ -640,8 +642,6 @@ class FlutterMapViewFactory internal constructor(private val context: Context, m
                                 longitude = it.longitude()
                         ).toString())
 
-                if (debug)
-                    Timber.i(String.format("userOffRoute, %s", "Current Location: ${it.latitude()},${it.longitude()}"))
             }
 
             PluginUtilities.sendEvent(MapBoxEvents.USER_OFF_ROUTE,
@@ -661,13 +661,10 @@ class FlutterMapViewFactory internal constructor(private val context: Context, m
 
         refreshNavigation(directionsRoute)
 
-        if (debug)
-            Timber.i(String.format("onRerouteAlong, %s", "Distance: ${directionsRoute?.distance()}"))
     }
 
     override fun allowRerouteFrom(offRoutePoint: Point?): Boolean {
-        if (debug)
-            Timber.i(String.format("allowRerouteFrom, %s", "Point: ${offRoutePoint?.latitude()}, ${offRoutePoint?.longitude()}"))
+
         return true
     }
 
@@ -698,61 +695,6 @@ class FlutterMapViewFactory internal constructor(private val context: Context, m
         }
     }
 
-    private fun showMapView(methodCall: MethodCall, result: MethodChannel.Result) {
-        PluginUtilities.getDoubleValueById("initialLat", methodCall).takeIf { it != null }?.let {
-            initialLat = it
-        }
-        PluginUtilities.getDoubleValueById("initialLong", methodCall).takeIf { it != null }?.let {
-            initialLong = it
-        }
-        PluginUtilities.getDoubleValueById("zoom", methodCall).takeIf { it != null }?.let {
-            zoom = it
-        }
-        PluginUtilities.getDoubleValueById("bearing", methodCall).takeIf { it != null }?.let {
-            bearing = it
-        }
-        PluginUtilities.getDoubleValueById("tilt", methodCall).takeIf { it != null }?.let {
-            tilt = it
-        }
-
-        language = PluginUtilities.getStringValueById("language", methodCall)
-        alternatives = PluginUtilities.getBoolValueById("alternatives", methodCall)
-        clientAppName = PluginUtilities.getStringValueById("clientAppName", methodCall)
-        profile = PluginUtilities.getStringValueById("mode", methodCall)
-        continueStraight = PluginUtilities.getBoolValueById("continueStraight", methodCall)
-        enableRefresh = PluginUtilities.getBoolValueById("enableRefresh", methodCall)
-        steps = PluginUtilities.getBoolValueById("steps", methodCall)
-        voiceInstructions = PluginUtilities.getBoolValueById("voiceInstructionsEnabled", methodCall)
-        bannerInstructions = PluginUtilities.getBoolValueById("bannerInstructionsEnabled", methodCall)
-        testRoute = PluginUtilities.getStringValueById("testRoute", methodCall)
-        debug = PluginUtilities.getBoolValueById("debug", methodCall)
-
-        locale = PluginUtilities.getLocaleFromCode(language)
-
-        result.success("MapView options set.")
-    }
-
-    private fun buildRoute(methodCall: MethodCall, result: MethodChannel.Result) {
-        isNavigationCanceled = false
-        isNavigationInProgress = false
-        PluginUtilities.getDoubleValueById("originLat", methodCall).takeIf { it != null }?.let {
-            originLat = it
-        }
-        PluginUtilities.getDoubleValueById("originLong", methodCall).takeIf { it != null }?.let {
-            originLong = it
-        }
-        PluginUtilities.getDoubleValueById("destinationLat", methodCall).takeIf { it != null }?.let {
-            destinationLat = it
-        }
-        PluginUtilities.getDoubleValueById("destinationLong", methodCall).takeIf { it != null }?.let {
-            destinationLong = it
-        }
-        PluginUtilities.getDoubleValueById("zoom", methodCall).takeIf { it != null }?.let {
-            zoom = it
-        }
-        buildRoute(result)
-    }
-
     private fun startNavigation(methodCall: MethodCall, result: MethodChannel.Result) {
         isNavigationCanceled = false
         shouldSimulateRoute = PluginUtilities.getBoolValueById("shouldSimulateRoute", methodCall)
@@ -762,10 +704,6 @@ class FlutterMapViewFactory internal constructor(private val context: Context, m
         } else {
             result.success("No route found. Unable to start navigation.")
         }
-    }
-
-    private  fun startNavigationWithWayPoints(methodCall: MethodCall, result: MethodChannel.Result) {
-
     }
 
     private fun startEmbeddedNavigation() {
@@ -837,9 +775,6 @@ class FlutterMapViewFactory internal constructor(private val context: Context, m
 
     private fun cancelEmbeddedNavigation(methodCall: MethodCall, result: MethodChannel.Result) {
 
-        if (debug)
-            Timber.e(String.format("cancelEmbeddedNavigation: Cancelling navigation.."))
-
         cancelEmbeddedNavigation()
 
         if (currentRoute != null) {
@@ -851,7 +786,7 @@ class FlutterMapViewFactory internal constructor(private val context: Context, m
 
     private fun getFormattedDistance(methodCall: MethodCall, result: MethodChannel.Result) {
         val distance = PluginUtilities.getDoubleValueById("distance", methodCall)
-        result.success(MapUtilities.formatDistance(distance, context, locale))
+        result.success(MapUtilities.formatDistance(distance, context, navigationLanguage))
     }
 
     private fun getFormattedDuration(methodCall: MethodCall, result: MethodChannel.Result) {

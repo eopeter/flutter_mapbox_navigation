@@ -182,7 +182,7 @@ Add Turn By Turn Navigation to Your Flutter Application Using MapBox. Never leav
     _controller.startNavigation();
 ```
 
-### IOS Configuration
+### Additional IOS Configuration
 Add the following to your `info.plist` file
 
 ```xml
@@ -190,7 +190,7 @@ Add the following to your `info.plist` file
 	<true/>
 ```
 
-### Android Configuration
+### Additional Android Configuration
 Modify your `MainActivity` to instantiate the plugin for native embedding
 
 ```kotlin

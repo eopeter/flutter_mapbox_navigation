@@ -112,7 +112,7 @@ object MapUtilities {
 
     fun doOnProgressChange(location: Location, routeProgress: RouteProgress, context: Context) {
 
-        val formattedDistance = formatDistance(routeProgress.distanceTraveled(), context, FlutterMapViewFactory.locale)
+        val formattedDistance = formatDistance(routeProgress.distanceTraveled(), context, FlutterMapViewFactory.navigationLanguage)
         val upComingStepBearingAfter = routeProgress.currentLegProgress()?.upComingStep?.maneuver()?.bearingAfter()
         val upComingStepBearingBefore = routeProgress.currentLegProgress()?.upComingStep?.maneuver()?.bearingBefore()
         val currentStepBearingAfter = routeProgress.currentStep?.maneuver()?.bearingAfter()
