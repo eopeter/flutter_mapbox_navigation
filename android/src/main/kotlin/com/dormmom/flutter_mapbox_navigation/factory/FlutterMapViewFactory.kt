@@ -155,7 +155,7 @@ class FlutterMapViewFactory  :
         var mapStyleURL: String? = null
         var navigationLanguage = Locale("en")
         var navigationVoiceUnits = DirectionsCriteria.IMPERIAL
-        var zoom = 15.0
+        var zoom = 8.0
         var bearing = 0.0
         var tilt = 0.0
         var distanceRemaining: Double? = null
@@ -444,12 +444,12 @@ class FlutterMapViewFactory  :
     }
 
     override fun onActivityCreated(activity: Activity, savedInstanceState: Bundle?) {
-        //Timber.i(String.format("onActivityCreated, %s, %s, %s", "$activityHashCode", "${activity.hashCode()}", "$isDisposed"))
+
         mapView.onCreate(savedInstanceState)
     }
 
     override fun onActivityStarted(activity: Activity) {
-        //Timber.i(String.format("onActivityStarted, %s, %s, %s", "$activityHashCode", "${activity.hashCode()}", "$isDisposed"))
+
         try {
             mapView.onStart()
         } catch (e: java.lang.Exception) {
@@ -458,27 +458,25 @@ class FlutterMapViewFactory  :
     }
 
     override fun onActivityResumed(activity: Activity) {
-        //Timber.i(String.format("onActivityResumed, %s, %s, %s", "$activityHashCode", "${activity.hashCode()}", "$isDisposed"))
+
         mapView.onResume()
     }
 
     override fun onActivityPaused(activity: Activity) {
-        //Timber.i(String.format("onActivityPaused, %s, %s, %s", "$activityHashCode", "${activity.hashCode()}", "$isDisposed"))
         mapView.onPause()
     }
 
     override fun onActivityStopped(activity: Activity) {
-        //Timber.i(String.format("onActivityStopped, %s, %s, %s", "$activityHashCode", "${activity.hashCode()}", "$isDisposed"))
         //mapView.onStop()
     }
 
     override fun onActivitySaveInstanceState(activity: Activity, outState: Bundle?) {
-        //Timber.i(String.format("onActivitySaveInstanceState, %s, %s, %s", "$activityHashCode", "${activity.hashCode()}", "$isDisposed"))
+
         mapView.onSaveInstanceState(outState!!)
     }
 
     override fun onActivityDestroyed(activity: Activity) {
-        //Timber.i(String.format("onActivityDestroyed, %s, %s, %s", "$activityHashCode", "${activity.hashCode()}", "$isDisposed"))
+
         //mapView.onDestroy()
     }
 
@@ -602,7 +600,7 @@ class FlutterMapViewFactory  :
     }
 
     override fun onFailedReroute(errorMessage: String?) {
-        PluginUtilities.sendEvent(MapBoxEvents.FAILED_TO_REROUTE,"${errorMessage}")
+        PluginUtilities.sendEvent(MapBoxEvents.FAILED_TO_REROUTE,"$errorMessage")
 
     }
 
@@ -642,7 +640,6 @@ class FlutterMapViewFactory  :
 
     override fun onRerouteAlong(directionsRoute: DirectionsRoute?) {
         PluginUtilities.sendEvent(MapBoxEvents.REROUTE_ALONG, "${directionsRoute?.toJson()}")
-
         refreshNavigation(directionsRoute)
 
     }

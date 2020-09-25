@@ -3,6 +3,7 @@
 * Add Embedded Navigation
 * Consolidated Navigation Options
 * Add ability to change map style
+* Can select alternate routes
 
 ## 0.0.15
 * Remove Dialog at WayPoint Arrival
