@@ -58,34 +58,7 @@ class _MyAppState extends State<MyApp> {
     // setState to update our non-existent appearance.
     if (!mounted) return;
 
-    _directions = MapBoxNavigation(onRouteEvent: (e) async {
-      _distanceRemaining = await _directions.distanceRemaining;
-      _durationRemaining = await _directions.durationRemaining;
-
-      switch (e.eventType) {
-        case MapBoxEvent.progress_change:
-          var progressEvent = e.data as RouteProgressEvent;
-          _arrived = progressEvent.arrived;
-          _distanceRemaining = progressEvent.distance;
-          _durationRemaining = progressEvent.duration;
-          if (progressEvent.currentStepInstruction != null)
-            _instruction = progressEvent.currentStepInstruction;
-          break;
-        case MapBoxEvent.route_build_failed:
-          print(e.data);
-          break;
-        case MapBoxEvent.on_arrival:
-          _arrived = true;
-          if (!_isMultipleStop) {
-            await Future.delayed(Duration(seconds: 3));
-            await _directions.finishNavigation();
-          }
-          break;
-        default:
-          break;
-      }
-      setState(() {});
-    });
+    _directions = MapBoxNavigation(onRouteEvent: _onEmbeddedRouteEvent);
 
     String platformVersion;
     // Platform messages may fail, so we use a try/catch PlatformException.
@@ -135,9 +108,12 @@ class _MyAppState extends State<MyApp> {
                         RaisedButton(
                           child: Text("Start A to B"),
                           onPressed: () async {
+                            var wayPoints = List<WayPoint>();
+                            wayPoints.add(_origin);
+                            wayPoints.add(_stop1);
+
                             await _directions.startNavigation(
-                                origin: _origin,
-                                destination: _stop1,
+                                wayPoints: wayPoints,
                                 options: MapBoxOptions(
                                     mode:
                                         MapBoxNavigationMode.drivingWithTraffic,
@@ -161,7 +137,7 @@ class _MyAppState extends State<MyApp> {
                             wayPoints.add(_stop4);
                             wayPoints.add(_origin);
 
-                            await _directions.startNavigationWithWayPoints(
+                            await _directions.startNavigation(
                                 wayPoints: wayPoints,
                                 options: MapBoxOptions(
                                     mode: MapBoxNavigationMode.driving,
@@ -189,37 +165,49 @@ class _MyAppState extends State<MyApp> {
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         RaisedButton(
-                          child: Text("Build Route"),
-                          onPressed: _routeBuilt ? null : () {
-
-                            var wayPoints = List<WayPoint>();
-                            wayPoints.add(_origin);
-                            wayPoints.add(_stop1);
-                            wayPoints.add(_stop2);
-                            wayPoints.add(_stop3);
-                            wayPoints.add(_stop4);
-                            wayPoints.add(_origin);
-                            _isMultipleStop = wayPoints.length > 2;
-                            _controller.buildRoute(wayPoints: wayPoints);
-                          },
+                          child: Text(_routeBuilt && !_isNavigating
+                              ? "Clear Route"
+                              : "Build Route"),
+                          onPressed: _isNavigating
+                              ? null
+                              : () {
+                                  if (_routeBuilt) {
+                                    _controller.clearRoute();
+                                  } else {
+                                    var wayPoints = List<WayPoint>();
+                                    wayPoints.add(_origin);
+                                    wayPoints.add(_stop1);
+                                    wayPoints.add(_stop2);
+                                    wayPoints.add(_stop3);
+                                    wayPoints.add(_stop4);
+                                    wayPoints.add(_origin);
+                                    _isMultipleStop = wayPoints.length > 2;
+                                    _controller.buildRoute(
+                                        wayPoints: wayPoints);
+                                  }
+                                },
                         ),
                         SizedBox(
                           width: 10,
                         ),
                         RaisedButton(
                           child: Text("Start "),
-                          onPressed:  _routeBuilt && !_isNavigating ?  () {
-                            _controller.startNavigation();
-                          } : null,
+                          onPressed: _routeBuilt && !_isNavigating
+                              ? () {
+                                  _controller.startNavigation();
+                                }
+                              : null,
                         ),
                         SizedBox(
                           width: 10,
                         ),
                         RaisedButton(
                           child: Text("Cancel "),
-                          onPressed: _isNavigating ? () {
-                            _controller.finishNavigation();
-                          } : null,
+                          onPressed: _isNavigating
+                              ? () {
+                                  _controller.finishNavigation();
+                                }
+                              : null,
                         )
                       ],
                     ),
@@ -268,7 +256,6 @@ class _MyAppState extends State<MyApp> {
                                   : "---")
                             ],
                           ),
-
                         ],
                       ),
                     ),
@@ -283,8 +270,8 @@ class _MyAppState extends State<MyApp> {
                 color: Colors.grey,
                 child: MapBoxNavigationView(
                     options: MapBoxOptions(
-                        initialLatitude: 36.1175275,
-                        initialLongitude: -115.1839524,
+                        //initialLatitude: 36.1175275,
+                        //initialLongitude: -115.1839524,
                         zoom: 13.0,
                         tilt: 0.0,
                         bearing: 0.0,
@@ -296,6 +283,7 @@ class _MyAppState extends State<MyApp> {
                         mode: MapBoxNavigationMode.drivingWithTraffic,
                         units: VoiceUnits.imperial,
                         simulateRoute: true,
+                        animateBuildRoute: true,
                         language: "en"),
                     onRouteEvent: _onEmbeddedRouteEvent,
                     onCreated:
@@ -318,8 +306,6 @@ class _MyAppState extends State<MyApp> {
       case MapBoxEvent.progress_change:
         var progressEvent = e.data as RouteProgressEvent;
         _arrived = progressEvent.arrived;
-        _distanceRemaining = progressEvent.distance;
-        _durationRemaining = progressEvent.duration;
         if (progressEvent.currentStepInstruction != null)
           _instruction = progressEvent.currentStepInstruction;
         break;
@@ -340,15 +326,11 @@ class _MyAppState extends State<MyApp> {
         });
         break;
       case MapBoxEvent.on_arrival:
-
         _arrived = true;
         if (!_isMultipleStop) {
           await Future.delayed(Duration(seconds: 3));
           await _controller.finishNavigation();
-        }
-        else{
-
-        }
+        } else {}
         break;
       case MapBoxEvent.navigation_finished:
       case MapBoxEvent.navigation_cancelled:

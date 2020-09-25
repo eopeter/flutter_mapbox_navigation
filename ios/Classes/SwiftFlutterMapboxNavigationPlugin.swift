@@ -36,22 +36,13 @@ public class SwiftFlutterMapboxNavigationPlugin: NavigationFactory, FlutterPlugi
         {
             result(_durationRemaining)
         }
-        else if(call.method == "finishNavigation")
-        {
-            endNavigation(result: result)
-        }
-        else if(call.method == "startRoute")
-        {
-            guard let routeIdentifier = arguments?["routeIdentifier"] as? String else {return}
-            startNavigation(routeIdentifier: routeIdentifier, flutterResult: result)
-        }
         else if(call.method == "startNavigation")
         {
             startNavigation(arguments: arguments, result: result)
         }
-        else if(call.method == "startNavigationWithWayPoints")
+        else if(call.method == "finishNavigation")
         {
-            startNavigationWithWayPoints(arguments: arguments, result: result)
+            endNavigation(result: result)
         }
         else
         {
@@ -89,51 +80,15 @@ public class NavigationFactory : NSObject, FlutterStreamHandler, NavigationViewC
     var _zoom: Double = 13.0
     var _tilt: Double = 0.0
     var _bearing: Double = 0.0
+    var _animateBuildRoute = true
     
     var navigationDirections: NavigationDirections?
     
+    
     func startNavigation(arguments: NSDictionary?, result: @escaping FlutterResult)
     {
-        guard let oName = arguments?["originName"] as? String else {return}
-        guard let oLatitude = arguments?["originLatitude"] as? Double else {return}
-        guard let oLongitude = arguments?["originLongitude"] as? Double else {return}
+        _wayPoints.removeAll()
         
-        guard let dName = arguments?["destinationName"] as? String else {return}
-        guard let dLatitude = arguments?["destinationLatitude"] as? Double else {return}
-        guard let dLongitude = arguments?["destinationLongitude"] as? Double else {return}
-        
-        _language = arguments?["language"] as? String ?? _language
-        _voiceUnits = arguments?["units"] as? String ?? _voiceUnits
-        _simulateRoute = arguments?["simulateRoute"] as? Bool ?? false
-        _navigationMode = arguments?["mode"] as? String ?? "drivingWithTraffic"
-        _mapStyleURL = arguments?["mapStyleURL"] as? String
-        
-        let origin = Location(name: oName, latitude: oLatitude, longitude: oLongitude)
-        let destination = Location(name: dName, latitude: dLatitude, longitude: dLongitude)
-        
-        startNavigation(origin: origin, destination: destination, flutterResult: result)
-    }
-    
-    func startNavigation(routeIdentifier: String, flutterResult: @escaping FlutterResult)
-    {
-        guard let route = self._routes?.first(where: { $0.routeIdentifier == routeIdentifier}) else {return}
-        let simulationMode: SimulationMode = _simulateRoute ? .always : .never
-        let options = self._options!
-        let navigationService = MapboxNavigationService(route: route, routeOptions: options, simulating: simulationMode)
-        let navigationOptions = NavigationOptions(navigationService: navigationService)
-        startNavigation(route: route, options: options, navOptions: navigationOptions)
-    }
-    
-    
-    func startNavigation(origin: Location, destination: Location, flutterResult: @escaping FlutterResult){
-        
-        let o = Waypoint(coordinate: CLLocationCoordinate2D(latitude: origin.latitude!, longitude: origin.longitude!), name: origin.name)
-        let d = Waypoint(coordinate: CLLocationCoordinate2D(latitude: destination.latitude!, longitude: destination.longitude!), name: destination.name)
-        startNavigationWithWayPoints(wayPoints: [o, d], flutterResult: flutterResult)
-    }
-    
-    func startNavigationWithWayPoints(arguments: NSDictionary?, result: @escaping FlutterResult)
-    {
         guard let oWayPoints = arguments?["wayPoints"] as? NSDictionary else {return}
         
         var locations = [Location]()
@@ -574,7 +529,7 @@ public class FlutterMapboxNavigationViewFactory : NSObject, FlutterPlatformViewF
     }
 }
 
-public class FlutterMapboxNavigationView : NavigationFactory, MGLMapViewDelegate, FlutterPlatformView
+public class FlutterMapboxNavigationView : NavigationFactory, MGLMapViewDelegate, UIGestureRecognizerDelegate, FlutterPlatformView
 {
     let frame: CGRect
     let viewId: Int64
@@ -619,6 +574,10 @@ public class FlutterMapboxNavigationView : NavigationFactory, MGLMapViewDelegate
             {
                 strongSelf.buildRoute(arguments: arguments, result: result)
             }
+            else if(call.method == "clearRoute")
+            {
+                strongSelf.clearRoute(arguments: arguments, result: result)
+            }
             else if(call.method == "getDistanceRemaining")
             {
                 result(strongSelf._distanceRemaining)
@@ -650,6 +609,13 @@ public class FlutterMapboxNavigationView : NavigationFactory, MGLMapViewDelegate
             return mapView
         }
         
+        bindMapView()
+        
+        return mapView
+    }
+    
+    private func bindMapView()
+    {
         mapView = NavigationMapView(frame: frame)
         mapView.delegate = self
         mapView.showsUserLocation = true
@@ -667,6 +633,7 @@ public class FlutterMapboxNavigationView : NavigationFactory, MGLMapViewDelegate
             _zoom = arguments?["zoom"] as? Double ?? _zoom
             _bearing = arguments?["bearing"] as? Double ?? _bearing
             _tilt = arguments?["tilt"] as? Double ?? _tilt
+            _animateBuildRoute = arguments?["animateBuildRoute"] as? Bool ?? _animateBuildRoute
             
             if(_mapStyleURL != nil)
             {
@@ -692,8 +659,24 @@ public class FlutterMapboxNavigationView : NavigationFactory, MGLMapViewDelegate
             
         }
         let gesture = UILongPressGestureRecognizer(target: self, action: #selector(handleLongPress(_:)))
+        gesture.delegate = self
         mapView?.addGestureRecognizer(gesture)
-        return mapView
+    }
+    
+    func clearRoute(arguments: NSDictionary?, result: @escaping FlutterResult)
+    {
+        if route == nil
+        {
+            return
+        }
+        
+        bindMapView()
+        self.view().setNeedsDisplay()
+        
+        route = nil
+        sendEvent(eventType: MapBoxEventType.navigation_cancelled)
+        
+        
     }
     
     func buildRoute(arguments: NSDictionary?, result: @escaping FlutterResult)
@@ -843,6 +826,7 @@ public class FlutterMapboxNavigationView : NavigationFactory, MGLMapViewDelegate
     }
     
     func requestRoute(destination: CLLocationCoordinate2D) {
+        sendEvent(eventType: MapBoxEventType.route_building)
         guard let userLocation = mapView?.userLocation!.location else { return }
         let userWaypoint = Waypoint(location: userLocation, heading: mapView?.userLocation?.heading, name: "Current Location")
         let destinationWaypoint = Waypoint(coordinate: destination)
@@ -850,21 +834,30 @@ public class FlutterMapboxNavigationView : NavigationFactory, MGLMapViewDelegate
         let routeOptions = NavigationRouteOptions(waypoints: [userWaypoint, destinationWaypoint])
         
         Directions.shared.calculate(routeOptions) { [weak self] (session, result) in
-            switch result {
-            case .failure(let error):
-                print(error.localizedDescription)
-            case .success(let response):
-                guard let routes = response.routes, let route = response.routes?.first, let strongSelf = self else {
-                    return
-                }
-                strongSelf.routeOptions = routeOptions
-                strongSelf._routes = routes
-                strongSelf.route = route
-                //strongSelf.startButton?.isHidden = false
+            
+            if let strongSelf = self {
                 
-                strongSelf.mapView?.show(routes)
-                strongSelf.mapView?.showWaypoints(on: strongSelf.route!)
+                switch result {
+                case .failure(let error):
+                    print(error.localizedDescription)
+                    strongSelf.sendEvent(eventType: MapBoxEventType.route_build_failed)
+                case .success(let response):
+                    guard let routes = response.routes, let route = response.routes?.first else {
+                        strongSelf.sendEvent(eventType: MapBoxEventType.route_build_failed)
+                        return
+                    }
+                    strongSelf.sendEvent(eventType: MapBoxEventType.route_built)
+                    strongSelf.routeOptions = routeOptions
+                    strongSelf._routes = routes
+                    strongSelf.route = route
+                    
+                    strongSelf.mapView?.show(routes)
+                    strongSelf.mapView?.showWaypoints(on: strongSelf.route!)
+                }
+                
             }
+            
+            
         }
     }
     
@@ -884,12 +877,22 @@ public class FlutterMapboxNavigationView : NavigationFactory, MGLMapViewDelegate
     
     func moveCameraToCenter()
     {
+        var duration = 5.0
+        if(!_animateBuildRoute)
+        {
+            duration = 0.0
+        }
         // Create a camera that rotates around the same center point, rotating 180°.
         // `fromDistance:` is meters above mean sea level that an eye would have to be in order to see what the map view is showing.
         let camera = MGLMapCamera(lookingAtCenter: mapView.centerCoordinate, altitude: 2500, pitch: 15, heading: 180)
         
         // Animate the camera movement over 5 seconds.
-        mapView.setCamera(camera, withDuration: 5, animationTimingFunction: CAMediaTimingFunction(name: CAMediaTimingFunctionName.easeInEaseOut))
+        mapView.setCamera(camera, withDuration: duration, animationTimingFunction: CAMediaTimingFunction(name: CAMediaTimingFunctionName.easeInEaseOut))
+    }
+    
+    // MARK: Gesture Recognizer Delegate
+    public func gestureRecognizer(_ gestureRecognizer: UIGestureRecognizer, shouldRecognizeSimultaneouslyWith otherGestureRecognizer: UIGestureRecognizer) -> Bool {
+        return true
     }
 }
 

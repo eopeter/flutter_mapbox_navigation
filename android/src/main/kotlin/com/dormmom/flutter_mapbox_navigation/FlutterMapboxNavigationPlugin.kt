@@ -121,13 +121,6 @@ public class FlutterMapboxNavigationPlugin: FlutterPlugin, MethodCallHandler, Ev
       "startNavigation" -> {
         checkPermissionAndBeginNavigation(call, result, false)
       }
-      "startNavigationWithWayPoints" -> {
-        checkPermissionAndBeginNavigation(call, result, true)
-
-      }
-      "startEmbeddedNavigation" -> {
-        //startEmbeddedNavigation(call, result)
-      }
       "finishNavigation" -> {
         NavigationLauncher.stopNavigation(currentActivity)
       }

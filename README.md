@@ -41,83 +41,103 @@ Add Turn By Turn Navigation to Your Flutter Application Using MapBox. Never leav
 
 ## Usage
 
+
+#### Declare an instance
+
 ```dart
 
   MapboxNavigation _directions;
 
 ```
 
+#### Initialize It
+
 ```dart
 
     initState()
     {
-      _directions = MapboxNavigation(onRouteEvent: (e) async{
-      
-            _distanceRemaining = await _directions.distanceRemaining;
-            _durationRemaining = await _directions.durationRemaining;
-      
-            switch (e.eventType) {
-                case MapBoxEvent.progress_change:
-                  var progressEvent = e.data as RouteProgressEvent;
-                  _arrived = progressEvent.arrived;
-                  _distanceRemaining = progressEvent.distance;
-                  _durationRemaining = progressEvent.duration;
-                  _instruction = progressEvent.currentStepInstruction;
-                  break;
-                case MapBoxEvent.route_build_failed:
-                  print(e.data);
-                  break;
-                case MapBoxEvent.on_arrival:
-                  _arrived = true;
-                  //await Future.delayed(Duration(seconds: 3));
-                  //await _directions.finishNavigation();
-                  break;
-                default:
-                  break;
-            }
-            setState(() {});
-      });
+      _directions = MapBoxNavigation(onRouteEvent: _onRouteEvent);
     }
-
-    final cityhall = WayPoint(name: "City Hall", latitude: 42.886448, longitude: -78.878372);
-    final downtown = WayPoint(name: "Downtown Buffalo", latitude: 42.8866177, longitude: -78.8814924);
-            
-    await _directions.startNavigation(
-                                origin: cityhall, 
-                                destination: downtown, 
-                                mode: MapBoxNavigationMode.drivingWithTraffic, 
-                                simulateRoute: false,
-                                mapStyleURL: "mapbox://styles/eopeter/ckffcmgtl0car1ap80jhp4hsr",
-                                language: "en");
+    
   
 ```
 
-## Multiple Stops / WayPoints
+#### Set Route Options
+```dart
+    _options = MapBoxOptions(
+                     initialLatitude: 36.1175275,
+                     initialLongitude: -115.1839524,
+                     zoom: 13.0,
+                     tilt: 0.0,
+                     bearing: 0.0,
+                     enableRefresh: false,
+                     alternatives: true,
+                     voiceInstructionsEnabled: true,
+                     bannerInstructionsEnabled: true,
+                     allowsUTurnAtWayPoints: true,
+                     mode: MapBoxNavigationMode.drivingWithTraffic,
+                     units: VoiceUnits.imperial,
+                     simulateRoute: true,
+                     language: "en")
+```
+
+#### Listen for Events
+
+```dart
+    Future<void> _onRouteEvent(e) async {
+
+        _distanceRemaining = await _directions.distanceRemaining;
+        _durationRemaining = await _directions.durationRemaining;
+    
+        switch (e.eventType) {
+          case MapBoxEvent.progress_change:
+            var progressEvent = e.data as RouteProgressEvent;
+            _arrived = progressEvent.arrived;
+            if (progressEvent.currentStepInstruction != null)
+              _instruction = progressEvent.currentStepInstruction;
+            break;
+          case MapBoxEvent.route_building:
+          case MapBoxEvent.route_built:
+            _routeBuilt = true;
+            break;
+          case MapBoxEvent.route_build_failed:
+            _routeBuilt = false;
+            break;
+          case MapBoxEvent.navigation_running:
+            _isNavigating = true;
+            break;
+          case MapBoxEvent.on_arrival:
+            _arrived = true;
+            if (!_isMultipleStop) {
+              await Future.delayed(Duration(seconds: 3));
+              await _controller.finishNavigation();
+            } else {}
+            break;
+          case MapBoxEvent.navigation_finished:
+          case MapBoxEvent.navigation_cancelled:
+            _routeBuilt = false;
+            _isNavigating = false;
+            break;
+          default:
+            break;
+        }
+        //refresh UI
+        setState(() {});
+      }
+```
+
+#### Begin Navigating
 
 ```dart
 
-    final _origin = WayPoint(name: "A", latitude: 38.8842107, longitude: -77.000346);
-    final _stop1 = WayPoint(name: "B", latitude: 38.883281, longitude: -77.0037567);
-    final _stop2 = WayPoint(name: "C", latitude: 38.91040213277608, longitude: -77.03848242759705);
-    final _stop3 = WayPoint(name: "D", latitude: 38.909650771013034, longitude: -77.03850388526917);
+    final cityhall = WayPoint(name: "City Hall", latitude: 42.886448, longitude: -78.878372);
+    final downtown = WayPoint(name: "Downtown Buffalo", latitude: 42.8866177, longitude: -78.8814924);
 
     var wayPoints = List<WayPoint>();
-                wayPoints.add(_origin);
-                wayPoints.add(_stop1);
-                wayPoints.add(_stop2);
-                wayPoints.add(_stop3);
-                wayPoints.add(_origin);
-
-                await _directions.startNavigationWithWayPoints(
-                    wayPoints: wayPoints,
-                    mode: MapBoxNavigationMode.driving,
-                    simulateRoute: true,
-                    language: "en", 
-                    allowsUTurnAtWayPoints: true, 
-                    isOptimized: false,
-                    mapStyleURL: "mapbox://styles/eopeter/ckffcmgtl0car1ap80jhp4hsr",
-                    units: VoiceUnits.metric);
-
+    wayPoints.add(cityHall);
+    wayPoints.add(downtown);
+    
+    await _directions.startNavigation(wayPoints: wayPoints, options: _options);
 ```
 
 
@@ -136,7 +156,7 @@ Add Turn By Turn Navigation to Your Flutter Application Using MapBox. Never leav
       MapBoxNavigationViewController _controller;
 ```
 
-#### Navigation View As Widget
+#### Add Navigation View to Widget Tree
 ```dart
             Container(
                 color: Colors.grey,
@@ -156,7 +176,7 @@ Add Turn By Turn Navigation to Your Flutter Application Using MapBox. Never leav
                         units: VoiceUnits.imperial,
                         simulateRoute: false,
                         language: "en"),
-                    onRouteEvent: _onEmbeddedRouteEvent,
+                    onRouteEvent: _onRouteEvent,
                     onCreated:
                         (MapBoxNavigationViewController controller) async {
                       _controller = controller;
@@ -228,3 +248,4 @@ class MainActivity: FlutterActivity() {
 * [DONE] Add more settings like Navigation Mode (driving, walking, etc)
 * [DONE] Stream Events like relevant navigation notifications, metrics, current location, etc. 
 * [DONE] Embeddable Navigation View 
+* Offline Routing

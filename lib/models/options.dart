@@ -50,7 +50,12 @@ class MapBoxOptions {
 
   /// if true, will reorder the routes to optimize navigation for time and shortest distance using the Travelling Salesman Algorithm. Always false for now
   final bool isOptimized;
+
+  /// Padding applied to the MapView when embedded
   final EdgeInsets padding;
+
+  /// Should animate the building of the Route. Default is True
+  final bool animateBuildRoute;
 
   MapBoxOptions(
       {this.initialLatitude,
@@ -69,7 +74,8 @@ class MapBoxOptions {
       this.simulateRoute,
       this.isOptimized,
       this.mapStyleURL,
-      this.padding});
+      this.padding,
+      this.animateBuildRoute});
 
   Map<String, dynamic> toMap() {
     final Map<String, dynamic> optionsMap = new Map<String, dynamic>();
@@ -82,6 +88,7 @@ class MapBoxOptions {
     addIfNonNull("initialLatitude", initialLatitude);
     addIfNonNull("initialLongitude", initialLongitude);
     addIfNonNull("language", language);
+    addIfNonNull("animateBuildRoute", animateBuildRoute);
 
     if (this.zoom != null) optionsMap['zoom'] = this.zoom;
     if (this.bearing != null) optionsMap['bearing'] = this.bearing;

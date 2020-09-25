@@ -14,11 +14,11 @@ class MapBoxNavigationView extends StatelessWidget {
   final OnNavigationViewCreatedCallBack onCreated;
   final ValueSetter<RouteEvent> onRouteEvent;
 
-  MapBoxNavigationView({Key key, this.options, this.onCreated, this.onRouteEvent})
+  MapBoxNavigationView(
+      {Key key, this.options, this.onCreated, this.onRouteEvent})
       : super(key: key);
   @override
   Widget build(BuildContext context) {
-
     if (Platform.isAndroid) {
       return AndroidView(
           viewType: 'FlutterMapboxNavigationView',

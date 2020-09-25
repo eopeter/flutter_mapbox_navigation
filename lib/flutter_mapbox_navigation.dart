@@ -1,13 +1,13 @@
 part of navigation;
 
 /// Turn-By-Turn Navigation Provider
-class MapBoxNavigation implements IMapBoxNavigation {
+class MapBoxNavigation {
   factory MapBoxNavigation({ValueSetter<RouteEvent> onRouteEvent}) {
     if (_instance == null) {
       final MethodChannel methodChannel =
-      const MethodChannel('flutter_mapbox_navigation');
+          const MethodChannel('flutter_mapbox_navigation');
       final EventChannel eventChannel =
-      const EventChannel('flutter_mapbox_navigation/events');
+          const EventChannel('flutter_mapbox_navigation/events');
       _instance =
           MapBoxNavigation.private(methodChannel, eventChannel, onRouteEvent);
     }
@@ -44,56 +44,17 @@ class MapBoxNavigation implements IMapBoxNavigation {
 
   ///Show the Navigation View and Begins Direction Routing
   ///
-  /// [origin] must not be null. It must have a longitude, latitude and name.
-  /// [destination] must not be null. It must have a longitude, latitude and name.
+  /// [wayPoints] must not be null and have at least 2 items. A collection of [WayPoint](longitude, latitude and name). Must be at least 2 or at most 25. Cannot use drivingWithTraffic mode if more than 3-waypoints.
   /// [options] options used to generate the route and used while navigating
-  ///
   /// Begins to generate Route Progress
   ///
   Future startNavigation(
-      {WayPoint origin,
-        WayPoint destination,
-        MapBoxOptions options}) async {
-    assert(origin != null);
-    assert(origin.name != null);
-    assert(origin.latitude != null);
-    assert(origin.longitude != null);
-    assert(destination != null);
-    assert(destination.name != null);
-    assert(destination.latitude != null);
-    assert(destination.longitude != null);
-    final Map<String, Object> wayPointMap = <String, dynamic>{
-      "originName": origin.name,
-      "originLatitude": origin.latitude,
-      "originLongitude": origin.longitude,
-      "destinationName": destination.name,
-      "destinationLatitude": destination.latitude,
-      "destinationLongitude": destination.longitude
-    };
-
-    var args = {};
-    args.addAll(wayPointMap);
-    args.addAll(options.toMap());
-
-    _routeEventSubscription = _streamRouteEvent.listen(_onProgressData);
-    await _methodChannel
-        .invokeMethod('startNavigation', args)
-        .then<String>((dynamic result) => result);
-  }
-
-  ///Show the Navigation View and Begins Direction Routing
-  ///
-  /// [wayPoints] must not be null. A collection of [WayPoint](longitude, latitude and name). Must be at least 2 or at most 25. Cannot use drivingWithTraffic mode if more than 3-waypoints.
-  /// [options] options used to generate the route and used while navigating
-  /// Begins to generate Route Progress
-  ///
-  Future startNavigationWithWayPoints(
       {List<WayPoint> wayPoints, MapBoxOptions options}) async {
     assert(wayPoints != null);
     assert(wayPoints.length > 1);
     if (Platform.isIOS && wayPoints.length > 3) {
       assert(options.mode != MapBoxNavigationMode.drivingWithTraffic,
-      "Error: Cannot use drivingWithTraffic Mode when you have more than 3 Stops");
+          "Error: Cannot use drivingWithTraffic Mode when you have more than 3 Stops");
     }
     var pointList = List<Map<String, Object>>();
 
@@ -114,14 +75,14 @@ class MapBoxNavigation implements IMapBoxNavigation {
     }
     var i = 0;
     var wayPointMap =
-    Map.fromIterable(pointList, key: (e) => i++, value: (e) => e);
+        Map.fromIterable(pointList, key: (e) => i++, value: (e) => e);
 
-    var  args = options.toMap();
+    var args = options.toMap();
     args["wayPoints"] = wayPointMap;
 
     _routeEventSubscription = _streamRouteEvent.listen(_onProgressData);
     await _methodChannel
-        .invokeMethod('startNavigationWithWayPoints', args)
+        .invokeMethod('startNavigation', args)
         .then<String>((dynamic result) => result);
   }
 

@@ -68,14 +68,18 @@ class MapBoxNavigationViewController {
         Map.fromIterable(pointList, key: (e) => i++, value: (e) => e);
 
     Map<String, dynamic> args = Map<String, dynamic>();
-    if(options != null)
-       args = options.toMap();
+    if (options != null) args = options.toMap();
     args["wayPoints"] = wayPointMap;
 
     _routeEventSubscription = _streamRouteEvent.listen(_onProgressData);
     await _methodChannel
         .invokeMethod('buildRoute', args)
         .then<String>((dynamic result) => result);
+  }
+
+  /// Clear the built route and resets the map
+  Future<bool> clearRoute() async {
+    return _methodChannel.invokeMethod('clearRoute', null);
   }
 
   /// Starts the Navigation
@@ -114,7 +118,7 @@ class MapBoxNavigationViewController {
     if (_routeEventNotifier != null) _routeEventNotifier(event);
 
     //if (event.eventType == MapBoxEvent.on_arrival)
-      //_routeEventSubscription.cancel();
+    //_routeEventSubscription.cancel();
   }
 
   Stream<RouteEvent> get _streamRouteEvent {
