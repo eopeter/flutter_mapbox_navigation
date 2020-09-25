@@ -140,15 +140,14 @@ Add Turn By Turn Navigation to Your Flutter Application Using MapBox. Never leav
     await _directions.startNavigation(wayPoints: wayPoints, options: _options);
 ```
 
+#### Screenshots
+![Navigation View](screenshots/screenshot1.png?raw=true "iOS View") | ![Android View](screenshots/screenshot2.png?raw=true "Android View")
+|:---:|:---:|
+| iOS View | Android View |
+
 
 
 ## Embedding Navigation View
-![Navigation View](screenshots/screenshot3.png?raw=true "Embedded iOS View") | ![Navigation View](screenshots/screenshot4.png?raw=true "Embedded Android View")
-|:---:|:---:|
-| Embedded iOS View | Embedded Android View |
-
-
-## Embedded Sample Code
 
 
 #### Declare Controller
@@ -200,10 +199,10 @@ Add the following to your `info.plist` file
     </dict>
 ```
 
-## Screenshots
-![Navigation View](screenshots/screenshot1.png?raw=true "iOS View") | ![Android View](screenshots/screenshot2.png?raw=true "Android View")
+### Embedding Navigation Screenshots
+![Navigation View](screenshots/screenshot3.png?raw=true "Embedded iOS View") | ![Navigation View](screenshots/screenshot4.png?raw=true "Embedded Android View")
 |:---:|:---:|
-| iOS View | Android View |
+| Embedded iOS View | Embedded Android View |
 
 ## To Do
 * [DONE] Android Implementation
