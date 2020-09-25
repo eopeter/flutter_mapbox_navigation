@@ -161,21 +161,7 @@ Add Turn By Turn Navigation to Your Flutter Application Using MapBox. Never leav
             Container(
                 color: Colors.grey,
                 child: MapBoxNavigationView(
-                    options: MapBoxOptions(
-                        initialLatitude: 36.1175275,
-                        initialLongitude: -115.1839524,
-                        zoom: 13.0,
-                        tilt: 0.0,
-                        bearing: 0.0,
-                        enableRefresh: false,
-                        alternatives: true,
-                        voiceInstructionsEnabled: true,
-                        bannerInstructionsEnabled: true,
-                        allowsUTurnAtWayPoints: true,
-                        mode: MapBoxNavigationMode.drivingWithTraffic,
-                        units: VoiceUnits.imperial,
-                        simulateRoute: false,
-                        language: "en"),
+                    options: _options,
                     onRouteEvent: _onRouteEvent,
                     onCreated:
                         (MapBoxNavigationViewController controller) async {
@@ -206,38 +192,14 @@ Add Turn By Turn Navigation to Your Flutter Application Using MapBox. Never leav
 Add the following to your `info.plist` file
 
 ```xml
-    <key>io.flutter.embedded_views_preview</key>
-	<true/>
+    <dict>
+        ...
+        <key>io.flutter.embedded_views_preview</key>
+        <true/>
+        ...
+    </dict>
 ```
 
-### Additional Android Configuration
-Modify your `MainActivity` to instantiate the plugin for native embedding
-
-```kotlin
-class MainActivity: FlutterActivity() {
-    companion object {
-
-        @JvmStatic
-        var flutterEngineInstance: FlutterEngine? = null
-    }
-
-    override fun configureFlutterEngine(@NonNull flutterEngine: FlutterEngine) {
-        GeneratedPluginRegistrant.registerWith(flutterEngine)
-        flutterEngineInstance = flutterEngine
-    }
-
-    override fun onResume() {
-        super.onResume()
-
-        flutterEngineInstance?.let {
-            FlutterMapboxNavigationPlugin.registerWith(it)
-        }
-    }
-
- 
-}
-
-```
 ## Screenshots
 ![Navigation View](screenshots/screenshot1.png?raw=true "iOS View") | ![Android View](screenshots/screenshot2.png?raw=true "Android View")
 |:---:|:---:|

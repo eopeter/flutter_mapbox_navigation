@@ -3,7 +3,6 @@ package com.dormmom.flutter_mapbox_navigation.factory
 import android.app.Activity
 import android.app.Application
 import android.content.Context
-import android.content.Intent
 import android.graphics.BitmapFactory
 import android.graphics.Color
 import android.location.Location
@@ -14,8 +13,8 @@ import android.view.ViewGroup
 import android.widget.ImageView
 import androidx.annotation.DrawableRes
 import androidx.annotation.NonNull
+import com.dormmom.flutter_mapbox_navigation.FlutterMapboxNavigationPlugin
 
-import com.dormmom.flutter_mapbox_navigation.activity.NavigationActivity
 import com.dormmom.flutter_mapbox_navigation.utilities.PluginUtilities
 import com.dormmom.flutter_mapbox_navigation.R
 import com.dormmom.flutter_mapbox_navigation.models.MapBoxEvents
@@ -29,7 +28,6 @@ import com.mapbox.api.directions.v5.DirectionsCriteria
 import com.mapbox.api.directions.v5.models.BannerInstructions
 import com.mapbox.api.directions.v5.models.DirectionsResponse
 import com.mapbox.api.directions.v5.models.DirectionsRoute
-import com.mapbox.geojson.Feature
 import com.mapbox.geojson.Point
 import com.mapbox.mapboxsdk.Mapbox
 import com.mapbox.mapboxsdk.camera.CameraPosition
@@ -65,6 +63,7 @@ import com.mapbox.services.android.navigation.v5.routeprogress.ProgressChangeLis
 import com.mapbox.services.android.navigation.v5.routeprogress.RouteProgress
 
 import io.flutter.plugin.common.BinaryMessenger
+import io.flutter.plugin.common.EventChannel
 import io.flutter.plugin.common.MethodCall
 import io.flutter.plugin.common.MethodChannel
 import io.flutter.plugin.common.MethodChannel.MethodCallHandler
@@ -89,7 +88,7 @@ class FlutterMapViewFactory  :
         SpeechAnnouncementListener,
         BannerInstructionsListener,
         RouteListener,
-        RefreshCallback {
+        RefreshCallback, EventChannel.StreamHandler {
 
     constructor(cxt: Context, messenger: BinaryMessenger, accessToken: String, viewId: Int,  act: Activity,  args: Any?)
     {
@@ -100,6 +99,8 @@ class FlutterMapViewFactory  :
             setOptions(arguments)
 
         methodChannel = MethodChannel(messenger, "flutter_mapbox_navigation/${viewId}")
+        eventChannel = EventChannel(messenger, "flutter_mapbox_navigation/${viewId}/events")
+        eventChannel.setStreamHandler(this)
         options = MapboxMapOptions.createFromAttributes(context)
                 .compassEnabled(false)
                 .logoEnabled(true)
@@ -118,6 +119,9 @@ class FlutterMapViewFactory  :
     private val activity: Activity
     private val context: Context
     private val methodChannel: MethodChannel
+    private val eventChannel: EventChannel
+    //private var eventSink: EventChannel.EventSink? = null
+
     private val options: MapboxMapOptions
     private var locationEngine: LocationEngine? = null
     private var mapView: MapView
@@ -157,8 +161,7 @@ class FlutterMapViewFactory  :
         var distanceRemaining: Double? = null
         var durationRemaining: Double? = null
 
-        var shouldSimulateRoute = false
-        var alternatives = false
+        var alternatives = true
 
         var continueStraight = false
         var enableRefresh = false
@@ -179,17 +182,14 @@ class FlutterMapViewFactory  :
             "buildRoute" -> {
                 buildRoute(methodCall, result)
             }
-            "addMarker" -> {
-                addMarker(methodCall, result)
-            }
-            "moveCameraToPosition" -> {
-                moveCamera(methodCall, result)
+            "clearRoute" -> {
+                clearRoute(methodCall, result)
             }
             "startNavigation" -> {
-                startEmbeddedNavigation(methodCall, result)
+                startNavigation(methodCall, result)
             }
             "finishNavigation" -> {
-                cancelEmbeddedNavigation(methodCall, result)
+                cancelNavigation(methodCall, result)
             }
             "getDistanceRemaining" -> {
                 getFormattedDistance(methodCall, result)
@@ -208,6 +208,9 @@ class FlutterMapViewFactory  :
         mapView.onDestroy()
     }
 
+    private fun clearRoute(methodCall: MethodCall, result: MethodChannel.Result) {
+        result.error("TODO", "Not Implemented in Android","will implement soon")
+    }
 
     private fun buildRoute(methodCall: MethodCall, result: MethodChannel.Result) {
         isNavigationCanceled = false
@@ -371,12 +374,14 @@ class FlutterMapViewFactory  :
 
     private fun getRoute(context: Context) {
 
+        //TODO Remove for Offline Routing
         if (!PluginUtilities.isNetworkAvailable(context)) {
-            doOnRouteBuildFailed("Network not available.")
+            PluginUtilities.sendEvent(MapBoxEvents.ROUTE_BUILD_FAILED, "No Internet Connection")
             return
         }
 
         PluginUtilities.sendEvent(MapBoxEvents.ROUTE_BUILDING)
+
         originPoint = Point.fromLngLat(wayPoints[0].longitude(), wayPoints[0].latitude())
         destinationPoint = Point.fromLngLat(wayPoints[1].longitude(), wayPoints[1].latitude())
 
@@ -389,22 +394,19 @@ class FlutterMapViewFactory  :
                 .profile(navigationMode)
                 .continueStraight(continueStraight)
                 .enableRefresh(enableRefresh)
-                .voiceUnits(DirectionsCriteria.METRIC)
-                .annotations(DirectionsCriteria.ANNOTATION_DISTANCE, DirectionsCriteria.ANNOTATION_DURATION, DirectionsCriteria.ANNOTATION_DURATION, DirectionsCriteria.ANNOTATION_CONGESTION)
+                .voiceUnits(navigationVoiceUnits)
+                .annotations(DirectionsCriteria.ANNOTATION_DISTANCE, DirectionsCriteria.ANNOTATION_DURATION, DirectionsCriteria.ANNOTATION_CONGESTION)
                 .build()
                 .getRoute(object : Callback<DirectionsResponse> {
                     override fun onResponse(call: Call<DirectionsResponse?>, response: Response<DirectionsResponse?>) {
 
-                        if (response.body() == null) {
-                            doOnRouteBuildFailed("No routes found, make sure you set the right user and access token.")
-                            return
-                        } else if (response.body()!!.routes().size < 1) {
-                            doOnRouteBuildFailed("No routes found.")
+                        if (response.body() == null || response.body()!!.routes().size < 1) {
+                            PluginUtilities.sendEvent(MapBoxEvents.ROUTE_BUILD_FAILED, "No routes found")
                             return
                         }
 
                         currentRoute = response.body()!!.routes()[0]
-                        PluginUtilities.sendEvent(MapBoxEvents.ROUTE_BUILT, data = "${response.body()?.toJson()}")
+                        PluginUtilities.sendEvent(MapBoxEvents.ROUTE_BUILT)
 
                         moveCameraToOriginOfRoute()
 
@@ -419,24 +421,15 @@ class FlutterMapViewFactory  :
 
                         //Start Navigation again from new Point, if it was already in Progress
                         if (isNavigationInProgress) {
-                            startEmbeddedNavigation()
+                            startNavigation()
                         }
                     }
 
                     override fun onFailure(call: Call<DirectionsResponse?>, throwable: Throwable) {
-                        Timber.e(String.format("getRoute: Error, %s", throwable.message))
                         isBuildingRoute = false
-                        PluginUtilities.sendEvent(MapBoxEvents.ROUTE_BUILD_FAILED)
+                        PluginUtilities.sendEvent(MapBoxEvents.ROUTE_BUILD_FAILED, "${throwable.message}")
                     }
                 })
-    }
-
-    private fun doOnRouteBuildFailed(message: String) {
-        isBuildingRoute = false
-        PluginUtilities.sendEvent(MapBoxEvents.ROUTE_BUILD_FAILED, data = message)
-        isNavigationInProgress = false
-        moveCameraToOriginOfRoute()
-        cancelEmbeddedNavigation()
     }
 
     private fun moveCameraToOriginOfRoute() {
@@ -509,7 +502,7 @@ class FlutterMapViewFactory  :
 
                 moveCamera(LatLng(location.latitude, location.longitude))
 
-                if (shouldSimulateRoute && !isDisposed && !isBuildingRoute)
+                if (simulateRoute && !isDisposed && !isBuildingRoute)
                     mapBoxMap?.locationComponent?.forceLocationUpdate(location)
 
                 if (!isRefreshing) {
@@ -579,18 +572,15 @@ class FlutterMapViewFactory  :
             if (shouldCancel) {
 
                 currentRoute = directionsRoute
-                cancelEmbeddedNavigation()
-                startEmbeddedNavigation()
+                cancelNavigation()
+                startNavigation()
             }
         }
     }
 
     override fun willVoice(announcement: SpeechAnnouncement?): SpeechAnnouncement? {
         return if (voiceInstructions) {
-            PluginUtilities.sendEvent(MapBoxEvents.SPEECH_ANNOUNCEMENT,
-                    "{" +
-                            "  \"data\": \"${announcement?.announcement()}\"" +
-                            "}")
+            PluginUtilities.sendEvent(MapBoxEvents.SPEECH_ANNOUNCEMENT, "${announcement?.announcement()}")
             announcement
         } else {
             null
@@ -599,10 +589,7 @@ class FlutterMapViewFactory  :
 
     override fun willDisplay(instructions: BannerInstructions?): BannerInstructions? {
         return if (bannerInstructions) {
-            PluginUtilities.sendEvent(MapBoxEvents.BANNER_INSTRUCTION,
-                    "{" +
-                            "  \"data\": \"${instructions?.primary()?.text()}\"" +
-                            "}")
+            PluginUtilities.sendEvent(MapBoxEvents.BANNER_INSTRUCTION,"${instructions?.primary()?.text()}")
 
             return instructions
         } else {
@@ -615,10 +602,7 @@ class FlutterMapViewFactory  :
     }
 
     override fun onFailedReroute(errorMessage: String?) {
-        PluginUtilities.sendEvent(MapBoxEvents.FAILED_TO_REROUTE,
-                "{" +
-                        "  \"data\": \"${errorMessage}\"" +
-                        "}")
+        PluginUtilities.sendEvent(MapBoxEvents.FAILED_TO_REROUTE,"${errorMessage}")
 
     }
 
@@ -632,7 +616,7 @@ class FlutterMapViewFactory  :
 
             offRoutePoint?.let {
 
-                cancelEmbeddedNavigation(isOffRouted = true)
+                cancelNavigation(isOffRouted = true)
 
                 moveCamera(LatLng(it.latitude(), it.longitude()))
 
@@ -695,18 +679,7 @@ class FlutterMapViewFactory  :
         }
     }
 
-    private fun startNavigation(methodCall: MethodCall, result: MethodChannel.Result) {
-        isNavigationCanceled = false
-        shouldSimulateRoute = PluginUtilities.getBoolValueById("shouldSimulateRoute", methodCall)
-        if (currentRoute != null) {
-            activity.startActivity(Intent(activity, NavigationActivity::class.java).putExtra("route", currentRoute))
-            result.success("Navigation started.")
-        } else {
-            result.success("No route found. Unable to start navigation.")
-        }
-    }
-
-    private fun startEmbeddedNavigation() {
+    private fun startNavigation() {
         isNavigationCanceled = false
 
         if (currentRoute != null) {
@@ -717,32 +690,23 @@ class FlutterMapViewFactory  :
             navigation.addNavigationEventListener(this@FlutterMapViewFactory)
 
             currentRoute?.let {
-                if (shouldSimulateRoute) {
+                if (simulateRoute) {
                     (locationEngine as ReplayRouteLocationEngine).assign(it)
                     navigation.locationEngine = locationEngine as ReplayRouteLocationEngine
                 }
                 isNavigationInProgress = true
                 navigation.startNavigation(it)
+                PluginUtilities.sendEvent(MapBoxEvents.NAVIGATION_RUNNING)
             }
         }
     }
 
 
-    private fun startEmbeddedNavigation(methodCall: MethodCall, result: MethodChannel.Result) {
+    private fun startNavigation(methodCall: MethodCall, result: MethodChannel.Result) {
 
-        PluginUtilities.getDoubleValueById("zoom", methodCall).takeIf { it != null }?.let {
-            zoom = it
-        }
-        PluginUtilities.getDoubleValueById("bearing", methodCall).takeIf { it != null }?.let {
-            bearing = it
-        }
-        PluginUtilities.getDoubleValueById("tilt", methodCall).takeIf { it != null }?.let {
-            tilt = it
-        }
+        //TODO: load options
 
-        shouldSimulateRoute = PluginUtilities.getBoolValueById("shouldSimulateRoute", methodCall)
-
-        startEmbeddedNavigation()
+        startNavigation()
 
         if (currentRoute != null) {
             result.success("Embedded Navigation started.")
@@ -751,7 +715,7 @@ class FlutterMapViewFactory  :
         }
     }
 
-    private fun cancelEmbeddedNavigation(isOffRouted: Boolean = false) {
+    private fun cancelNavigation(isOffRouted: Boolean = false) {
         zoom = 15.0
         bearing = 0.0
         tilt = 0.0
@@ -773,9 +737,9 @@ class FlutterMapViewFactory  :
 
     }
 
-    private fun cancelEmbeddedNavigation(methodCall: MethodCall, result: MethodChannel.Result) {
+    private fun cancelNavigation(methodCall: MethodCall, result: MethodChannel.Result) {
 
-        cancelEmbeddedNavigation()
+        cancelNavigation()
 
         if (currentRoute != null) {
             result.success("Navigation stopped.")
@@ -818,5 +782,14 @@ class FlutterMapViewFactory  :
         } else {
             result.success("Unable to move camera, location invalid.")
         }
+    }
+
+
+    override fun onListen(arguments: Any?, events: EventChannel.EventSink?) {
+        FlutterMapboxNavigationPlugin.eventSink = events
+    }
+
+    override fun onCancel(arguments: Any?) {
+        FlutterMapboxNavigationPlugin.eventSink = null
     }
 }

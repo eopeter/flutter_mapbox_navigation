@@ -16,12 +16,14 @@ import io.flutter.embedding.engine.FlutterEngine
 import io.flutter.embedding.engine.plugins.FlutterPlugin
 import io.flutter.embedding.engine.plugins.activity.ActivityAware
 import io.flutter.embedding.engine.plugins.activity.ActivityPluginBinding
+import io.flutter.plugin.common.BinaryMessenger
 import io.flutter.plugin.common.EventChannel
 import io.flutter.plugin.common.MethodCall
 import io.flutter.plugin.common.MethodChannel
 import io.flutter.plugin.common.MethodChannel.MethodCallHandler
 import io.flutter.plugin.common.MethodChannel.Result
 import io.flutter.plugin.common.PluginRegistry.Registrar
+import io.flutter.plugin.platform.PlatformViewRegistry
 import io.flutter.plugin.platform.PlatformViewsController
 import java.util.*
 
@@ -35,12 +37,16 @@ public class FlutterMapboxNavigationPlugin: FlutterPlugin, MethodCallHandler, Ev
   private lateinit var progressEventChannel: EventChannel
 
   override fun onAttachedToEngine(@NonNull flutterPluginBinding: FlutterPlugin.FlutterPluginBinding) {
-    var messenger = flutterPluginBinding.getFlutterEngine().getDartExecutor()
+    var messenger = flutterPluginBinding.binaryMessenger
     channel = MethodChannel(messenger, "flutter_mapbox_navigation")
     channel.setMethodCallHandler(this)
 
     progressEventChannel = EventChannel(messenger, "flutter_mapbox_navigation/events")
     progressEventChannel.setStreamHandler(this)
+
+    platformViewRegistry = flutterPluginBinding.platformViewRegistry
+    binaryMessenger = messenger;
+
 
   }
 
@@ -76,21 +82,11 @@ public class FlutterMapboxNavigationPlugin: FlutterPlugin, MethodCallHandler, Ev
     var tilt = 0.0
     var distanceRemaining: Double? = null
     var durationRemaining: Double? = null
+    var platformViewRegistry: PlatformViewRegistry? = null
+    var binaryMessenger: BinaryMessenger? = null
 
     @JvmStatic
     var view_name = "FlutterMapboxNavigationView"
-
-    @JvmStatic
-    var viewController: PlatformViewsController? = null
-
-    @JvmStatic
-    fun registerWith(engine: FlutterEngine) {
-      viewController = engine.platformViewsController
-      currentActivity?.let { activity ->
-        viewController?.registry?.registerViewFactory(
-                view_name, MapViewFactory(engine.dartExecutor.binaryMessenger, activity))
-      }
-    }
 
     @JvmStatic
     fun registerWith(registrar: Registrar) {
@@ -102,9 +98,14 @@ public class FlutterMapboxNavigationPlugin: FlutterPlugin, MethodCallHandler, Ev
 
       val progressEventChannel = EventChannel(messenger, "flutter_mapbox_navigation/events")
       progressEventChannel.setStreamHandler(instance)
-      
+
+      platformViewRegistry = registrar.platformViewRegistry()
+      binaryMessenger = messenger;
+
     }
   }
+
+
 
   override fun onMethodCall(@NonNull call: MethodCall, @NonNull result: Result) {
     when(call.method)
@@ -162,36 +163,17 @@ public class FlutterMapboxNavigationPlugin: FlutterPlugin, MethodCallHandler, Ev
         navigationVoiceUnits = DirectionsCriteria.METRIC
     }
 
+    mapStyleURL = arguments?.get("mapStyleURL") as? String
+
     wayPoints.clear()
-    
-    if(isMultiStop)
-    {
-      mapStyleURL = arguments?.get("mapStyleURL") as? String
-     
-      var points = arguments?.get("wayPoints") as HashMap<Int, Any>
-      for (item in points)
-      {
-        val point = item.value as HashMap<*, *>
-        val latitude = point["Latitude"] as Double
-        val longitude = point["Longitude"] as Double
-        wayPoints.add(Point.fromLngLat(longitude, latitude))
-      }
-    }
-    else
-    {
-      var originName = arguments?.get("originName") as? String
-      val originLatitude = arguments?.get("originLatitude") as? Double
-      val originLongitude = arguments?.get("originLongitude") as? Double
 
-      val destinationName = arguments?.get("destinationName") as? String
-      val destinationLatitude = arguments?.get("destinationLatitude") as? Double
-      val destinationLongitude = arguments?.get("destinationLongitude") as? Double
-
-      if(originLatitude != null && originLongitude != null && destinationLatitude != null && destinationLongitude != null)
-      {
-        wayPoints.add(Point.fromLngLat(originLongitude, originLatitude))
-        wayPoints.add(Point.fromLngLat(destinationLongitude, destinationLatitude))
-      }
+    val points = arguments?.get("wayPoints") as HashMap<Int, Any>
+    for (item in points)
+    {
+      val point = item.value as HashMap<*, *>
+      val latitude = point["Latitude"] as Double
+      val longitude = point["Longitude"] as Double
+      wayPoints.add(Point.fromLngLat(longitude, latitude))
     }
 
     checkPermissionAndBeginNavigation(wayPoints)
@@ -229,11 +211,9 @@ public class FlutterMapboxNavigationPlugin: FlutterPlugin, MethodCallHandler, Ev
   }
 
   override fun onDetachedFromEngine(@NonNull binding: FlutterPlugin.FlutterPluginBinding) {
-    viewController?.detachFromView()
+
     currentActivity = null
-
     channel.setMethodCallHandler(null)
-
     progressEventChannel.setStreamHandler(null)
 
   }
@@ -246,12 +226,16 @@ public class FlutterMapboxNavigationPlugin: FlutterPlugin, MethodCallHandler, Ev
   override fun onReattachedToActivityForConfigChanges(binding: ActivityPluginBinding) {
 
     currentActivity = binding.activity
+
   }
 
   override fun onAttachedToActivity(binding: ActivityPluginBinding) {
 
     currentActivity = binding.activity
     currentContext = binding.activity.applicationContext
+
+    if(platformViewRegistry != null && binaryMessenger != null && currentActivity != null)
+      platformViewRegistry?.registerViewFactory(view_name, MapViewFactory(binaryMessenger!!, currentActivity!!))
 
   }
 
