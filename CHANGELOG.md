@@ -1,3 +1,7 @@
+## 0.0.17
+* Offline Navigation
+* Bug Fixes
+
 ## 0.0.16
 * Refactoring with breaking changes. Sorry :-(
 * Add Embedded Navigation

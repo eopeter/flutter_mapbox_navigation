@@ -44,6 +44,10 @@ public class SwiftFlutterMapboxNavigationPlugin: NavigationFactory, FlutterPlugi
         {
             endNavigation(result: result)
         }
+        else if(call.method == "enableOfflineRouting")
+        {
+            downloadOfflineRoute(arguments: arguments, flutterResult: result)
+        }
         else
         {
             result("Method is Not Implemented");
@@ -123,10 +127,16 @@ public class NavigationFactory : NSObject, FlutterStreamHandler, NavigationViewC
         _isOptimized = arguments?["isOptimized"] as? Bool ?? _isOptimized
         _allowsUTurnAtWayPoints = arguments?["allowsUTurnAtWayPoints"] as? Bool
         _navigationMode = arguments?["mode"] as? String ?? "drivingWithTraffic"
+        
+        if(_wayPoints.count > 3 && arguments?["mode"] == nil)
+        {
+            _navigationMode = "driving"
+        }
         _mapStyleURL = arguments?["mapStyleURL"] as? String
         
         if(_wayPoints.count > 0)
         {
+            
             if(IsMultipleUniqueRoutes)
             {
                 startNavigationWithWayPoints(wayPoints: [_wayPoints.remove(at: 0), _wayPoints.remove(at: 0)], flutterResult: result)
@@ -221,8 +231,7 @@ public class NavigationFactory : NSObject, FlutterStreamHandler, NavigationViewC
             guard let strongSelf = self else { return }
             switch result {
             case .failure(let error):
-                strongSelf.sendEvent(eventType: MapBoxEventType.route_build_failed)
-            //flutterResult("An error occured while calculating the route \(error.localizedDescription)")
+                strongSelf.sendEvent(eventType: MapBoxEventType.route_build_failed, data: error.localizedDescription)
             case .success(let response):
                 strongSelf.sendEvent(eventType: MapBoxEventType.route_built)
                 guard let routes = response.routes else { return }
@@ -288,7 +297,7 @@ public class NavigationFactory : NSObject, FlutterStreamHandler, NavigationViewC
         
     }
     
-    func downloadOfflineRoute()
+    func downloadOfflineRoute(arguments: NSDictionary?, flutterResult: @escaping FlutterResult)
     {
         // Create a directions client and store it as a property on the view controller.
         self.navigationDirections = NavigationDirections(credentials: Directions.shared.credentials)
@@ -302,10 +311,12 @@ public class NavigationFactory : NSObject, FlutterStreamHandler, NavigationViewC
             // Download tiles using the most recent version.
             _ = self.navigationDirections!.downloadTiles(in: coordinateBounds, version: version) { (url, response, error) in
                 guard let url = url else {
+                    flutterResult(false)
                     preconditionFailure("Unable to locate temporary file.")
                 }
                 
                 guard let outputDirectoryURL = Bundle.mapboxCoreNavigation.suggestedTileURL(version: version) else {
+                    flutterResult(false)
                     preconditionFailure("No suggested tile URL.")
                 }
                 try? FileManager.default.createDirectory(at: outputDirectoryURL, withIntermediateDirectories: true, attributes: nil)
@@ -317,6 +328,7 @@ public class NavigationFactory : NSObject, FlutterStreamHandler, NavigationViewC
                     // Configure the offline router with the output directory where the tiles have been unpacked.
                     self.navigationDirections!.configureRouter(tilesURL: outputDirectoryURL) { (numberOfTiles) in
                         // Completed, dismiss UI
+                        flutterResult(true)
                     }
                 })
             }

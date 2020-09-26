@@ -120,16 +120,23 @@ public class FlutterMapboxNavigationPlugin: FlutterPlugin, MethodCallHandler, Ev
         result.success(durationRemaining);
       }
       "startNavigation" -> {
-        checkPermissionAndBeginNavigation(call, result, false)
+        checkPermissionAndBeginNavigation(call, result)
       }
       "finishNavigation" -> {
         NavigationLauncher.stopNavigation(currentActivity)
+      }
+      "enableOfflineRouting" -> {
+        downloadRegionForOfflineRouting(call, result)
       }
       else -> result.notImplemented()
     }
   }
   
-  private fun checkPermissionAndBeginNavigation(@NonNull call: MethodCall, @NonNull result: MethodChannel.Result, isMultiStop: Boolean)
+  private fun downloadRegionForOfflineRouting(@NonNull call: MethodCall, @NonNull result: MethodChannel.Result){
+    result.error("TODO", "Not Implemented in Android","will implement soon")
+  }
+  
+  private fun checkPermissionAndBeginNavigation(@NonNull call: MethodCall, @NonNull result: MethodChannel.Result)
   {
     var arguments = call.arguments as? Map<String, Any>
 

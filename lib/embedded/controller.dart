@@ -117,8 +117,8 @@ class MapBoxNavigationViewController {
   void _onProgressData(RouteEvent event) {
     if (_routeEventNotifier != null) _routeEventNotifier(event);
 
-    //if (event.eventType == MapBoxEvent.on_arrival)
-    //_routeEventSubscription.cancel();
+    if (event.eventType == MapBoxEvent.on_arrival)
+      _routeEventSubscription.cancel();
   }
 
   Stream<RouteEvent> get _streamRouteEvent {

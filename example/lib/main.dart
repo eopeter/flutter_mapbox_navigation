@@ -38,6 +38,8 @@ class _MyAppState extends State<MyApp> {
       name: "Far Far Away", latitude: 36.1175275, longitude: -115.1839524);
 
   MapBoxNavigation _directions;
+  MapBoxOptions _options;
+
   bool _arrived = false;
   bool _isMultipleStop = false;
   double _distanceRemaining, _durationRemaining;
@@ -59,6 +61,22 @@ class _MyAppState extends State<MyApp> {
     if (!mounted) return;
 
     _directions = MapBoxNavigation(onRouteEvent: _onEmbeddedRouteEvent);
+    _options = MapBoxOptions(
+        initialLatitude: 36.1175275,
+        initialLongitude: -115.1839524,
+        zoom: 13.0,
+        tilt: 0.0,
+        bearing: 0.0,
+        enableRefresh: false,
+        alternatives: true,
+        voiceInstructionsEnabled: true,
+        bannerInstructionsEnabled: true,
+        allowsUTurnAtWayPoints: true,
+        mode: MapBoxNavigationMode.drivingWithTraffic,
+        units: VoiceUnits.imperial,
+        simulateRoute: true,
+        animateBuildRoute: true,
+        language: "en");
 
     String platformVersion;
     // Platform messages may fail, so we use a try/catch PlatformException.
@@ -118,7 +136,7 @@ class _MyAppState extends State<MyApp> {
                                     mode:
                                         MapBoxNavigationMode.drivingWithTraffic,
                                     simulateRoute: true,
-                                    language: "en",
+                                    language: "da",
                                     units: VoiceUnits.metric));
                           },
                         ),
@@ -142,7 +160,7 @@ class _MyAppState extends State<MyApp> {
                                 options: MapBoxOptions(
                                     mode: MapBoxNavigationMode.driving,
                                     simulateRoute: true,
-                                    language: "en",
+                                    language: "da",
                                     allowsUTurnAtWayPoints: true,
                                     units: VoiceUnits.metric));
                           },
@@ -269,22 +287,7 @@ class _MyAppState extends State<MyApp> {
               child: Container(
                 color: Colors.grey,
                 child: MapBoxNavigationView(
-                    options: MapBoxOptions(
-                        //initialLatitude: 36.1175275,
-                        //initialLongitude: -115.1839524,
-                        zoom: 13.0,
-                        tilt: 0.0,
-                        bearing: 0.0,
-                        enableRefresh: false,
-                        alternatives: true,
-                        voiceInstructionsEnabled: true,
-                        bannerInstructionsEnabled: true,
-                        allowsUTurnAtWayPoints: true,
-                        mode: MapBoxNavigationMode.drivingWithTraffic,
-                        units: VoiceUnits.imperial,
-                        simulateRoute: true,
-                        animateBuildRoute: true,
-                        language: "en"),
+                    options: _options,
                     onRouteEvent: _onEmbeddedRouteEvent,
                     onCreated:
                         (MapBoxNavigationViewController controller) async {
