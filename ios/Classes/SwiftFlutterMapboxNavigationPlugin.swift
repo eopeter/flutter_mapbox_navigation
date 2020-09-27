@@ -85,6 +85,7 @@ public class NavigationFactory : NSObject, FlutterStreamHandler, NavigationViewC
     var _tilt: Double = 0.0
     var _bearing: Double = 0.0
     var _animateBuildRoute = true
+    var _longPressDestinationEnabled = true
     
     var navigationDirections: NavigationDirections?
     
@@ -584,7 +585,7 @@ public class FlutterMapboxNavigationView : NavigationFactory, MGLMapViewDelegate
             }
             else if(call.method == "buildRoute")
             {
-                strongSelf.buildRoute(arguments: arguments, result: result)
+                strongSelf.buildRoute(arguments: arguments, flutterResult: result)
             }
             else if(call.method == "clearRoute")
             {
@@ -646,6 +647,7 @@ public class FlutterMapboxNavigationView : NavigationFactory, MGLMapViewDelegate
             _bearing = arguments?["bearing"] as? Double ?? _bearing
             _tilt = arguments?["tilt"] as? Double ?? _tilt
             _animateBuildRoute = arguments?["animateBuildRoute"] as? Bool ?? _animateBuildRoute
+            _longPressDestinationEnabled = arguments?["longPressDestinationEnabled"] as? Bool ?? _longPressDestinationEnabled
             
             if(_mapStyleURL != nil)
             {
@@ -670,9 +672,14 @@ public class FlutterMapboxNavigationView : NavigationFactory, MGLMapViewDelegate
             }
             
         }
-        let gesture = UILongPressGestureRecognizer(target: self, action: #selector(handleLongPress(_:)))
-        gesture.delegate = self
-        mapView?.addGestureRecognizer(gesture)
+        
+        if _longPressDestinationEnabled
+        {
+            let gesture = UILongPressGestureRecognizer(target: self, action: #selector(handleLongPress(_:)))
+            gesture.delegate = self
+            mapView?.addGestureRecognizer(gesture)
+        }
+        
     }
     
     func clearRoute(arguments: NSDictionary?, result: @escaping FlutterResult)
@@ -681,7 +688,7 @@ public class FlutterMapboxNavigationView : NavigationFactory, MGLMapViewDelegate
         {
             return
         }
-        
+
         bindMapView()
         self.view().setNeedsDisplay()
         
@@ -691,7 +698,7 @@ public class FlutterMapboxNavigationView : NavigationFactory, MGLMapViewDelegate
         
     }
     
-    func buildRoute(arguments: NSDictionary?, result: @escaping FlutterResult)
+    func buildRoute(arguments: NSDictionary?, flutterResult: @escaping FlutterResult)
     {
         isEmbeddedNavigation = true
         sendEvent(eventType: MapBoxEventType.route_building)
@@ -768,6 +775,7 @@ public class FlutterMapboxNavigationView : NavigationFactory, MGLMapViewDelegate
         _ = Directions.shared.calculate(routeOptions) { [weak self] (session, result) in
             
             guard case let .success(response) = result, let route = response.routes?.first, let strongSelf = self else {
+                flutterResult(false)
                 self?.sendEvent(eventType: MapBoxEventType.route_build_failed)
                 return
             }
@@ -786,7 +794,7 @@ public class FlutterMapboxNavigationView : NavigationFactory, MGLMapViewDelegate
             // Optionally set a starting point.
             strongSelf.mapView.setCenter(center!, zoomLevel: 2, direction: 0, animated: false)
             strongSelf.moveCameraToCenter()
-            
+            flutterResult(true)
             //strongSelf.startEmbeddedNavigation()
         }
     }
@@ -809,6 +817,7 @@ public class FlutterMapboxNavigationView : NavigationFactory, MGLMapViewDelegate
         constraintsWithPaddingBetween(holderView: container, topView: _navigationViewController!.view, padding: 0.0)
         //navigationService.start()
         flutterViewController.didMove(toParent: flutterViewController)
+        result(true)
         
     }
     

@@ -39,7 +39,8 @@ class MapBoxNavigationViewController {
   /// [wayPoints] must not be null. A collection of [WayPoint](longitude, latitude and name). Must be at least 2 or at most 25. Cannot use drivingWithTraffic mode if more than 3-waypoints.
   /// [options] options used to generate the route and used while navigating
   ///
-  Future buildRoute({List<WayPoint> wayPoints, MapBoxOptions options}) async {
+  Future<bool> buildRoute(
+      {List<WayPoint> wayPoints, MapBoxOptions options}) async {
     assert(wayPoints != null);
     assert(wayPoints.length > 1);
     if (Platform.isIOS && wayPoints.length > 3 && options?.mode != null) {
@@ -72,9 +73,14 @@ class MapBoxNavigationViewController {
     args["wayPoints"] = wayPointMap;
 
     _routeEventSubscription = _streamRouteEvent.listen(_onProgressData);
-    await _methodChannel
+    return await _methodChannel
         .invokeMethod('buildRoute', args)
-        .then<String>((dynamic result) => result);
+        .then<bool>((dynamic result) => result);
+  }
+
+  /// starts listening for events
+  Future<void> initialize() async{
+    _routeEventSubscription = _streamRouteEvent.listen(_onProgressData);
   }
 
   /// Clear the built route and resets the map
@@ -83,8 +89,8 @@ class MapBoxNavigationViewController {
   }
 
   /// Starts the Navigation
-  Future<String> startNavigation({MapBoxOptions options}) async {
-    Map<String, dynamic> args = null;
+  Future<bool> startNavigation({MapBoxOptions options}) async {
+    Map<String, dynamic> args;
     if (options != null) args = options.toMap();
     //_routeEventSubscription = _streamRouteEvent.listen(_onProgressData);
     return _methodChannel.invokeMethod('startNavigation', args);

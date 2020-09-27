@@ -34,9 +34,15 @@ Add Turn By Turn Navigation to Your Flutter Application Using MapBox. Never leav
 </resources>
 ```
 
-1. Add the following permission to the app level Android Manifest
+1. Add the following permissions to the app level Android Manifest
 ```xml
-<uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"/>
+<manifest>
+    ...
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    ...
+</manifest>
 ```
 
 ## Usage

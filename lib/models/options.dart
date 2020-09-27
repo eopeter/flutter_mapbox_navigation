@@ -57,6 +57,9 @@ class MapBoxOptions {
   /// Should animate the building of the Route. Default is True
   final bool animateBuildRoute;
 
+  /// When the user long presses on a point on the map, set that as the destination
+  final bool longPressDestinationEnabled;
+
   MapBoxOptions(
       {this.initialLatitude,
       this.initialLongitude,
@@ -71,6 +74,7 @@ class MapBoxOptions {
       this.enableRefresh,
       this.voiceInstructionsEnabled,
       this.bannerInstructionsEnabled,
+      this.longPressDestinationEnabled,
       this.simulateRoute,
       this.isOptimized,
       this.mapStyleURL,
@@ -89,6 +93,7 @@ class MapBoxOptions {
     addIfNonNull("initialLongitude", initialLongitude);
     addIfNonNull("language", language);
     addIfNonNull("animateBuildRoute", animateBuildRoute);
+    addIfNonNull("longPressDestinationEnabled", longPressDestinationEnabled);
 
     if (this.zoom != null) optionsMap['zoom'] = this.zoom;
     if (this.bearing != null) optionsMap['bearing'] = this.bearing;

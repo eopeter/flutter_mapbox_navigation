@@ -64,7 +64,7 @@ class _MyAppState extends State<MyApp> {
     _options = MapBoxOptions(
         initialLatitude: 36.1175275,
         initialLongitude: -115.1839524,
-        zoom: 13.0,
+        zoom: 15.0,
         tilt: 0.0,
         bearing: 0.0,
         enableRefresh: false,
@@ -76,6 +76,7 @@ class _MyAppState extends State<MyApp> {
         units: VoiceUnits.imperial,
         simulateRoute: true,
         animateBuildRoute: true,
+        longPressDestinationEnabled: true,
         language: "en");
 
     String platformVersion;
@@ -292,6 +293,7 @@ class _MyAppState extends State<MyApp> {
                     onCreated:
                         (MapBoxNavigationViewController controller) async {
                       _controller = controller;
+                      controller.initialize();
                     }),
               ),
             )

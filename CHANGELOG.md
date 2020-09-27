@@ -1,3 +1,6 @@
+## 0.0.18
+* Bug Fixes
+
 ## 0.0.17
 * Offline Navigation
 * Bug Fixes
