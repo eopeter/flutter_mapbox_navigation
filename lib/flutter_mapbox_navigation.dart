@@ -101,7 +101,8 @@ class MapBoxNavigation {
 
   void _onProgressData(RouteEvent event) {
     if (_routeEventNotifier != null) _routeEventNotifier(event);
-    if (event.data is RouteProgressEvent && event.data.arrived)
+    if (event.data == MapBoxEvent.navigation_finished ||
+        event.data == MapBoxEvent.navigation_cancelled)
       _routeEventSubscription.cancel();
   }
 
