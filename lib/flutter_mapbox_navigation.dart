@@ -94,14 +94,14 @@ class MapBoxNavigation {
 
   /// Will download the navigation engine and the user's region to allow offline routing
   Future<bool> enableOfflineRouting() async {
-    var success = await _methodChannel.invokeMethod('enableOfflineRouting', null);
+    var success =
+        await _methodChannel.invokeMethod('enableOfflineRouting', null);
     return success;
   }
 
   void _onProgressData(RouteEvent event) {
     if (_routeEventNotifier != null) _routeEventNotifier(event);
-
-    if (event.eventType == MapBoxEvent.on_arrival)
+    if (event.data is RouteProgressEvent && event.data.arrived)
       _routeEventSubscription.cancel();
   }
 
