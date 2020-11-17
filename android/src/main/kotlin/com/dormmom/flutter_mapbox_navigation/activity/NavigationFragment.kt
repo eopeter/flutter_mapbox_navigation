@@ -146,7 +146,7 @@ class NavigationFragment : Fragment(), OnNavigationReadyCallback, NavigationList
                 .accessToken(accessToken)
                 .origin(origin)
                 .destination(destination)
-                .alternatives(true)
+                .alternatives(FlutterMapboxNavigationPlugin.alternatives)
                 .profile(FlutterMapboxNavigationPlugin.navigationMode)
                 .language(FlutterMapboxNavigationPlugin.navigationLanguage)
                 .voiceUnits(FlutterMapboxNavigationPlugin.navigationVoiceUnits)
