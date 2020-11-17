@@ -52,7 +52,7 @@ class PluginUtilities {
         }
 
         fun sendEvent(event: MapBoxEvents, data: String = "") {
-            val jsonString = if (MapBoxEvents.MILESTONE_EVENT == event) "{" +
+            val jsonString = if (MapBoxEvents.MILESTONE_EVENT == event || event == MapBoxEvents.USER_OFF_ROUTE) "{" +
                     "  \"eventType\": \"${event.value}\"," +
                     "  \"data\": $data" +
                     "}" else "{" +
