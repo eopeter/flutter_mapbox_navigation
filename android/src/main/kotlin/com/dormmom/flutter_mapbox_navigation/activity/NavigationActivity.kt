@@ -273,8 +273,8 @@ class NavigationActivity : AppCompatActivity(),
 
         navigationView?.retrieveNavigationMapboxMap()?.let {navigationMap ->
 
-            if(FlutterMapboxNavigationPlugin.mapStyleURL != null)
-                navigationMap.retrieveMap().setStyle(Style.Builder().fromUri(FlutterMapboxNavigationPlugin.mapStyleURL as String))
+            // if(FlutterMapboxNavigationPlugin.mapStyleURL != null)
+            //     navigationMap.retrieveMap().setStyle(Style.Builder().fromUri(FlutterMapboxNavigationPlugin.mapStyleURL as String))
 
             this.navigationMapboxMap = navigationMap
             this.navigationMapboxMap.updateLocationLayerRenderMode(RenderMode.NORMAL)
