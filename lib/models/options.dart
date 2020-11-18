@@ -134,49 +134,4 @@ class MapBoxOptions {
       ..removeWhere(
           (String key, dynamic value) => prevOptionsMap[key] == value);
   }
-
-  MapBoxOptions copyWith(
-          {initialLatitude,
-          initialLongitude,
-          language,
-          zoom,
-          bearing,
-          tilt,
-          alternatives,
-          mode,
-          units,
-          allowsUTurnAtWayPoints,
-          enableRefresh,
-          voiceInstructionsEnabled,
-          bannerInstructionsEnabled,
-          longPressDestinationEnabled,
-          simulateRoute,
-          isOptimized,
-          mapStyleURL,
-          padding,
-          animateBuildRoute}) =>
-      MapBoxOptions(
-          initialLatitude: initialLatitude ?? this.initialLatitude,
-          initialLongitude: initialLongitude ?? this.initialLongitude,
-          language: language ?? this.language,
-          zoom: zoom ?? this.zoom,
-          bearing: bearing ?? this.bearing,
-          tilt: tilt ?? this.tilt,
-          alternatives: alternatives ?? this.alternatives,
-          mode: mode ?? this.mode,
-          units: units ?? this.units,
-          allowsUTurnAtWayPoints:
-              allowsUTurnAtWayPoints ?? this.allowsUTurnAtWayPoints,
-          enableRefresh: enableRefresh ?? this.enableRefresh,
-          voiceInstructionsEnabled:
-              voiceInstructionsEnabled ?? this.voiceInstructionsEnabled,
-          bannerInstructionsEnabled:
-              bannerInstructionsEnabled ?? this.bannerInstructionsEnabled,
-          longPressDestinationEnabled:
-              longPressDestinationEnabled ?? this.longPressDestinationEnabled,
-          simulateRoute: simulateRoute ?? this.simulateRoute,
-          isOptimized: isOptimized ?? this.isOptimized,
-          mapStyleURL: mapStyleURL ?? this.mapStyleURL,
-          padding: padding ?? this.padding,
-          animateBuildRoute: animateBuildRoute ?? this.animateBuildRoute);
 }
