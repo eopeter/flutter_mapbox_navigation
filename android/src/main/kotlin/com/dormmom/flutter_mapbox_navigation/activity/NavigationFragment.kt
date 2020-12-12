@@ -9,7 +9,6 @@ import android.preference.PreferenceManager
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Toast
 import androidx.annotation.Nullable
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.fragment.app.Fragment
@@ -146,7 +145,7 @@ class NavigationFragment : Fragment(), OnNavigationReadyCallback, NavigationList
                 .accessToken(accessToken)
                 .origin(origin)
                 .destination(destination)
-                .alternatives(FlutterMapboxNavigationPlugin.alternatives)
+                .alternatives(FlutterMapboxNavigationPlugin.showAlternateRoutes)
                 .profile(FlutterMapboxNavigationPlugin.navigationMode)
                 .language(FlutterMapboxNavigationPlugin.navigationLanguage)
                 .voiceUnits(FlutterMapboxNavigationPlugin.navigationVoiceUnits)

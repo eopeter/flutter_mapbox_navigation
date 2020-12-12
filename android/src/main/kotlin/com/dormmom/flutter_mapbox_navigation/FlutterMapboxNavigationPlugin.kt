@@ -11,7 +11,6 @@ import com.dormmom.flutter_mapbox_navigation.factory.MapViewFactory
 import com.mapbox.api.directions.v5.DirectionsCriteria
 import com.mapbox.api.directions.v5.models.DirectionsRoute
 import com.mapbox.geojson.Point
-import io.flutter.embedding.engine.FlutterEngine
 
 import io.flutter.embedding.engine.plugins.FlutterPlugin
 import io.flutter.embedding.engine.plugins.activity.ActivityAware
@@ -24,7 +23,6 @@ import io.flutter.plugin.common.MethodChannel.MethodCallHandler
 import io.flutter.plugin.common.MethodChannel.Result
 import io.flutter.plugin.common.PluginRegistry.Registrar
 import io.flutter.plugin.platform.PlatformViewRegistry
-import io.flutter.plugin.platform.PlatformViewsController
 import java.util.*
 
 /** FlutterMapboxNavigationPlugin */
@@ -60,8 +58,6 @@ public class FlutterMapboxNavigationPlugin: FlutterPlugin, MethodCallHandler, Ev
   // depending on the user's project. onAttachedToEngine or registerWith must both be defined
   // in the same class.
   companion object {
-
-    val allowsUTurnsAtWayPoints = false
     private var currentActivity: Activity? = null
     private lateinit var currentContext: Context
     var eventSink:EventChannel.EventSink? = null
@@ -72,6 +68,8 @@ public class FlutterMapboxNavigationPlugin: FlutterPlugin, MethodCallHandler, Ev
     private var currentRoute: DirectionsRoute? = null
     val wayPoints: MutableList<Point> = mutableListOf()
 
+    var showAlternateRoutes: Boolean = true
+    var allowsUTurnsAtWayPoints: Boolean = false
     var navigationMode =  DirectionsCriteria.PROFILE_DRIVING_TRAFFIC
     var simulateRoute = false
     var mapStyleUrlDay: String? = null
@@ -105,9 +103,7 @@ public class FlutterMapboxNavigationPlugin: FlutterPlugin, MethodCallHandler, Ev
 
     }
   }
-
-
-
+  
   override fun onMethodCall(@NonNull call: MethodCall, @NonNull result: Result) {
     when(call.method)
     {
@@ -152,9 +148,19 @@ public class FlutterMapboxNavigationPlugin: FlutterPlugin, MethodCallHandler, Ev
         navigationMode = DirectionsCriteria.PROFILE_DRIVING;
     }
 
+    val alternateRoutes = arguments?.get("showAlternateRoutes") as? Boolean
+    if(alternateRoutes != null){
+      showAlternateRoutes = alternateRoutes
+    }
+
     val simulated = arguments?.get("simulateRoute") as? Boolean
     if (simulated != null) {
       simulateRoute = simulated
+    }
+
+    val allowsUTurns = arguments?.get("allowsUTurnsAtWayPoints") as? Boolean
+    if(allowsUTurns != null){
+      allowsUTurnsAtWayPoints = allowsUTurns
     }
 
     val language = arguments?.get("language") as? String

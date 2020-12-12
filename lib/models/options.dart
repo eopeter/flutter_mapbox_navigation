@@ -69,6 +69,8 @@ class MapBoxOptions {
   /// No destination is required when set to true.
   final bool enableFreeDriveMode;
 
+  final bool showAlternateRoutes;
+
   MapBoxOptions(
       {this.initialLatitude,
       this.initialLongitude,
@@ -90,6 +92,7 @@ class MapBoxOptions {
       this.mapStyleUrlNight,
       this.enableFreeDriveMode,
       this.padding,
+      this.showAlternateRoutes,
       this.animateBuildRoute});
 
   Map<String, dynamic> toMap() {
