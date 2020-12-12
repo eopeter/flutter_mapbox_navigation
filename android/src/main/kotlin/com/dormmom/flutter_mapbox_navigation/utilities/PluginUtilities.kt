@@ -1,4 +1,4 @@
-package com.dormmom.flutter_mapbox_navigation.utilities
+package com.dormmom.flutter_mapbox_navigation.utilities;
 
 import android.content.Context
 import android.graphics.BitmapFactory
@@ -21,8 +21,7 @@ import java.io.ByteArrayInputStream
 import java.io.InputStream
 import java.util.*
 
-class PluginUtilities 
-{
+class PluginUtilities {
     companion object {
         @JvmStatic
         fun getResourceFromContext(@NonNull context: Context, resName: String): String {
@@ -33,8 +32,7 @@ class PluginUtilities
             return context.getString(stringRes)
         }
 
-        fun getRandomLatLng(bbox: DoubleArray) : LatLng
-        {
+        fun getRandomLatLng(bbox: DoubleArray): LatLng {
             val random = Random()
 
             val randomLat: Double = bbox.get(1) + (bbox.get(3) - bbox.get(1)) * random.nextDouble()
@@ -54,10 +52,13 @@ class PluginUtilities
         }
 
         fun sendEvent(event: MapBoxEvents, data: String = "") {
-            val jsonString = "{" +
+            val jsonString = if (MapBoxEvents.MILESTONE_EVENT == event || event == MapBoxEvents.USER_OFF_ROUTE) "{" +
+                    "  \"eventType\": \"${event.value}\"," +
+                    "  \"data\": $data" +
+                    "}" else "{" +
                     "  \"eventType\": \"${event.value}\"," +
                     "  \"data\": \"$data\"" +
-                    "}"
+                    "}";
             FlutterMapboxNavigationPlugin.eventSink?.success(jsonString)
         }
 
@@ -108,7 +109,6 @@ class PluginUtilities
         }
 
 
-
         fun getLocaleFromCode(locale: String): Locale {
             val locales: Array<Locale> = Locale.getAvailableLocales()
 
@@ -126,7 +126,7 @@ class PluginUtilities
         fun isNetworkAvailable(context: Context): Boolean {
             val connectivityManager = context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                val nw      = connectivityManager.activeNetwork ?: return false
+                val nw = connectivityManager.activeNetwork ?: return false
                 val actNw = connectivityManager.getNetworkCapabilities(nw) ?: return false
                 return when {
                     actNw.hasTransport(NetworkCapabilities.TRANSPORT_WIFI) -> true

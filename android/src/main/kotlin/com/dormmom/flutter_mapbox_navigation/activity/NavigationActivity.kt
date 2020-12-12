@@ -72,6 +72,8 @@ class NavigationActivity : AppCompatActivity(),
     private val route by lazy { intent.getSerializableExtra("route") as? DirectionsRoute }
     private var points: MutableList<Point> = mutableListOf()
 
+    private var currentDestination: Point? = null;
+
     override fun onCreate(savedInstanceState: Bundle?) {
 
         receiver = object : BroadcastReceiver() {
@@ -255,6 +257,10 @@ class NavigationActivity : AppCompatActivity(),
                         latitude = offRoutePoint?.latitude(),
                         longitude = offRoutePoint?.longitude()
                 ).toString())
+        if(offRoutePoint != null)
+            fetchRoute(offRoutePoint, getCurrentDestination());
+        else
+            fetchRoute(getLastKnownLocation(), getCurrentDestination());
     }
 
     override fun onRerouteAlong(directionsRoute: DirectionsRoute?) {
@@ -272,6 +278,7 @@ class NavigationActivity : AppCompatActivity(),
 
             if(FlutterMapboxNavigationPlugin.mapStyleUrlNight != null)
                 navigationMap.retrieveMap().setStyle(Style.Builder().fromUri(FlutterMapboxNavigationPlugin.mapStyleUrlNight as String))
+
 
             this.navigationMapboxMap = navigationMap
             this.navigationMapboxMap.updateLocationLayerRenderMode(RenderMode.NORMAL)
@@ -320,7 +327,7 @@ class NavigationActivity : AppCompatActivity(),
             finish()
             return
         }
-
+        currentDestination = destination
         NavigationRoute.builder(this)
                 .accessToken(accessToken)
                 .origin(origin)
@@ -353,6 +360,9 @@ class NavigationActivity : AppCompatActivity(),
 
     private fun getLastKnownLocation(): Point {
         return Point.fromLngLat(lastKnownLocation?.longitude!!, lastKnownLocation?.latitude!!)
+    }
+    private fun getCurrentDestination(): Point {
+        return Point.fromLngLat(currentDestination?.longitude()!!, currentDestination?.latitude()!!)
     }
 
     override fun allowRerouteFrom(offRoutePoint: Point?): Boolean {

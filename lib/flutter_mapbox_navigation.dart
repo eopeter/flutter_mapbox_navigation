@@ -48,6 +48,8 @@ class MapBoxNavigation {
   /// [options] options used to generate the route and used while navigating
   /// Begins to generate Route Progress
   ///
+  int currentLegIndex = 0;
+  int legsCount = 0;
   Future startNavigation(
       {List<WayPoint> wayPoints, MapBoxOptions options}) async {
     assert(wayPoints != null);
@@ -80,6 +82,9 @@ class MapBoxNavigation {
     var args = options.toMap();
     args["wayPoints"] = wayPointMap;
 
+    currentLegIndex = 0;
+    legsCount = wayPoints.length - 1;
+
     _routeEventSubscription = _streamRouteEvent.listen(_onProgressData);
     await _methodChannel
         .invokeMethod('startNavigation', args)
@@ -94,14 +99,20 @@ class MapBoxNavigation {
 
   /// Will download the navigation engine and the user's region to allow offline routing
   Future<bool> enableOfflineRouting() async {
-    var success = await _methodChannel.invokeMethod('enableOfflineRouting', null);
+    var success =
+        await _methodChannel.invokeMethod('enableOfflineRouting', null);
     return success;
   }
 
   void _onProgressData(RouteEvent event) {
     if (_routeEventNotifier != null) _routeEventNotifier(event);
 
-    if (event.eventType == MapBoxEvent.on_arrival)
+    if (event.eventType == MapBoxEvent.on_arrival) {
+      if (currentLegIndex >= legsCount - 1)
+        _routeEventSubscription.cancel();
+      else
+        currentLegIndex++;
+    } else if (event.eventType == MapBoxEvent.navigation_finished)
       _routeEventSubscription.cancel();
   }
 
