@@ -148,7 +148,7 @@ public class FlutterMapboxNavigationPlugin: FlutterPlugin, MethodCallHandler, Ev
         navigationMode = DirectionsCriteria.PROFILE_DRIVING;
     }
 
-    val alternateRoutes = arguments?.get("showAlternateRoutes") as? Boolean
+    val alternateRoutes = arguments?.get("alternatives") as? Boolean
     if(alternateRoutes != null){
       showAlternateRoutes = alternateRoutes
     }

@@ -27,11 +27,13 @@ class MapBoxOptions {
   ///
   /// The map camera tilt can also adjust by placing two fingertips on the map and moving both fingers up and down in parallel at the same time or
   final double tilt;
+  ///
+  /// When true, alternate routes will be presented
   final bool alternatives;
-
+  ///
   /// The navigation mode desired. Defaults to drivingWithTraffic
   final MapBoxNavigationMode mode;
-
+  /// The unit of measure said in voice instructions
   final VoiceUnits units;
 
   /// If the value of this property is true, a returned route may require an immediate U-turn at an intermediate waypoint. At an intermediate waypoint, if the value of this property is false, each returned route may continue straight ahead or turn to either side but may not U-turn. This property has no effect if only two waypoints are specified.
@@ -69,8 +71,6 @@ class MapBoxOptions {
   /// No destination is required when set to true.
   final bool enableFreeDriveMode;
 
-  final bool showAlternateRoutes;
-
   MapBoxOptions(
       {this.initialLatitude,
       this.initialLongitude,
@@ -92,7 +92,6 @@ class MapBoxOptions {
       this.mapStyleUrlNight,
       this.enableFreeDriveMode,
       this.padding,
-      this.showAlternateRoutes,
       this.animateBuildRoute});
 
   Map<String, dynamic> toMap() {
