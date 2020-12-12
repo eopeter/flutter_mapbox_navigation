@@ -62,8 +62,8 @@ class _MyAppState extends State<MyApp> {
 
     _directions = MapBoxNavigation(onRouteEvent: _onEmbeddedRouteEvent);
     _options = MapBoxOptions(
-        initialLatitude: 36.1175275,
-        initialLongitude: -115.1839524,
+        //initialLatitude: 36.1175275,
+        //initialLongitude: -115.1839524,
         zoom: 15.0,
         tilt: 0.0,
         bearing: 0.0,
@@ -74,7 +74,7 @@ class _MyAppState extends State<MyApp> {
         allowsUTurnAtWayPoints: true,
         mode: MapBoxNavigationMode.drivingWithTraffic,
         units: VoiceUnits.imperial,
-        simulateRoute: true,
+        simulateRoute: false,
         animateBuildRoute: true,
         longPressDestinationEnabled: true,
         language: "en");
@@ -137,7 +137,7 @@ class _MyAppState extends State<MyApp> {
                                     mode:
                                         MapBoxNavigationMode.drivingWithTraffic,
                                     simulateRoute: true,
-                                    language: "da",
+                                    language: "en",
                                     units: VoiceUnits.metric));
                           },
                         ),
@@ -161,7 +161,7 @@ class _MyAppState extends State<MyApp> {
                                 options: MapBoxOptions(
                                     mode: MapBoxNavigationMode.driving,
                                     simulateRoute: true,
-                                    language: "da",
+                                    language: "en",
                                     allowsUTurnAtWayPoints: true,
                                     units: VoiceUnits.metric));
                           },

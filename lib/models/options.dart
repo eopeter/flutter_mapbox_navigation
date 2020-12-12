@@ -39,14 +39,19 @@ class MapBoxOptions {
   final bool allowsUTurnAtWayPoints;
 
   final bool enableRefresh;
+  // if true voice instruction is enabled
   final bool voiceInstructionsEnabled;
+  //if true, banner instruction is shown and returned
   final bool bannerInstructionsEnabled;
 
   /// if true will simulate the route as if you were driving. Always true on iOS Simulator
   final bool simulateRoute;
 
-  /// The Url of the style the Navigation MapView should use
-  final String mapStyleURL;
+  /// The Url of the style the Navigation MapView should use during the day
+  final String mapStyleUrlDay;
+
+  /// The Url of the style the Navigation MapView should use at night
+  final String mapStyleUrlNight;
 
   /// if true, will reorder the routes to optimize navigation for time and shortest distance using the Travelling Salesman Algorithm. Always false for now
   final bool isOptimized;
@@ -59,6 +64,10 @@ class MapBoxOptions {
 
   /// When the user long presses on a point on the map, set that as the destination
   final bool longPressDestinationEnabled;
+
+  /// Free-drive mode is a unique Mapbox Navigation SDK feature that allows drivers to navigate without a set destination. This mode is sometimes referred to as passive navigation.
+  /// No destination is required when set to true.
+  final bool enableFreeDriveMode;
 
   MapBoxOptions(
       {this.initialLatitude,
@@ -77,7 +86,9 @@ class MapBoxOptions {
       this.longPressDestinationEnabled,
       this.simulateRoute,
       this.isOptimized,
-      this.mapStyleURL,
+      this.mapStyleUrlDay,
+      this.mapStyleUrlNight,
+      this.enableFreeDriveMode,
       this.padding,
       this.animateBuildRoute});
 
@@ -112,7 +123,10 @@ class MapBoxOptions {
     addIfNonNull("voiceInstructionsEnabled", voiceInstructionsEnabled);
     addIfNonNull("bannerInstructionsEnabled", bannerInstructionsEnabled);
 
-    if (this.mapStyleURL != null) optionsMap['mapStyleURL'] = this.mapStyleURL;
+    if (this.mapStyleUrlDay != null)
+      optionsMap['mapStyleUrlDay'] = this.mapStyleUrlDay;
+    if (this.mapStyleUrlNight != null)
+      optionsMap['mapStyleUrlNight'] = this.mapStyleUrlNight;
     if (this.simulateRoute != null)
       optionsMap['simulateRoute'] = this.simulateRoute;
     if (this.isOptimized != null) optionsMap['isOptimized'] = this.isOptimized;

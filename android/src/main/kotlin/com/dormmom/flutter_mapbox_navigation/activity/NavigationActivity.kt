@@ -273,8 +273,12 @@ class NavigationActivity : AppCompatActivity(),
 
         navigationView?.retrieveNavigationMapboxMap()?.let {navigationMap ->
 
-            // if(FlutterMapboxNavigationPlugin.mapStyleURL != null)
-            //     navigationMap.retrieveMap().setStyle(Style.Builder().fromUri(FlutterMapboxNavigationPlugin.mapStyleURL as String))
+            if(FlutterMapboxNavigationPlugin.mapStyleUrlDay != null)
+                navigationMap.retrieveMap().setStyle(Style.Builder().fromUri(FlutterMapboxNavigationPlugin.mapStyleUrlDay as String))
+
+            if(FlutterMapboxNavigationPlugin.mapStyleUrlNight != null)
+                navigationMap.retrieveMap().setStyle(Style.Builder().fromUri(FlutterMapboxNavigationPlugin.mapStyleUrlNight as String))
+
 
             this.navigationMapboxMap = navigationMap
             this.navigationMapboxMap.updateLocationLayerRenderMode(RenderMode.NORMAL)

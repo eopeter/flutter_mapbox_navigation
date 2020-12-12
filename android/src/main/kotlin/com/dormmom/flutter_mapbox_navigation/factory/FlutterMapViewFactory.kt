@@ -613,9 +613,9 @@ class FlutterMapViewFactory  :
         //mapView.onStop()
     }
 
-    override fun onActivitySaveInstanceState(activity: Activity, outState: Bundle?) {
+    override fun onActivitySaveInstanceState(@NonNull p0: Activity, @NonNull outState: Bundle) {
 
-        mapView.onSaveInstanceState(outState!!)
+        mapView.onSaveInstanceState(outState)
     }
 
     override fun onActivityDestroyed(activity: Activity) {

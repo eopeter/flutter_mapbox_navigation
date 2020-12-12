@@ -52,7 +52,7 @@ Add Turn By Turn Navigation to Your Flutter Application Using MapBox. Never leav
 
 ```dart
 
-  MapboxNavigation _directions;
+  MapBoxNavigation _directions;
 
 ```
 
