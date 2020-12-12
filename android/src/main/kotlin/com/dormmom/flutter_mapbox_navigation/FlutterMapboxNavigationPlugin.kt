@@ -37,7 +37,7 @@ public class FlutterMapboxNavigationPlugin: FlutterPlugin, MethodCallHandler, Ev
   private lateinit var progressEventChannel: EventChannel
 
   override fun onAttachedToEngine(@NonNull flutterPluginBinding: FlutterPlugin.FlutterPluginBinding) {
-    var messenger = flutterPluginBinding.binaryMessenger
+    val messenger = flutterPluginBinding.binaryMessenger
     channel = MethodChannel(messenger, "flutter_mapbox_navigation")
     channel.setMethodCallHandler(this)
 
@@ -74,7 +74,8 @@ public class FlutterMapboxNavigationPlugin: FlutterPlugin, MethodCallHandler, Ev
 
     var navigationMode =  DirectionsCriteria.PROFILE_DRIVING_TRAFFIC
     var simulateRoute = false
-    var mapStyleURL: String? = null
+    var mapStyleUrlDay: String? = null
+    var mapStyleUrlNight: String? = null
     var navigationLanguage = Locale("en")
     var navigationVoiceUnits = DirectionsCriteria.IMPERIAL
     var zoom = 15.0
@@ -90,8 +91,8 @@ public class FlutterMapboxNavigationPlugin: FlutterPlugin, MethodCallHandler, Ev
 
     @JvmStatic
     fun registerWith(registrar: Registrar) {
-      var messenger = registrar.messenger()
-      var instance = FlutterMapboxNavigationPlugin()
+      val messenger = registrar.messenger()
+      val instance = FlutterMapboxNavigationPlugin()
 
       val channel = MethodChannel(messenger, "flutter_mapbox_navigation")
       channel.setMethodCallHandler(instance)
@@ -138,7 +139,7 @@ public class FlutterMapboxNavigationPlugin: FlutterPlugin, MethodCallHandler, Ev
   
   private fun checkPermissionAndBeginNavigation(@NonNull call: MethodCall, @NonNull result: MethodChannel.Result)
   {
-    var arguments = call.arguments as? Map<String, Any>
+    val arguments = call.arguments as? Map<String, Any>
 
     val navMode = arguments?.get("mode") as? String
     if(navMode != null)
@@ -156,11 +157,11 @@ public class FlutterMapboxNavigationPlugin: FlutterPlugin, MethodCallHandler, Ev
       simulateRoute = simulated
     }
 
-    var language = arguments?.get("language") as? String
+    val language = arguments?.get("language") as? String
     if(language != null)
       navigationLanguage = Locale(language)
 
-    var units = arguments?.get("units") as? String
+    val units = arguments?.get("units") as? String
 
     if(units != null)
     {
@@ -170,7 +171,8 @@ public class FlutterMapboxNavigationPlugin: FlutterPlugin, MethodCallHandler, Ev
         navigationVoiceUnits = DirectionsCriteria.METRIC
     }
 
-    mapStyleURL = arguments?.get("mapStyleURL") as? String
+    mapStyleUrlDay = arguments?.get("mapStyleUrlDay") as? String
+    mapStyleUrlNight = arguments?.get("mapStyleUrlNight") as? String
 
     wayPoints.clear()
 
@@ -190,7 +192,7 @@ public class FlutterMapboxNavigationPlugin: FlutterPlugin, MethodCallHandler, Ev
   private fun checkPermissionAndBeginNavigation(wayPoints: List<Point>)
   {
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-      var haspermission = currentActivity?.checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION)
+      val haspermission = currentActivity?.checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION)
       if(haspermission != PackageManager.PERMISSION_GRANTED) {
         //_activity.onRequestPermissionsResult((a,b,c) => onRequestPermissionsResult)
         currentActivity?.requestPermissions(arrayOf(Manifest.permission.ACCESS_FINE_LOCATION), PERMISSION_REQUEST_CODE)
@@ -256,7 +258,7 @@ public class FlutterMapboxNavigationPlugin: FlutterPlugin, MethodCallHandler, Ev
 
         for (permission in permissions) {
           if (permission == Manifest.permission.ACCESS_FINE_LOCATION) {
-            var haspermission = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            val haspermission = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
               currentActivity?.checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION)
             } else {
               TODO("VERSION.SDK_INT < M")

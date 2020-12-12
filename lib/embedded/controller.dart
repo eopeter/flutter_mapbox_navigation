@@ -79,7 +79,7 @@ class MapBoxNavigationViewController {
   }
 
   /// starts listening for events
-  Future<void> initialize() async{
+  Future<void> initialize() async {
     _routeEventSubscription = _streamRouteEvent.listen(_onProgressData);
   }
 
@@ -102,21 +102,12 @@ class MapBoxNavigationViewController {
     return success;
   }
 
+  /// Generic Handler for Messages sent from the Platform
   Future<dynamic> _handleMethod(MethodCall call) async {
     switch (call.method) {
       case 'sendFromNative':
         String text = call.arguments as String;
         return new Future.value("Text from native: $text");
-    }
-  }
-
-  Future<void> _receiveFromFlutter(String text) async {
-    try {
-      final String result = await _methodChannel
-          .invokeMethod('receiveFromFlutter', {"text": text});
-      print("Result from native: $result");
-    } on PlatformException catch (e) {
-      print("Error from native: $e.message");
     }
   }
 

@@ -2,6 +2,7 @@ package com.dormmom.flutter_mapbox_navigation.activity
 
 import android.app.Activity
 import android.app.Application
+import android.app.Application.ActivityLifecycleCallbacks
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
@@ -10,6 +11,7 @@ import android.os.Bundle
 import android.view.View
 import android.widget.Button
 import android.widget.Toast
+import androidx.annotation.NonNull
 import com.dormmom.flutter_mapbox_navigation.CustomNavigationNotification
 import com.dormmom.flutter_mapbox_navigation.R
 import com.dormmom.flutter_mapbox_navigation.utilities.PluginUtilities
@@ -44,7 +46,7 @@ import java.lang.ref.WeakReference
 import java.util.concurrent.atomic.AtomicInteger
 
 
-class RouteMapActivity : Activity(), Application.ActivityLifecycleCallbacks, OnMapReadyCallback,
+class RouteMapActivity : Activity(), ActivityLifecycleCallbacks, OnMapReadyCallback,
         MapboxMap.OnMapClickListener, ProgressChangeListener, NavigationEventListener,
         MilestoneEventListener, OffRouteListener, RefreshCallback
 {
@@ -315,7 +317,7 @@ class RouteMapActivity : Activity(), Application.ActivityLifecycleCallbacks, OnM
         state.set(STOPPED)
     }
 
-    override fun onActivitySaveInstanceState(activity: Activity?, outState: Bundle) {
+    override fun onActivitySaveInstanceState(@NonNull p0: Activity, @NonNull outState: Bundle) {
         mapView?.onSaveInstanceState(outState);
     }
 

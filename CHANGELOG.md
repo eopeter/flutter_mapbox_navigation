@@ -1,3 +1,7 @@
+## 0.0.19
+* Gradle Updates
+* Bug Fixes
+
 ## 0.0.18
 * Bug Fixes
 
