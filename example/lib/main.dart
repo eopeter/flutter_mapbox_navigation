@@ -136,7 +136,7 @@ class _MyAppState extends State<MyApp> {
                                 options: MapBoxOptions(
                                     mode:
                                         MapBoxNavigationMode.drivingWithTraffic,
-                                    simulateRoute: true,
+                                    simulateRoute: false,
                                     language: "en",
                                     units: VoiceUnits.metric));
                           },

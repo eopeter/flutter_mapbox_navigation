@@ -1,4 +1,5 @@
 ## 0.0.19
+* Upgrade MapBox Android to v1.0.1
 * Gradle Updates
 * Bug Fixes
 
