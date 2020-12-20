@@ -80,7 +80,8 @@ public class NavigationFactory : NSObject, FlutterStreamHandler, NavigationViewC
     var _isOptimized = false
     var _language = "en"
     var _voiceUnits = "imperial"
-    var _mapStyleURL: String?
+    var _mapStyleUrlDay: String?
+    var _mapStyleUrlNight: String?
     var _zoom: Double = 13.0
     var _tilt: Double = 0.0
     var _bearing: Double = 0.0
@@ -133,11 +134,10 @@ public class NavigationFactory : NSObject, FlutterStreamHandler, NavigationViewC
         {
             _navigationMode = "driving"
         }
-        _mapStyleURL = arguments?["mapStyleURL"] as? String
-        
+        _mapStyleUrlDay = arguments?["mapStyleUrlDay"] as? String
+        _mapStyleUrlNight = arguments?["mapStyleUrlNight"] as? String
         if(_wayPoints.count > 0)
         {
-            
             if(IsMultipleUniqueRoutes)
             {
                 startNavigationWithWayPoints(wayPoints: [_wayPoints.remove(at: 0), _wayPoints.remove(at: 0)], flutterResult: result)
@@ -202,10 +202,17 @@ public class NavigationFactory : NSObject, FlutterStreamHandler, NavigationViewC
                 {
                     let route = routes.first!
                     let navigationService = MapboxNavigationService(route: route, routeOptions: options, simulating: simulationMode)
-                    let navigationOptions = NavigationOptions(styles: [CustomDayStyle(url: strongSelf._mapStyleURL), CustomNightStyle()], navigationService: navigationService)
+                    var dayStyle = CustomDayStyle()
+                    if(strongSelf._mapStyleUrlDay != nil){
+                        dayStyle = CustomDayStyle(url: strongSelf._mapStyleUrlDay)
+                    }
+                    let nightStyle = CustomNightStyle()
+                    if(strongSelf._mapStyleUrlNight != nil){
+                        nightStyle.mapStyleURL = URL(string: strongSelf._mapStyleUrlNight!)!
+                    }
+                    let navigationOptions = NavigationOptions(styles: [dayStyle, nightStyle], navigationService: navigationService)
                     strongSelf.startNavigation(route: route, options: options, navOptions: navigationOptions)
                 }
-            //strongSelf.startNavigation(route: routes.first!, options: options)
             }
         }
         
@@ -642,16 +649,16 @@ public class FlutterMapboxNavigationView : NavigationFactory, MGLMapViewDelegate
             _isOptimized = arguments?["isOptimized"] as? Bool ?? _isOptimized
             _allowsUTurnAtWayPoints = arguments?["allowsUTurnAtWayPoints"] as? Bool
             _navigationMode = arguments?["mode"] as? String ?? "drivingWithTraffic"
-            _mapStyleURL = arguments?["mapStyleURL"] as? String
+            _mapStyleUrlDay = arguments?["mapStyleUrlDay"] as? String
             _zoom = arguments?["zoom"] as? Double ?? _zoom
             _bearing = arguments?["bearing"] as? Double ?? _bearing
             _tilt = arguments?["tilt"] as? Double ?? _tilt
             _animateBuildRoute = arguments?["animateBuildRoute"] as? Bool ?? _animateBuildRoute
             _longPressDestinationEnabled = arguments?["longPressDestinationEnabled"] as? Bool ?? _longPressDestinationEnabled
             
-            if(_mapStyleURL != nil)
+            if(_mapStyleUrlDay != nil)
             {
-                mapView.styleURL = URL(string: _mapStyleURL!)
+                mapView.styleURL = URL(string: _mapStyleUrlDay!)
             }
             
             var currentLoc: CLLocation!
@@ -742,8 +749,8 @@ public class FlutterMapboxNavigationView : NavigationFactory, MGLMapViewDelegate
         {
             _navigationMode = "driving"
         }
-        _mapStyleURL = arguments?["mapStyleURL"] as? String
-    
+        _mapStyleUrlDay = arguments?["mapStyleUrlDay"] as? String
+        _mapStyleUrlNight = arguments?["mapStyleUrlNight"] as? String
         
         var mode: DirectionsProfileIdentifier = .automobileAvoidingTraffic
         
@@ -804,7 +811,15 @@ public class FlutterMapboxNavigationView : NavigationFactory, MGLMapViewDelegate
         
         guard let route = route else { return }
         let navigationService = MapboxNavigationService(route: route, routeOptions: routeOptions!, simulating: self._simulateRoute ? .always : .onPoorGPS)
-        let navigationOptions = NavigationOptions(navigationService: navigationService)
+        var dayStyle = CustomDayStyle()
+        if(_mapStyleUrlDay != nil){
+            dayStyle = CustomDayStyle(url: _mapStyleUrlDay)
+        }
+        let nightStyle = CustomNightStyle()
+        if(_mapStyleUrlNight != nil){
+            nightStyle.mapStyleURL = URL(string: _mapStyleUrlNight!)!
+        }
+        let navigationOptions = NavigationOptions(styles: [dayStyle, nightStyle], navigationService: navigationService)
         _navigationViewController = NavigationViewController(for: route, routeOptions: routeOptions!, navigationOptions: navigationOptions)
         _navigationViewController!.delegate = self
         

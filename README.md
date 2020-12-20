@@ -82,6 +82,8 @@ Add Turn By Turn Navigation to Your Flutter Application Using MapBox. Never leav
                      bannerInstructionsEnabled: true,
                      allowsUTurnAtWayPoints: true,
                      mode: MapBoxNavigationMode.drivingWithTraffic,
+                     mapStyleUrlDay: "https://url_to_day_style",
+                     mapStyleUrlNight: "https://url_to_night_style",
                      units: VoiceUnits.imperial,
                      simulateRoute: true,
                      language: "en")
