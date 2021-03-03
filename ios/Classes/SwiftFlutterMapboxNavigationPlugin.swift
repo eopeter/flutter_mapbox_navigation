@@ -210,7 +210,7 @@ public class NavigationFactory : NSObject, FlutterStreamHandler, NavigationViewC
                     if(strongSelf._mapStyleUrlNight != nil){
                         nightStyle.mapStyleURL = URL(string: strongSelf._mapStyleUrlNight!)!
                     }
-                    let navigationOptions = NavigationOptions(styles: [dayStyle, nightStyle], navigationService: navigationService)
+                    let navigationOptions = NavigationOptions(styles: [dayStyle], navigationService: navigationService)
                     strongSelf.startNavigation(route: route, options: options, navOptions: navigationOptions)
                 }
             }
@@ -364,6 +364,10 @@ public class NavigationFactory : NSObject, FlutterStreamHandler, NavigationViewC
                 _eventSink = nil
             }
         }
+    }
+    
+    public func navigationViewController(_ navigationViewController: NavigationViewController, shouldRerouteFrom location: CLLocation) -> Bool {
+        return false
     }
     
     public func navigationViewController(_ navigationViewController: NavigationViewController, didArriveAt waypoint: Waypoint) -> Bool {
@@ -695,7 +699,7 @@ public class FlutterMapboxNavigationView : NavigationFactory, MGLMapViewDelegate
         {
             return
         }
-
+        
         bindMapView()
         self.view().setNeedsDisplay()
         
@@ -777,7 +781,7 @@ public class FlutterMapboxNavigationView : NavigationFactory, MGLMapViewDelegate
         routeOptions.distanceMeasurementSystem = _voiceUnits == "imperial" ? .imperial : .metric
         routeOptions.locale = Locale(identifier: _language)
         
-
+        
         // Generate the route object and draw it on the map
         _ = Directions.shared.calculate(routeOptions) { [weak self] (session, result) in
             
@@ -841,6 +845,7 @@ public class FlutterMapboxNavigationView : NavigationFactory, MGLMapViewDelegate
             return
         }
         topView.translatesAutoresizingMaskIntoConstraints = false
+        
         let pinTop = NSLayoutConstraint(item: topView, attribute: .top, relatedBy: .equal,
                                         toItem: holderView, attribute: .top, multiplier: 1.0, constant: padding)
         let pinBottom = NSLayoutConstraint(item: topView, attribute: .bottom, relatedBy: .equal,
@@ -911,6 +916,7 @@ public class FlutterMapboxNavigationView : NavigationFactory, MGLMapViewDelegate
         moveCameraToCenter()
     }
     
+
     func moveCameraToCenter()
     {
         var duration = 5.0
@@ -955,7 +961,7 @@ public class RouteOptionsViewController : UIViewController, MGLMapViewDelegate
     
     public override func viewDidLoad() {
         super.viewDidLoad()
-        
+             
         mapView = NavigationMapView(frame: view.bounds)
         view.addSubview(mapView)
         mapView.delegate = self
@@ -1016,7 +1022,7 @@ public class RouteOptionsViewController : UIViewController, MGLMapViewDelegate
         let destination = Waypoint(coordinate: destination, coordinateAccuracy: -1, name: "Finish")
         
         // Specify that the route is intended for automobiles avoiding traffic
-        let routeOptions = NavigationRouteOptions(waypoints: [origin, destination], profileIdentifier: .automobileAvoidingTraffic)
+        let routeOptions = NavigationRouteOptions(waypoints: [origin, destination], profileIdentifier: .cycling)
         
         // Generate the route object and draw it on the map
         _ = Directions.shared.calculate(routeOptions) { [weak self] (session, result) in
@@ -1074,6 +1080,15 @@ public class RouteOptionsViewController : UIViewController, MGLMapViewDelegate
 
 class CustomDayStyle: DayStyle {
     
+    private let backgroundColor = #colorLiteral(red: 0.1611822248, green: 0.6845952868, blue: 0.6483739614, alpha: 1)
+    private let darkBackgroundColor = #colorLiteral(red: 0.0473754704, green: 0.4980872273, blue: 0.2575169504, alpha: 1)
+    private let secondaryBackgroundColor = #colorLiteral(red: 0.9842069745, green: 0.9843751788, blue: 0.9841964841, alpha: 1)
+    private let defaultGreenColor = #colorLiteral(red: 0.1611822248, green: 0.6845952868, blue: 0.6483739614, alpha: 1)
+    private let lightGrayColor = #colorLiteral(red: 0.501960814, green: 0.501960814, blue: 0.501960814, alpha: 1)
+    private let darkGrayColor = #colorLiteral(red: 0, green: 0, blue: 0, alpha: 1)
+    private let primaryLabelColor = #colorLiteral(red: 1, green: 1, blue: 1, alpha: 1)
+    private let secondaryLabelColor = #colorLiteral(red: 1, green: 1, blue: 1, alpha: 0.9)
+    
     required init() {
         super.init()
         initStyle()
@@ -1103,8 +1118,55 @@ class CustomDayStyle: DayStyle {
     override func apply() {
         super.apply()
         
-        // Begin styling the UI
-        //BottomBannerView.appearance().backgroundColor = .orange
+        ArrivalTimeLabel.appearance().textColor = lightGrayColor
+        BottomBannerView.appearance().backgroundColor = secondaryBackgroundColor
+        TopBannerView.appearance().backgroundColor = backgroundColor
+        DismissButton.appearance().backgroundColor = backgroundColor
+        DismissButton.appearance().textColor = primaryLabelColor
+        Button.appearance().textColor = #colorLiteral(red: 0.9842069745, green: 0.9843751788, blue: 0.9841964841, alpha: 1)
+        CancelButton.appearance().tintColor = defaultGreenColor
+        DistanceLabel.appearance(whenContainedInInstancesOf: [InstructionsBannerView.self]).unitTextColor = secondaryLabelColor
+        DistanceLabel.appearance(whenContainedInInstancesOf: [InstructionsBannerView.self]).valueTextColor = primaryLabelColor
+        DistanceLabel.appearance(whenContainedInInstancesOf: [StepInstructionsView.self]).unitTextColor = lightGrayColor
+        DistanceLabel.appearance(whenContainedInInstancesOf: [StepInstructionsView.self]).valueTextColor = darkGrayColor
+        DistanceRemainingLabel.appearance().textColor = lightGrayColor
+        
+        FloatingButton.appearance().backgroundColor = #colorLiteral(red: 0.9999960065, green: 1, blue: 1, alpha: 1)
+        FloatingButton.appearance().tintColor = defaultGreenColor
+        InstructionsBannerView.appearance().backgroundColor = backgroundColor
+        LaneView.appearance().primaryColor = #colorLiteral(red: 0.9842069745, green: 0.9843751788, blue: 0.9841964841, alpha: 1)
+        ManeuverView.appearance().backgroundColor = backgroundColor
+        ManeuverView.appearance(whenContainedInInstancesOf: [InstructionsBannerView.self]).primaryColor = #colorLiteral(red: 0.9842069745, green: 0.9843751788, blue: 0.9841964841, alpha: 1)
+        ManeuverView.appearance(whenContainedInInstancesOf: [InstructionsBannerView.self]).secondaryColor = #colorLiteral(red: 1, green: 1, blue: 1, alpha: 0.5)
+        ManeuverView.appearance(whenContainedInInstancesOf: [NextBannerView.self]).primaryColor = #colorLiteral(red: 0.9842069745, green: 0.9843751788, blue: 0.9841964841, alpha: 1)
+        ManeuverView.appearance(whenContainedInInstancesOf: [NextBannerView.self]).secondaryColor = #colorLiteral(red: 1, green: 1, blue: 1, alpha: 0.5)
+        ManeuverView.appearance(whenContainedInInstancesOf: [StepInstructionsView.self]).primaryColor = darkGrayColor
+        ManeuverView.appearance(whenContainedInInstancesOf: [StepInstructionsView.self]).secondaryColor = lightGrayColor
+        MarkerView.appearance().pinColor = defaultGreenColor
+        NextBannerView.appearance().backgroundColor = backgroundColor
+        NextInstructionLabel.appearance().textColor = #colorLiteral(red: 0.9842069745, green: 0.9843751788, blue: 0.9841964841, alpha: 1)
+        NavigationMapView.appearance().tintColor = defaultGreenColor
+        NavigationMapView.appearance().routeCasingColor = backgroundColor
+        NavigationMapView.appearance().trafficHeavyColor = #colorLiteral(red: 0.9995597005, green: 0, blue: 0, alpha: 1)
+        NavigationMapView.appearance().trafficLowColor = defaultGreenColor
+        NavigationMapView.appearance().trafficModerateColor = #colorLiteral(red: 1, green: 0.6184511781, blue: 0, alpha: 1)
+        NavigationMapView.appearance().trafficSevereColor = #colorLiteral(red: 0.7458544374, green: 0.0006075350102, blue: 0, alpha: 1)
+        NavigationMapView.appearance().trafficUnknownColor = defaultGreenColor
+        // Customize the color that appears on the traversed section of a route
+//        NavigationMapView.appearance().traversedRouteColor = #colorLiteral(red: 0.8039215803, green: 0.8039215803, blue: 0.8039215803, alpha: 0.5)
+        PrimaryLabel.appearance(whenContainedInInstancesOf: [InstructionsBannerView.self]).normalTextColor = primaryLabelColor
+        PrimaryLabel.appearance(whenContainedInInstancesOf: [StepInstructionsView.self]).normalTextColor = darkGrayColor
+        ResumeButton.appearance().backgroundColor = secondaryBackgroundColor
+        ResumeButton.appearance().tintColor = defaultGreenColor
+        SecondaryLabel.appearance(whenContainedInInstancesOf: [InstructionsBannerView.self]).normalTextColor = secondaryLabelColor
+        SecondaryLabel.appearance(whenContainedInInstancesOf: [StepInstructionsView.self]).normalTextColor = darkGrayColor
+        TimeRemainingLabel.appearance().textColor = lightGrayColor
+        TimeRemainingLabel.appearance().trafficUnknownColor = darkGrayColor
+        WayNameLabel.appearance().normalTextColor = defaultGreenColor
+        WayNameView.appearance().backgroundColor = secondaryBackgroundColor
+        
+       
+        
     }
 }
 
