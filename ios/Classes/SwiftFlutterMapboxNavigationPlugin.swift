@@ -72,6 +72,7 @@ public class NavigationFactory : NSObject, FlutterStreamHandler, NavigationViewC
     var _navigationMode: String?
     var _routes: [Route]?
     var _wayPoints = [Waypoint]()
+    var _matchingCoordinates = [Waypoint]()
     var _lastKnownLocation: CLLocation?
     
     var _options: NavigationRouteOptions?
@@ -98,6 +99,7 @@ public class NavigationFactory : NSObject, FlutterStreamHandler, NavigationViewC
         guard let oWayPoints = arguments?["wayPoints"] as? NSDictionary else {return}
         
         var locations = [Location]()
+        var coordinates = [CLLocationCoordinate2D]()
         
         for item in oWayPoints as NSDictionary
         {
@@ -108,20 +110,24 @@ public class NavigationFactory : NSObject, FlutterStreamHandler, NavigationViewC
             let order = point["Order"] as? Int
             let location = Location(name: oName, latitude: oLatitude, longitude: oLongitude, order: order)
             locations.append(location)
+            
+            let coordinate = CLLocationCoordinate2D(latitude: oLatitude, longitude: oLongitude)
+            coordinates.append(coordinate)
         }
         
-        if(!_isOptimized)
-        {
-            //waypoints must be in the right order
-            locations.sort(by: {$0.order ?? 0 < $1.order ?? 0})
-        }
+    
+//        if(!_isOptimized)
+//        {
+//            //waypoints must be in the right order
+//            locations.sort(by: {$0.order ?? 0 < $1.order ?? 0})
+//        }
         
         
-        for loc in locations
-        {
-            let location = Waypoint(coordinate: CLLocationCoordinate2D(latitude: loc.latitude!, longitude: loc.longitude!), name: loc.name)
-            _wayPoints.append(location)
-        }
+//        for loc in locations
+//        {
+//            let location = Waypoint(coordinate: CLLocationCoordinate2D(latitude: loc.latitude!, longitude: loc.longitude!), name: loc.name)
+//            _wayPoints.append(location)
+//        }
         
         _language = arguments?["language"] as? String ?? _language
         _voiceUnits = arguments?["units"] as? String ?? _voiceUnits
@@ -132,22 +138,23 @@ public class NavigationFactory : NSObject, FlutterStreamHandler, NavigationViewC
         
         if(_wayPoints.count > 3 && arguments?["mode"] == nil)
         {
-            _navigationMode = "driving"
+            _navigationMode = "cycling"
         }
         _mapStyleUrlDay = arguments?["mapStyleUrlDay"] as? String
         _mapStyleUrlNight = arguments?["mapStyleUrlNight"] as? String
-        if(_wayPoints.count > 0)
-        {
-            if(IsMultipleUniqueRoutes)
-            {
-                startNavigationWithWayPoints(wayPoints: [_wayPoints.remove(at: 0), _wayPoints.remove(at: 0)], flutterResult: result)
-            }
-            else
-            {
-                startNavigationWithWayPoints(wayPoints: _wayPoints, flutterResult: result)
-            }
-            
-        }
+//        if(_wayPoints.count > 0)
+//        {
+//            if(IsMultipleUniqueRoutes)
+//            {
+//                startNavigationWithWayPoints(wayPoints: [_wayPoints.remove(at: 0), _wayPoints.remove(at: 0)], flutterResult: result)
+//            }
+//            else
+//            {
+//                startNavigationWithWayPoints(wayPoints: _wayPoints, flutterResult: result)
+//            }
+//
+//        }
+        startNavigationWithMapmatching(coordinates: coordinates)
     }
     
     func startNavigationWithWayPoints(wayPoints: [Waypoint], flutterResult: @escaping FlutterResult)
@@ -217,6 +224,98 @@ public class NavigationFactory : NSObject, FlutterStreamHandler, NavigationViewC
         }
         
     }
+    
+    func startNavigationWithMapmatching(coordinates: [CLLocationCoordinate2D]) {
+        
+       
+//        var coordinates = [CLLocationCoordinate2D]()
+//
+//        for item in oWayPoints as NSDictionary
+//        {
+//            let point = item.value as! NSDictionary
+//            guard let oLatitude = point["Latitude"] as? Double else {return}
+//            guard let oLongitude = point["Longitude"] as? Double else {return}
+//            let coordinate = CLLocationCoordinate2D(latitude: oLatitude, longitude: oLongitude)
+//            coordinates.append(coordinate)
+//        }
+        
+        
+        let matchingOptions = NavigationMatchOptions(coordinates: coordinates)
+        matchingOptions.includesSteps = true
+        
+        
+        var dayStyle = CustomDayStyle()
+        
+        let task = Directions.shared.calculateRoutes(matching: matchingOptions) { [self] (session, result) in
+            switch result {
+            case .failure(let error):
+                print("Error matching coordinates: \(error)")
+            case .success(let response):
+                guard let match = response.routes?.first, let leg = match.legs.first else {
+                    return
+                }
+                
+                print(match)
+                
+                let options = NavigationRouteOptions(coordinates: coordinates, profileIdentifier: .cycling)
+                        if (_allowsUTurnAtWayPoints != nil)
+                        {
+                            options.allowsUTurnAtWaypoint = _allowsUTurnAtWayPoints!
+                        }
+                        options.distanceMeasurementSystem = _voiceUnits == "imperial" ? .imperial : .metric
+                        options.locale = Locale(identifier: _language)
+
+                let route = match
+                let navigationService = MapboxNavigationService(route: route, routeOptions: options, simulating: .never)
+
+                let navigationOptions = NavigationOptions(styles: [dayStyle], navigationService: navigationService)
+                self.startNavigation(route: match, options: options, navOptions: navigationOptions)
+            }
+            // self.startNavigation(route: match, options: options, navOptions: navigationOptions)
+            
+        }
+    }
+    
+//    func startNavigationWithWaypointMapmatching() {
+//        let coordinates = [
+//
+//
+//        ] as [Waypoint]
+//
+//
+//
+//        var mode: DirectionsProfileIdentifier = .cycling
+//
+//
+//        let navOptions = NavigationRouteOptions(waypoints: coordinates, profileIdentifier: mode)
+//        navOptions.includesSteps = true
+//
+//        if (_allowsUTurnAtWayPoints != nil)
+//        {
+//            navOptions.allowsUTurnAtWaypoint = _allowsUTurnAtWayPoints!
+//        }
+//
+//        navOptions.distanceMeasurementSystem = _voiceUnits == "imperial" ? .imperial : .metric
+//        navOptions.locale = Locale(identifier: _language)
+//
+//        let task = Directions.shared.calculate(navOptions) { (session, result) in
+//            switch result {
+//            case .failure(let error):
+//                print("Error matching coordinates: \(error)")
+//            case .success(let response):
+//                guard let match = response.routes?.first, let leg = match.legs.first else {
+//                    return
+//                }
+//
+//                print(match)
+//
+//                let route = match
+//                let navigationService = MapboxNavigationService(route: route, routeOptions: navOptions, simulating: .never)
+//
+//                let navigationOptions = NavigationOptions(styles: [], navigationService: navigationService)
+//                self.startNavigation(route: route, options: navOptions, navOptions: navigationOptions)
+//            }
+//        }
     
     func startNavigation(route: Route, options: NavigationRouteOptions, navOptions: NavigationOptions)
     {
@@ -916,7 +1015,7 @@ public class FlutterMapboxNavigationView : NavigationFactory, MGLMapViewDelegate
         moveCameraToCenter()
     }
     
-
+    
     func moveCameraToCenter()
     {
         var duration = 5.0
@@ -961,7 +1060,7 @@ public class RouteOptionsViewController : UIViewController, MGLMapViewDelegate
     
     public override func viewDidLoad() {
         super.viewDidLoad()
-             
+        
         mapView = NavigationMapView(frame: view.bounds)
         view.addSubview(mapView)
         mapView.delegate = self
@@ -1153,7 +1252,7 @@ class CustomDayStyle: DayStyle {
         NavigationMapView.appearance().trafficSevereColor = #colorLiteral(red: 0.7458544374, green: 0.0006075350102, blue: 0, alpha: 1)
         NavigationMapView.appearance().trafficUnknownColor = defaultGreenColor
         // Customize the color that appears on the traversed section of a route
-//        NavigationMapView.appearance().traversedRouteColor = #colorLiteral(red: 0.8039215803, green: 0.8039215803, blue: 0.8039215803, alpha: 0.5)
+        //        NavigationMapView.appearance().traversedRouteColor = #colorLiteral(red: 0.8039215803, green: 0.8039215803, blue: 0.8039215803, alpha: 0.5)
         PrimaryLabel.appearance(whenContainedInInstancesOf: [InstructionsBannerView.self]).normalTextColor = primaryLabelColor
         PrimaryLabel.appearance(whenContainedInInstancesOf: [StepInstructionsView.self]).normalTextColor = darkGrayColor
         ResumeButton.appearance().backgroundColor = secondaryBackgroundColor
@@ -1165,7 +1264,7 @@ class CustomDayStyle: DayStyle {
         WayNameLabel.appearance().normalTextColor = defaultGreenColor
         WayNameView.appearance().backgroundColor = secondaryBackgroundColor
         
-       
+        
         
     }
 }
