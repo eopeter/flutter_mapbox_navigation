@@ -116,18 +116,18 @@ public class NavigationFactory : NSObject, FlutterStreamHandler, NavigationViewC
         }
         
     
-//        if(!_isOptimized)
-//        {
-//            //waypoints must be in the right order
-//            locations.sort(by: {$0.order ?? 0 < $1.order ?? 0})
-//        }
+        if(!_isOptimized)
+        {
+            //waypoints must be in the right order
+            locations.sort(by: {$0.order ?? 0 < $1.order ?? 0})
+        }
         
         
-//        for loc in locations
-//        {
-//            let location = Waypoint(coordinate: CLLocationCoordinate2D(latitude: loc.latitude!, longitude: loc.longitude!), name: loc.name)
-//            _wayPoints.append(location)
-//        }
+        for loc in locations
+        {
+            let location = Waypoint(coordinate: CLLocationCoordinate2D(latitude: loc.latitude!, longitude: loc.longitude!), name: loc.name)
+            _wayPoints.append(location)
+        }
         
         _language = arguments?["language"] as? String ?? _language
         _voiceUnits = arguments?["units"] as? String ?? _voiceUnits
@@ -142,19 +142,19 @@ public class NavigationFactory : NSObject, FlutterStreamHandler, NavigationViewC
         }
         _mapStyleUrlDay = arguments?["mapStyleUrlDay"] as? String
         _mapStyleUrlNight = arguments?["mapStyleUrlNight"] as? String
-//        if(_wayPoints.count > 0)
-//        {
-//            if(IsMultipleUniqueRoutes)
-//            {
-//                startNavigationWithWayPoints(wayPoints: [_wayPoints.remove(at: 0), _wayPoints.remove(at: 0)], flutterResult: result)
-//            }
-//            else
-//            {
-//                startNavigationWithWayPoints(wayPoints: _wayPoints, flutterResult: result)
-//            }
-//
-//        }
-        startNavigationWithMapmatching(coordinates: coordinates)
+       if(_wayPoints.count > 0)
+       {
+           if(IsMultipleUniqueRoutes)
+           {
+               startNavigationWithWayPoints(wayPoints: [_wayPoints.remove(at: 0), _wayPoints.remove(at: 0)], flutterResult: result)
+           }
+           else
+           {
+               startNavigationWithWayPoints(wayPoints: _wayPoints, flutterResult: result)
+           }
+
+       }
+ //       startNavigationWithMapmatching(coordinates: coordinates)
     }
     
     func startNavigationWithWayPoints(wayPoints: [Waypoint], flutterResult: @escaping FlutterResult)
@@ -242,6 +242,8 @@ public class NavigationFactory : NSObject, FlutterStreamHandler, NavigationViewC
         
         let matchingOptions = NavigationMatchOptions(coordinates: coordinates)
         matchingOptions.includesSteps = true
+        
+        print(coordinates.count)
         
         
         var dayStyle = CustomDayStyle()
