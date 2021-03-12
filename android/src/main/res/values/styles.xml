@@ -1,3 +1,41 @@
 <resources>
     <style name="AppTheme" parent="Theme.MaterialComponents.Light" />
+    <style name="CustomNavigationViewLight" parent="NavigationViewLight">
+        <!-- The main turn banner view at the top of the screen -->
+        <!-- Background color of the banner -->
+        <item name="navigationViewBannerBackground">#23AFA5</item>
+        <!-- Color for the primary label that displays the turn name -->
+        <item name="navigationViewBannerPrimaryText">#ffffff</item>
+        <!-- Color for the secondary label that occasionally appears underneath the primary label -->
+        <item name="navigationViewBannerSecondaryText">#ffffff</item>
+        <!-- Primary color for the turn arrow icons-->
+        <item name="navigationViewBannerManeuverPrimary">#ffffff</item>
+        <!-- Secondary color for the turn arrow icons (e.g. the line segment that forks off) -->
+        <item name="navigationViewBannerManeuverSecondary">#ffffff</item>
+        <!-- Alternate background color for the dropdown list of upcoming steps -->
+        <item name="navigationViewListBackground">#23AFA5</item>
+<!--        &lt;!&ndash; The summary view along the bottom of the screen &ndash;&gt;-->
+<!--        &lt;!&ndash; Background color of the summary view &ndash;&gt;-->
+<!--        <item name="navigationViewPrimary">#FFFFFF</item>-->
+<!--        &lt;!&ndash; Tint color for icons in the summary view &ndash;&gt;-->
+<!--        <item name="navigationViewSecondary">#28353D</item>-->
+<!--        &lt;!&ndash; Accent color for elements such as the recenter button &ndash;&gt;-->
+<!--        <item name="navigationViewAccent">#4882C6</item>-->
+<!--        &lt;!&ndash; Color for the main duration label in the summary view &ndash;&gt;-->
+<!--        <item name="navigationViewPrimaryText">#424242</item>-->
+<!--        &lt;!&ndash; Color for the secondary distance and ETA label in the summary view &ndash;&gt;-->
+<!--        <item name="navigationViewSecondaryText">#424242</item>-->
+<!--        &lt;!&ndash; Custom colors for progress bars displayed during navigation &ndash;&gt;-->
+<!--        <item name="navigationViewProgress">#4B75A4</item>-->
+<!--        <item name="navigationViewProgressBackground">#39587B</item>-->
+<!--&lt;!&ndash;        &lt;!&ndash; Custom colors for the route line and traffic &ndash;&gt;&ndash;&gt;-->
+<!--&lt;!&ndash;        <item name="navigationViewRouteStyle">@style/CustomNavigationMapRoute</item>&ndash;&gt;-->
+<!--        &lt;!&ndash; Map style &ndash;&gt;-->
+<!--        <item name="navigationViewMapStyle">mapbox://styles/mapbox/navigation-guidance-day-v2</item>-->
+<!--        &lt;!&ndash; Other components &ndash;&gt;-->
+<!--        <item name="navigationViewDivider">#4882C6</item>-->
+<!--        <item name="navigationViewRouteOverviewDrawable">#FAFAFA</item>-->
+<!--        <item name="navigationViewDestinationMarker">@drawable/map_marker_light</item>-->
+<!--        <item name="navigationViewLocationLayerStyle">@style/NavigationLocationLayerStyle</item>-->
+    </style>
 </resources>
