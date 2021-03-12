@@ -97,6 +97,7 @@ class NavigationActivity : AppCompatActivity(),
         if(p != null)
         {
             points = p
+            print("Waypoints length" + points.count())
         }
 
         navigationView = findViewById(R.id.navigationView)
@@ -332,8 +333,8 @@ class NavigationActivity : AppCompatActivity(),
                 .accessToken(accessToken)
                 .origin(origin)
                 .destination(destination)
-                .alternatives(true)
-                .profile(FlutterMapboxNavigationPlugin.navigationMode)
+                .alternatives(false)
+                .profile(DirectionsCriteria.PROFILE_CYCLING)
                 .language(FlutterMapboxNavigationPlugin.navigationLanguage)
                 .voiceUnits(FlutterMapboxNavigationPlugin.navigationVoiceUnits)
                 .continueStraight(!FlutterMapboxNavigationPlugin.allowsUTurnsAtWayPoints)

@@ -209,7 +209,7 @@ class RouteMapActivity : Activity(), ActivityLifecycleCallbacks, OnMapReadyCallb
             locationComponent.activateLocationComponent(this, it)
             locationComponent.renderMode = RenderMode.GPS
             locationComponent.isLocationComponentEnabled = false
-            navigationMapRoute = NavigationMapRoute(navigation, mapView!!, mapboxMap);
+            navigationMapRoute = NavigationMapRoute(navigation, mapView!!, mapboxMap, R.style.NavigationMapRoute);
 
             locationEngine = ReplayRouteLocationEngine()
             newOrigin()

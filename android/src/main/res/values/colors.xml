@@ -1,9 +1,30 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="colorPrimary">#23AFA5</color>
-    <color name="colorPrimaryDark">#23AFA5</color>
-    <color name="colorAccent">#23AFA5</color>
-    <color name="ic_launcher_background">#23AFA5</color>
-    <color name="red">#FF0000</color>
-    <color name="white">#FFFFFF</color>
+	<color name="colorPrimary">
+		#23AFA5
+	</color>
+	<color name="colorPrimaryDark">
+		#23AFA5
+	</color>
+	<color name="colorAccent">
+		#23AFA5
+	</color>
+	<color name="mapboxWhite">
+		#ffffff
+	</color>
+	<color name="mapboxBlue">
+		#23AFA5
+	</color>
+	<color name="mapboxGrayLight">
+		#23AFA5
+	</color>
+	<color name="mapboxPink">
+		#23AFA5
+	</color>
+	<color name="mapboxYellow">
+		#23AFA5
+	</color>
+	<color name="mapboxRed">
+		#23AFA5
+	</color>
 </resources>

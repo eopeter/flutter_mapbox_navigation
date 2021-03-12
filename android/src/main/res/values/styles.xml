@@ -14,13 +14,13 @@
         <item name="navigationViewBannerManeuverSecondary">#ffffff</item>
         <!-- Alternate background color for the dropdown list of upcoming steps -->
         <item name="navigationViewListBackground">#23AFA5</item>
-<!--        &lt;!&ndash; The summary view along the bottom of the screen &ndash;&gt;-->
-<!--        &lt;!&ndash; Background color of the summary view &ndash;&gt;-->
-<!--        <item name="navigationViewPrimary">#FFFFFF</item>-->
-<!--        &lt;!&ndash; Tint color for icons in the summary view &ndash;&gt;-->
-<!--        <item name="navigationViewSecondary">#28353D</item>-->
-<!--        &lt;!&ndash; Accent color for elements such as the recenter button &ndash;&gt;-->
-<!--        <item name="navigationViewAccent">#4882C6</item>-->
+        <!-- The summary view along the bottom of the screen -->
+        <!-- Background color of the summary view -->
+        <item name="navigationViewPrimary">#FFFFFF</item>
+        <!-- Tint color for icons in the summary view -->
+        <item name="navigationViewSecondary">#28353D</item>
+        <!-- Accent color for elements such as the recenter button -->
+        <item name="navigationViewAccent">#23AFA5</item>
 <!--        &lt;!&ndash; Color for the main duration label in the summary view &ndash;&gt;-->
 <!--        <item name="navigationViewPrimaryText">#424242</item>-->
 <!--        &lt;!&ndash; Color for the secondary distance and ETA label in the summary view &ndash;&gt;-->
@@ -28,14 +28,61 @@
 <!--        &lt;!&ndash; Custom colors for progress bars displayed during navigation &ndash;&gt;-->
 <!--        <item name="navigationViewProgress">#4B75A4</item>-->
 <!--        <item name="navigationViewProgressBackground">#39587B</item>-->
-<!--&lt;!&ndash;        &lt;!&ndash; Custom colors for the route line and traffic &ndash;&gt;&ndash;&gt;-->
-<!--&lt;!&ndash;        <item name="navigationViewRouteStyle">@style/CustomNavigationMapRoute</item>&ndash;&gt;-->
-<!--        &lt;!&ndash; Map style &ndash;&gt;-->
+        <!-- Custom colors for the route line and traffic -->
+        <item name="navigationViewRouteStyle">@style/CustomNavigationMapRoute</item>
+         Map style
 <!--        <item name="navigationViewMapStyle">mapbox://styles/mapbox/navigation-guidance-day-v2</item>-->
 <!--        &lt;!&ndash; Other components &ndash;&gt;-->
 <!--        <item name="navigationViewDivider">#4882C6</item>-->
 <!--        <item name="navigationViewRouteOverviewDrawable">#FAFAFA</item>-->
 <!--        <item name="navigationViewDestinationMarker">@drawable/map_marker_light</item>-->
 <!--        <item name="navigationViewLocationLayerStyle">@style/NavigationLocationLayerStyle</item>-->
+    </style>
+
+    <style name="CustomNavigationMapRoute">
+        <!-- Color of the primary route -->
+        <item name="routeColor">@color/colorPrimary</item>
+        <!-- Color of low traffic congestion -->
+<!--        <item name="routeLowCongestionColor">@color/mapbox_navigation_route_layer_blue</item>-->
+<!--        &lt;!&ndash; Color of unknown traffic congestion on primary route &ndash;&gt;-->
+<!--        <item name="routeUnknownCongestionColor">@color/mapbox_navigation_route_layer_congestion_unknown</item>-->
+        <!-- Color of moderate traffic congestion on primary route -->
+<!--        <item name="routeModerateCongestionColor">@color/mapbox_navigation_route_layer_congestion_yellow</item>-->
+<!--        &lt;!&ndash; Color of heavy traffic congestion on primary route &ndash;&gt;-->
+<!--&lt;!&ndash;        <item name="routeHeavyCongestionColor">@color/mapbox_navigation_route_layer_congestion_heavy</item>&ndash;&gt;-->
+<!--        &lt;!&ndash; Color of severe traffic congestion on primary route &ndash;&gt;-->
+<!--        <item name="routeSevereCongestionColor">@color/mapbox_navigation_route_layer_congestion_red</item>-->
+        <!-- Color of primary route shield -->
+        <item name="routeShieldColor">@color/mapboxWhite</item>
+        <!-- Color of primary route traveled -->
+<!--        <item name="routeLineTraveledColor">@color/mapbox_navigation_route_line_traveled_color</item>-->
+<!--        &lt;!&ndash; Color of primary route shield traveled &ndash;&gt;-->
+<!--        <item name="routeLineShieldTraveledColor">@color/mapbox_navigation_route_shield_line_traveled_color</item>-->
+        <!-- Color of alternative route -->
+<!--        <item name="alternativeRouteColor">@color/mapbox_navigation_route_alternative_color</item>-->
+        <!-- Color of unknown traffic congestion on alternate route -->
+<!--        <item name="alternativeRouteUnknownCongestionColor">@color/mapbox_navigation_route_alternative_congestion_unknown</item>-->
+<!--        &lt;!&ndash; Color of low traffic congestion on alternate route &ndash;&gt;-->
+<!--        <item name="alternativeRouteLowCongestionColor">@color/mapbox_navigation_route_alternative_color</item>-->
+        <!-- Color of moderate traffic congestion on alternate route -->
+<!--        <item name="alternativeRouteModerateCongestionColor">@color/mapbox_navigation_route_alternative_congestion_yellow</item>-->
+<!--        &lt;!&ndash; Color of heavy traffic congestion on alternate route &ndash;&gt;-->
+<!--&lt;!&ndash;        <item name="alternativeRouteHeavyCongestionColor">@color/mapbox_navigation_route_alternative_congestion_heavy</item>&ndash;&gt;-->
+<!--        &lt;!&ndash; Color of severe traffic congestion on alternate route &ndash;&gt;-->
+<!--        <item name="alternativeRouteSevereCongestionColor">@color/mapbox_navigation_route_alternative_congestion_red</item>-->
+<!--        &lt;!&ndash; Color of alternative route shield &ndash;&gt;-->
+<!--        <item name="alternativeRouteShieldColor">@color/mapbox_navigation_route_alternative_shield_color</item>-->
+<!--        &lt;!&ndash; Scaling factor of primary route line &ndash;&gt;-->
+<!--        <item name="routeScale">1.0</item>-->
+<!--        &lt;!&ndash; Scaling factor of traffic on route line &ndash;&gt;-->
+<!--&lt;!&ndash;        <item name="routeTrafficScale">1.0</item>&ndash;&gt;-->
+<!--        &lt;!&ndash; Scaling factor of alternative route line &ndash;&gt;-->
+<!--        <item name="alternativeRouteScale">1.0</item>-->
+<!--        &lt;!&ndash; Color of upcoming maneuver arrow &ndash;&gt;-->
+<!--        <item name="upcomingManeuverArrowColor">@color/mapbox_navigation_route_upcoming_maneuver_arrow_color</item>-->
+<!--        &lt;!&ndash; Color of upcoming maneuver arrow border &ndash;&gt;-->
+<!--        <item name="upcomingManeuverArrowBorderColor">@color/mapbox_navigation_route_upcoming_maneuver_arrow_border_color</item>-->
+<!--        &lt;!&ndash; Expression styling &ndash;&gt;-->
+<!--        <item name="roundedLineCap">true</item>-->
     </style>
 </resources>
