@@ -142,19 +142,19 @@ public class NavigationFactory : NSObject, FlutterStreamHandler, NavigationViewC
         }
         _mapStyleUrlDay = arguments?["mapStyleUrlDay"] as? String
         _mapStyleUrlNight = arguments?["mapStyleUrlNight"] as? String
-       if(_wayPoints.count > 0)
-       {
-           if(IsMultipleUniqueRoutes)
-           {
-               startNavigationWithWayPoints(wayPoints: [_wayPoints.remove(at: 0), _wayPoints.remove(at: 0)], flutterResult: result)
-           }
-           else
-           {
-               startNavigationWithWayPoints(wayPoints: _wayPoints, flutterResult: result)
-           }
-
-       }
- //       startNavigationWithMapmatching(coordinates: coordinates)
+//       if(_wayPoints.count > 0)
+//       {
+//           if(IsMultipleUniqueRoutes)
+//           {
+//               startNavigationWithWayPoints(wayPoints: [_wayPoints.remove(at: 0), _wayPoints.remove(at: 0)], flutterResult: result)
+//           }
+//           else
+//           {
+//               startNavigationWithWayPoints(wayPoints: _wayPoints, flutterResult: result)
+//           }
+//
+//       }
+       startNavigationWithMapmatching(coordinates: coordinates)
     }
     
     func startNavigationWithWayPoints(wayPoints: [Waypoint], flutterResult: @escaping FlutterResult)
@@ -248,6 +248,14 @@ public class NavigationFactory : NSObject, FlutterStreamHandler, NavigationViewC
         
         var dayStyle = CustomDayStyle()
         
+        let options = NavigationRouteOptions(coordinates: coordinates, profileIdentifier: .cycling)
+                if (_allowsUTurnAtWayPoints != nil)
+                {
+                    options.allowsUTurnAtWaypoint = _allowsUTurnAtWayPoints!
+                }
+                options.distanceMeasurementSystem = _voiceUnits == "imperial" ? .imperial : .metric
+                options.locale = Locale(identifier: _language)
+        
         let task = Directions.shared.calculateRoutes(matching: matchingOptions) { [self] (session, result) in
             switch result {
             case .failure(let error):
@@ -259,13 +267,7 @@ public class NavigationFactory : NSObject, FlutterStreamHandler, NavigationViewC
                 
                 print(match)
                 
-                let options = NavigationRouteOptions(coordinates: coordinates, profileIdentifier: .cycling)
-                        if (_allowsUTurnAtWayPoints != nil)
-                        {
-                            options.allowsUTurnAtWaypoint = _allowsUTurnAtWayPoints!
-                        }
-                        options.distanceMeasurementSystem = _voiceUnits == "imperial" ? .imperial : .metric
-                        options.locale = Locale(identifier: _language)
+                
 
                 let route = match
                 let navigationService = MapboxNavigationService(route: route, routeOptions: options, simulating: .never)
