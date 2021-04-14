@@ -98,7 +98,7 @@ class NavigationActivity : AppCompatActivity(),
     private fun fetchRoute() {
 
         val accessToken = Mapbox.getAccessToken()
-        if (accessToken == null) {
+        if (accessToken == null || accessToken == "MAPBOX_ACCESS_TOKEN_HERE") {
             sendEvent(MapBoxEvents.ROUTE_BUILD_FAILED, "Access Token is Required")
             finish()
             return

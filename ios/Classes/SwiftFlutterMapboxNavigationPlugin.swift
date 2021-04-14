@@ -201,7 +201,7 @@ public class NavigationFactory : NSObject, FlutterStreamHandler, NavigationViewC
                 else
                 {
                     let route = routes.first!
-                    let navigationService = MapboxNavigationService(route: route, routeOptions: options, simulating: simulationMode)
+                    let navigationService = MapboxNavigationService(route: route, routeIndex: 0, routeOptions: options, simulating: simulationMode)
                     var dayStyle = CustomDayStyle()
                     if(strongSelf._mapStyleUrlDay != nil){
                         dayStyle = CustomDayStyle(url: strongSelf._mapStyleUrlDay)
@@ -223,7 +223,7 @@ public class NavigationFactory : NSObject, FlutterStreamHandler, NavigationViewC
         isEmbeddedNavigation = false
         if(self._navigationViewController == nil)
         {
-            self._navigationViewController = NavigationViewController(for: route, routeOptions: options, navigationOptions: navOptions)
+            self._navigationViewController = NavigationViewController(for: route, routeIndex: 0, routeOptions: options, navigationOptions: navOptions)
             self._navigationViewController!.modalPresentationStyle = .fullScreen
             self._navigationViewController!.delegate = self
             self._navigationViewController!.mapView?.localizeLabels()
@@ -252,7 +252,7 @@ public class NavigationFactory : NSObject, FlutterStreamHandler, NavigationViewC
                 else
                 {
                     let route = routes.first!
-                    strongSelf._navigationViewController?.navigationService.route = route
+                    //strongSelf._navigationViewController?.navigationService.route = route
                     strongSelf._navigationViewController?.navigationService.start()
                 }
             }
@@ -307,6 +307,7 @@ public class NavigationFactory : NSObject, FlutterStreamHandler, NavigationViewC
     
     func downloadOfflineRoute(arguments: NSDictionary?, flutterResult: @escaping FlutterResult)
     {
+        /*
         // Create a directions client and store it as a property on the view controller.
         self.navigationDirections = NavigationDirections(credentials: Directions.shared.credentials)
         
@@ -341,6 +342,7 @@ public class NavigationFactory : NSObject, FlutterStreamHandler, NavigationViewC
                 })
             }
         }
+         */
     }
     //MARK: NavigationViewController Delegates
     public func navigationViewController(_ navigationViewController: NavigationViewController, didUpdate progress: RouteProgress, with location: CLLocation, rawLocation: CLLocation) {
@@ -810,7 +812,7 @@ public class FlutterMapboxNavigationView : NavigationFactory, MGLMapViewDelegate
     func startEmbeddedNavigation(arguments: NSDictionary?, result: @escaping FlutterResult) {
         
         guard let route = route else { return }
-        let navigationService = MapboxNavigationService(route: route, routeOptions: routeOptions!, simulating: self._simulateRoute ? .always : .onPoorGPS)
+        let navigationService = MapboxNavigationService(route: route, routeIndex: 0, routeOptions: routeOptions!, simulating: self._simulateRoute ? .always : .onPoorGPS)
         var dayStyle = CustomDayStyle()
         if(_mapStyleUrlDay != nil){
             dayStyle = CustomDayStyle(url: _mapStyleUrlDay)
@@ -820,7 +822,7 @@ public class FlutterMapboxNavigationView : NavigationFactory, MGLMapViewDelegate
             nightStyle.mapStyleURL = URL(string: _mapStyleUrlNight!)!
         }
         let navigationOptions = NavigationOptions(styles: [dayStyle, nightStyle], navigationService: navigationService)
-        _navigationViewController = NavigationViewController(for: route, routeOptions: routeOptions!, navigationOptions: navigationOptions)
+        _navigationViewController = NavigationViewController(for: route, routeIndex: 0, routeOptions: routeOptions!, navigationOptions: navigationOptions)
         _navigationViewController!.delegate = self
         
         let flutterViewController = UIApplication.shared.delegate?.window?!.rootViewController as! FlutterViewController
@@ -1066,7 +1068,7 @@ public class RouteOptionsViewController : UIViewController, MGLMapViewDelegate
         guard let route = route, let routeOptions = routeOptions else{
             return
         }
-        let navigationViewController = NavigationViewController(for: route, routeOptions: routeOptions)
+        let navigationViewController = NavigationViewController(for: route, routeIndex: 0, routeOptions: routeOptions)
         navigationViewController.modalPresentationStyle = .fullScreen
         self.present(navigationViewController, animated: true, completion: nil)
     }
@@ -1085,16 +1087,16 @@ class CustomDayStyle: DayStyle {
         initStyle()
         if(url != nil)
         {
-            mapStyleURL = URL(string: url!) ?? MGLStyle.navigationGuidanceDayStyleURL
-            previewMapStyleURL = URL(string: url!) ?? MGLStyle.navigationPreviewDayStyleURL
+            mapStyleURL = URL(string: url!) ?? MGLStyle.navigationDayStyleURL
+            previewMapStyleURL = URL(string: url!) ?? MGLStyle.navigationDayStyleURL
         }
     }
     
     func initStyle()
     {
         // Use a custom map style.
-        mapStyleURL = MGLStyle.navigationGuidanceDayStyleURL
-        previewMapStyleURL = MGLStyle.navigationPreviewDayStyleURL
+        mapStyleURL = MGLStyle.navigationDayStyleURL
+        previewMapStyleURL = MGLStyle.navigationDayStyleURL
         
         // Specify that the style should be used during the day.
         styleType = .day
@@ -1113,8 +1115,8 @@ class CustomNightStyle: NightStyle {
     required init() {
         super.init()
         
-        mapStyleURL = MGLStyle.navigationGuidanceNightStyleURL
-        previewMapStyleURL = MGLStyle.navigationPreviewNightStyleURL
+        mapStyleURL = MGLStyle.navigationNightStyleURL
+        previewMapStyleURL = MGLStyle.navigationNightStyleURL
         // Specify that the style should be used at night.
         styleType = .night
     }

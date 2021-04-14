@@ -2,11 +2,11 @@ part of navigation;
 
 ///A Geo-coordinate Point used for navigation.
 class WayPoint {
-  String name;
-  double latitude;
-  double longitude;
+  String? name;
+  double? latitude;
+  double? longitude;
   WayPoint(
-      {@required this.name, @required this.latitude, @required this.longitude});
+      {required this.name, required this.latitude, required this.longitude});
 
   @override
   String toString() {
@@ -15,7 +15,7 @@ class WayPoint {
 
   WayPoint.fromJson(Map<String, dynamic> json) {
     name = json["name"];
-    latitude = json["latitude"] as double;
-    longitude = json["longitude"] as double;
+    latitude = json["latitude"] as double?;
+    longitude = json["longitude"] as double?;
   }
 }

@@ -2,7 +2,7 @@ part of navigation;
 
 ///Data associated with a Route Event
 class MapBoxEventData {
-  String data;
+  String? data;
 
   MapBoxEventData({this.data});
 
