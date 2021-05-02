@@ -114,9 +114,9 @@ class MapBoxOptions {
     if (this.alternatives != null)
       optionsMap['alternatives'] = this.alternatives;
     if (this.mode != null)
-      optionsMap['mode'] = this.mode?.toString()?.split('.')?.last;
+      optionsMap['mode'] = this.mode?.toString().split('.').last;
     if (this.units != null)
-      optionsMap['units'] = this.units?.toString()?.split('.')?.last;
+      optionsMap['units'] = this.units?.toString().split('.').last;
     if (this.allowsUTurnAtWayPoints != null)
       optionsMap['allowsUTurnAtWayPoints'] = this.allowsUTurnAtWayPoints;
     if (this.enableRefresh != null)

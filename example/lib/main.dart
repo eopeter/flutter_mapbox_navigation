@@ -34,13 +34,10 @@ class _MyAppState extends State<MyApp> {
       name: "Way Point 5",
       latitude: 38.90894949285854,
       longitude: -77.03651905059814);
-  final _farAway = WayPoint(
-      name: "Far Far Away", latitude: 36.1175275, longitude: -115.1839524);
 
   MapBoxNavigation _directions;
   MapBoxOptions _options;
 
-  bool _arrived = false;
   bool _isMultipleStop = false;
   double _distanceRemaining, _durationRemaining;
   MapBoxNavigationViewController _controller;
@@ -124,10 +121,10 @@ class _MyAppState extends State<MyApp> {
                     Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        RaisedButton(
+                        ElevatedButton(
                           child: Text("Start A to B"),
                           onPressed: () async {
-                            var wayPoints = List<WayPoint>();
+                            var wayPoints = <WayPoint>[];
                             wayPoints.add(_origin);
                             wayPoints.add(_stop1);
 
@@ -144,11 +141,11 @@ class _MyAppState extends State<MyApp> {
                         SizedBox(
                           width: 10,
                         ),
-                        RaisedButton(
+                        ElevatedButton(
                           child: Text("Start Multi Stop"),
                           onPressed: () async {
                             _isMultipleStop = true;
-                            var wayPoints = List<WayPoint>();
+                            var wayPoints = <WayPoint>[];
                             wayPoints.add(_origin);
                             wayPoints.add(_stop1);
                             wayPoints.add(_stop2);
@@ -183,7 +180,7 @@ class _MyAppState extends State<MyApp> {
                     Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        RaisedButton(
+                        ElevatedButton(
                           child: Text(_routeBuilt && !_isNavigating
                               ? "Clear Route"
                               : "Build Route"),
@@ -193,7 +190,7 @@ class _MyAppState extends State<MyApp> {
                                   if (_routeBuilt) {
                                     _controller.clearRoute();
                                   } else {
-                                    var wayPoints = List<WayPoint>();
+                                    var wayPoints = <WayPoint>[];
                                     wayPoints.add(_origin);
                                     wayPoints.add(_stop1);
                                     wayPoints.add(_stop2);
@@ -209,7 +206,7 @@ class _MyAppState extends State<MyApp> {
                         SizedBox(
                           width: 10,
                         ),
-                        RaisedButton(
+                        ElevatedButton(
                           child: Text("Start "),
                           onPressed: _routeBuilt && !_isNavigating
                               ? () {
@@ -220,7 +217,7 @@ class _MyAppState extends State<MyApp> {
                         SizedBox(
                           width: 10,
                         ),
-                        RaisedButton(
+                        ElevatedButton(
                           child: Text("Cancel "),
                           onPressed: _isNavigating
                               ? () {
@@ -310,7 +307,6 @@ class _MyAppState extends State<MyApp> {
     switch (e.eventType) {
       case MapBoxEvent.progress_change:
         var progressEvent = e.data as RouteProgressEvent;
-        _arrived = progressEvent.arrived;
         if (progressEvent.currentStepInstruction != null)
           _instruction = progressEvent.currentStepInstruction;
         break;
@@ -331,7 +327,6 @@ class _MyAppState extends State<MyApp> {
         });
         break;
       case MapBoxEvent.on_arrival:
-        _arrived = true;
         if (!_isMultipleStop) {
           await Future.delayed(Duration(seconds: 3));
           await _controller.finishNavigation();

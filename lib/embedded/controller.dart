@@ -41,7 +41,6 @@ class MapBoxNavigationViewController {
   ///
   Future<bool> buildRoute(
       {required List<WayPoint> wayPoints, MapBoxOptions? options}) async {
-    assert(wayPoints != null);
     assert(wayPoints.length > 1);
     if (Platform.isIOS && wayPoints.length > 3 && options?.mode != null) {
       assert(options!.mode != MapBoxNavigationMode.drivingWithTraffic,
@@ -51,7 +50,6 @@ class MapBoxNavigationViewController {
 
     for (int i = 0; i < wayPoints.length; i++) {
       var wayPoint = wayPoints[i];
-      assert(wayPoint != null);
       assert(wayPoint.name != null);
       assert(wayPoint.latitude != null);
       assert(wayPoint.longitude != null);
@@ -131,7 +129,7 @@ class MapBoxNavigationViewController {
     RouteEvent event;
     var map = json.decode(jsonString);
     var progressEvent = RouteProgressEvent.fromJson(map);
-    if (progressEvent != null && progressEvent.isProgressEvent!) {
+    if (progressEvent.isProgressEvent!) {
       event = RouteEvent(
           eventType: MapBoxEvent.progress_change, data: progressEvent);
     } else

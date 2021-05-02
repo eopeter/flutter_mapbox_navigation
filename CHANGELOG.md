@@ -1,3 +1,12 @@
+## 0.0.21
+* bug fixes
+
+## 0.0.21
+* Fix static analysis bug
+
+## 0.0.20
+* Upgrade Mapbox Libraries
+
 ## 0.0.19
 * Upgrade MapBox Android to v1.0.1
 * Gradle Updates

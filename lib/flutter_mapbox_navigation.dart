@@ -52,7 +52,6 @@ class MapBoxNavigation {
   int legsCount = 0;
   Future startNavigation(
       {required List<WayPoint> wayPoints, required MapBoxOptions options}) async {
-    assert(wayPoints != null);
     assert(wayPoints.length > 1);
     if (Platform.isIOS && wayPoints.length > 3) {
       assert(options.mode != MapBoxNavigationMode.drivingWithTraffic,
@@ -62,7 +61,6 @@ class MapBoxNavigation {
 
     for (int i = 0; i < wayPoints.length; i++) {
       var wayPoint = wayPoints[i];
-      assert(wayPoint != null);
       assert(wayPoint.name != null);
       assert(wayPoint.latitude != null);
       assert(wayPoint.longitude != null);
@@ -129,7 +127,7 @@ class MapBoxNavigation {
     RouteEvent event;
     var map = json.decode(jsonString);
     var progressEvent = RouteProgressEvent.fromJson(map);
-    if (progressEvent != null && progressEvent.isProgressEvent!) {
+    if (progressEvent.isProgressEvent!) {
       event = RouteEvent(
           eventType: MapBoxEvent.progress_change, data: progressEvent);
     } else
