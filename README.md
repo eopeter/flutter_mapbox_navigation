@@ -118,7 +118,7 @@ Add Turn By Turn Navigation to Your Flutter Application Using MapBox. Never leav
             _arrived = true;
             if (!_isMultipleStop) {
               await Future.delayed(Duration(seconds: 3));
-              await _controller.finishNavigation();
+              await _directions.finishNavigation();
             } else {}
             break;
           case MapBoxEvent.navigation_finished:
