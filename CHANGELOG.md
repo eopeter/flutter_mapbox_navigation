@@ -1,3 +1,6 @@
+## 0.0.26
+* not implemented bug for onNextLegStart
+
 ## 0.0.25
 * bug fixes
 
