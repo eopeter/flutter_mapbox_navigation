@@ -31,7 +31,8 @@ class RouteLeg {
         : WayPoint.fromJson(json['destination'] as Map<String, dynamic>);
     steps = (json['steps'] as List?)
         ?.map((e) =>
-            e == null ? null : RouteStep.fromJson(e as Map<String, dynamic>)).cast<RouteStep>()
+            e == null ? null : RouteStep.fromJson(e as Map<String, dynamic>))
+        .cast<RouteStep>()
         .toList();
   }
 }

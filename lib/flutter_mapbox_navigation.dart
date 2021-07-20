@@ -51,7 +51,8 @@ class MapBoxNavigation {
   int currentLegIndex = 0;
   int legsCount = 0;
   Future startNavigation(
-      {required List<WayPoint> wayPoints, required MapBoxOptions options}) async {
+      {required List<WayPoint> wayPoints,
+      required MapBoxOptions options}) async {
     assert(wayPoints.length > 1);
     if (Platform.isIOS && wayPoints.length > 3) {
       assert(options.mode != MapBoxNavigationMode.drivingWithTraffic,

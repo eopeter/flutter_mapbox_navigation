@@ -65,7 +65,6 @@ class NavigationActivity : AppCompatActivity(),
         LocationObserver {
 
     override fun onCreate(savedInstanceState: Bundle?) {
-
         receiver = object : BroadcastReceiver() {
             override fun onReceive(context: Context, intent: Intent) {
                 finish()
@@ -387,6 +386,8 @@ class NavigationActivity : AppCompatActivity(),
         }
 
     }
-
+    fun onCleared() {
+        MapboxNavigationProvider.destroy()
+    }
 
 }

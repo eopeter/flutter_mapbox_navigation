@@ -58,7 +58,8 @@ class RouteProgressEvent {
         : RouteLeg.fromJson(json['priorLeg'] as Map<String, dynamic>);
     remainingLegs = (json['remainingLegs'] as List?)
         ?.map((e) =>
-            e == null ? null : RouteLeg.fromJson(e as Map<String, dynamic>)).cast<RouteLeg>()
+            e == null ? null : RouteLeg.fromJson(e as Map<String, dynamic>))
+        .cast<RouteLeg>()
         .toList();
     legIndex = json['legIndex'];
     stepIndex = json['stepIndex'];

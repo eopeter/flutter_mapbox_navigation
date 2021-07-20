@@ -27,12 +27,15 @@ class MapBoxOptions {
   ///
   /// The map camera tilt can also adjust by placing two fingertips on the map and moving both fingers up and down in parallel at the same time or
   final double? tilt;
+
   ///
   /// When true, alternate routes will be presented
   final bool? alternatives;
+
   ///
   /// The navigation mode desired. Defaults to drivingWithTraffic
   final MapBoxNavigationMode? mode;
+
   /// The unit of measure said in voice instructions
   final VoiceUnits? units;
 

@@ -570,6 +570,9 @@ class FlutterMapViewFactory :
                 .continueStraight(!allowsUTurnAtWayPoints)
                 .voiceUnits(navigationVoiceUnits)
                 .annotations(DirectionsCriteria.ANNOTATION_DISTANCE)
+                .baseUrl("https://api.mapbox.com")
+                .user(UUID.randomUUID().toString())
+                .requestUuid(UUID.randomUUID().toString())
                 .build()
                 , object : RoutesRequestCallback {
 
