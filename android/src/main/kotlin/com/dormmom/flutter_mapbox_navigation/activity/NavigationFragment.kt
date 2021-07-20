@@ -9,6 +9,7 @@ import android.preference.PreferenceManager
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.annotation.Nullable
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.fragment.app.Fragment
@@ -18,35 +19,36 @@ import com.dormmom.flutter_mapbox_navigation.models.MapBoxEvents
 import com.dormmom.flutter_mapbox_navigation.models.MapBoxLocation
 import com.dormmom.flutter_mapbox_navigation.models.MapBoxRouteProgressEvent
 import com.dormmom.flutter_mapbox_navigation.utilities.PluginUtilities
-import com.dormmom.flutter_mapbox_navigation.utilities.SimplifiedCallback
+
 import com.mapbox.api.directions.v5.DirectionsCriteria
-import com.mapbox.api.directions.v5.models.BannerInstructions
-import com.mapbox.api.directions.v5.models.DirectionsResponse
-import com.mapbox.api.directions.v5.models.DirectionsRoute
+import com.mapbox.api.directions.v5.models.*
 import com.mapbox.geojson.Point
 import com.mapbox.mapboxsdk.Mapbox
 import com.mapbox.mapboxsdk.camera.CameraPosition
 import com.mapbox.mapboxsdk.geometry.LatLng
 import com.mapbox.mapboxsdk.location.modes.RenderMode
 import com.mapbox.mapboxsdk.maps.Style
-import com.mapbox.services.android.navigation.ui.v5.NavigationView
-import com.mapbox.services.android.navigation.ui.v5.NavigationViewOptions
-import com.mapbox.services.android.navigation.ui.v5.OnNavigationReadyCallback
-import com.mapbox.services.android.navigation.ui.v5.listeners.BannerInstructionsListener
-import com.mapbox.services.android.navigation.ui.v5.listeners.NavigationListener
-import com.mapbox.services.android.navigation.ui.v5.listeners.RouteListener
-import com.mapbox.services.android.navigation.ui.v5.listeners.SpeechAnnouncementListener
-import com.mapbox.services.android.navigation.ui.v5.map.NavigationMapboxMap
-import com.mapbox.services.android.navigation.ui.v5.voice.SpeechAnnouncement
-import com.mapbox.services.android.navigation.v5.milestone.Milestone
-import com.mapbox.services.android.navigation.v5.milestone.MilestoneEventListener
-import com.mapbox.services.android.navigation.v5.navigation.MapboxNavigation
-import com.mapbox.services.android.navigation.v5.navigation.NavigationEventListener
-import com.mapbox.services.android.navigation.v5.navigation.NavigationRoute
-import com.mapbox.services.android.navigation.v5.offroute.OffRouteListener
-import com.mapbox.services.android.navigation.v5.route.FasterRouteListener
-import com.mapbox.services.android.navigation.v5.routeprogress.ProgressChangeListener
-import com.mapbox.services.android.navigation.v5.routeprogress.RouteProgress
+import com.mapbox.navigation.base.internal.extensions.coordinates
+import com.mapbox.navigation.base.trip.model.RouteLegProgress
+import com.mapbox.navigation.base.trip.model.RouteProgress
+import com.mapbox.navigation.core.MapboxNavigation
+import com.mapbox.navigation.core.arrival.ArrivalObserver
+import com.mapbox.navigation.core.directions.session.RoutesObserver
+import com.mapbox.navigation.core.directions.session.RoutesRequestCallback
+import com.mapbox.navigation.core.fasterroute.FasterRouteObserver
+import com.mapbox.navigation.core.reroute.RerouteController
+import com.mapbox.navigation.core.reroute.RerouteState
+import com.mapbox.navigation.core.trip.session.LocationObserver
+import com.mapbox.navigation.core.trip.session.OffRouteObserver
+import com.mapbox.navigation.core.trip.session.RouteProgressObserver
+import com.mapbox.navigation.ui.NavigationView
+import com.mapbox.navigation.ui.NavigationViewOptions
+import com.mapbox.navigation.ui.OnNavigationReadyCallback
+import com.mapbox.navigation.ui.listeners.BannerInstructionsListener
+import com.mapbox.navigation.ui.listeners.NavigationListener
+import com.mapbox.navigation.ui.listeners.SpeechAnnouncementListener
+import com.mapbox.navigation.ui.map.NavigationMapboxMap
+
 import retrofit2.Call
 import retrofit2.Response
 
@@ -61,8 +63,14 @@ private const val ARG_WAYPOINTS = "waypoints"
  * Use the [NavigationFragment.newInstance] factory method to
  * create an instance of this fragment.
  */
-class NavigationFragment : Fragment(), OnNavigationReadyCallback, NavigationListener,
-        ProgressChangeListener, OffRouteListener, NavigationEventListener, RouteListener, MilestoneEventListener, BannerInstructionsListener, FasterRouteListener, SpeechAnnouncementListener {
+class NavigationFragment : Fragment(), OnNavigationReadyCallback,
+        NavigationListener,
+        RouteProgressObserver,
+        RoutesObserver,
+        BannerInstructionsListener,
+        SpeechAnnouncementListener,
+        ArrivalObserver,
+        LocationObserver {
 
     var receiver: BroadcastReceiver? = null
 
@@ -74,6 +82,23 @@ class NavigationFragment : Fragment(), OnNavigationReadyCallback, NavigationList
 
     private var route: DirectionsRoute? = null
     private var points: MutableList<Point> = mutableListOf()
+
+    private var currentDestination: Point? = null;
+
+    val offRouteObserver = object : OffRouteObserver {
+        override fun onOffRouteStateChanged(offRoute: Boolean) {
+            PluginUtilities.sendEvent(MapBoxEvents.USER_OFF_ROUTE, offRoute.toString())
+        }
+    }
+
+    val fasterRouteObserver = object : FasterRouteObserver {
+
+        override fun restartAfterMillis() = FasterRouteObserver.DEFAULT_INTERVAL_MILLIS
+
+        override fun onFasterRoute(currentRoute: DirectionsRoute, alternatives: List<DirectionsRoute>, isAlternativeFaster: Boolean) {
+            PluginUtilities.sendEvent(MapBoxEvents.FASTER_ROUTE_FOUND, currentRoute.toJson())
+        }
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
 
@@ -135,40 +160,36 @@ class NavigationFragment : Fragment(), OnNavigationReadyCallback, NavigationList
 
         val accessToken = Mapbox.getAccessToken()
         if (accessToken == null) {
-            //Toast.makeText(this, "Access Token is Required", Toast.LENGTH_SHORT).show()
-            //finish()
+            Toast.makeText(this.context, "Access Token is Required", Toast.LENGTH_SHORT).show()
             return
         }
 
         this.activity?.applicationContext?.let {
-            NavigationRoute.builder(it)
+            mapboxNavigation.requestRoutes(
+            RouteOptions.builder()
                 .accessToken(accessToken)
-                .origin(origin)
-                .destination(destination)
+                    .coordinates(origin, destination = destination)
                 .alternatives(FlutterMapboxNavigationPlugin.showAlternateRoutes)
                 .profile(FlutterMapboxNavigationPlugin.navigationMode)
                 .language(FlutterMapboxNavigationPlugin.navigationLanguage)
                 .voiceUnits(FlutterMapboxNavigationPlugin.navigationVoiceUnits)
                 .continueStraight(!FlutterMapboxNavigationPlugin.allowsUTurnsAtWayPoints)
-                .annotations(DirectionsCriteria.ANNOTATION_DISTANCE, DirectionsCriteria.ANNOTATION_DURATION, DirectionsCriteria.ANNOTATION_DURATION, DirectionsCriteria.ANNOTATION_CONGESTION)
-                .build()
-                .getRoute(object : SimplifiedCallback() {
-                    override fun onResponse(call: Call<DirectionsResponse>, response: Response<DirectionsResponse>) {
-                        val directionsResponse = response.body()
-                        if (directionsResponse != null) {
-                            if (!directionsResponse.routes().isEmpty()) buildAndStartNavigation(directionsResponse.routes()[0]) else {
-                                val message = directionsResponse.message()
-                                PluginUtilities.sendEvent(MapBoxEvents.ROUTE_BUILD_FAILED, message!!)
-                                //finish()
+                .annotations(DirectionsCriteria.ANNOTATION_DISTANCE)
+                .build(),
+                    object : RoutesRequestCallback {
+                        override fun onRoutesReady(routes: List<DirectionsRoute>) {
+                            if (routes.isNotEmpty()) buildAndStartNavigation(routes[0]) else {
+                                PluginUtilities.sendEvent(MapBoxEvents.ROUTE_BUILD_NO_ROUTES_FOUND)
                             }
                         }
-                    }
-
-                    override fun onFailure(call: Call<DirectionsResponse>, throwable: Throwable) {
-                        PluginUtilities.sendEvent(MapBoxEvents.ROUTE_BUILD_FAILED, throwable.localizedMessage)
-                        //finish()
-                    }
-                })
+                        override fun onRoutesRequestFailure(throwable: Throwable, routeOptions: RouteOptions) {
+                            val message = throwable.localizedMessage
+                            PluginUtilities.sendEvent(MapBoxEvents.ROUTE_BUILD_FAILED, message!!)
+                        }
+                        override fun onRoutesRequestCanceled(routeOptions: RouteOptions) {
+                            PluginUtilities.sendEvent(MapBoxEvents.ROUTE_BUILD_CANCELLED)
+                        }
+                    })
         }
     }
 
@@ -189,20 +210,51 @@ class NavigationFragment : Fragment(), OnNavigationReadyCallback, NavigationList
             navigationView?.retrieveMapboxNavigation()?.let {
                 this.mapboxNavigation = it
 
-                mapboxNavigation.addOffRouteListener(this)
-                mapboxNavigation.addFasterRouteListener(this)
-                mapboxNavigation.addNavigationEventListener(this)
+                mapboxNavigation.registerOffRouteObserver(offRouteObserver)
+                mapboxNavigation.attachFasterRouteObserver(fasterRouteObserver)
+                mapboxNavigation.getRerouteController()?.registerRerouteStateObserver(object : RerouteController.RerouteStateObserver {
+
+                    override fun onRerouteStateChanged(rerouteState: RerouteState) {
+                        if (rerouteState is RerouteState.Failed){
+                            PluginUtilities.sendEvent(MapBoxEvents.FAILED_TO_REROUTE, rerouteState.message)
+                        }
+                        else if (rerouteState is RerouteState.RouteFetched){
+
+                        }
+                    }
+
+                    fun onRerouteAlong(directionsRoute: DirectionsRoute?) {
+                        PluginUtilities.sendEvent(MapBoxEvents.REROUTE_ALONG, "${directionsRoute?.toJson()}")
+                    }
+
+                    fun allowRerouteFrom(offRoutePoint: Point?): Boolean {
+                        return true
+                    }
+
+                    fun onOffRoute(offRoutePoint: Point?) {
+                        PluginUtilities.sendEvent(MapBoxEvents.USER_OFF_ROUTE,
+                                MapBoxLocation(
+                                        latitude = offRoutePoint?.latitude(),
+                                        longitude = offRoutePoint?.longitude()
+                                ).toString())
+                        if(offRoutePoint != null)
+                            fetchRoute(offRoutePoint, getCurrentDestination());
+                        else
+                            fetchRoute(getLastKnownLocation(), getCurrentDestination());
+                    }
+
+                })
             }
 
             // Custom map style has been loaded and map is now ready
             val options =
-                    NavigationViewOptions.builder()
-                            .progressChangeListener(this)
-                            .milestoneEventListener(this)
+                    NavigationViewOptions.builder(this.context!!)
+                            .routeProgressObserver(this)
+                            .locationObserver(this)
+                            .arrivalObserver(this)
                             .navigationListener(this)
                             .speechAnnouncementListener(this)
                             .bannerInstructionsListener(this)
-                            .routeListener(this)
                             .directionsRoute(directionsRoute)
                             .shouldSimulateRoute(FlutterMapboxNavigationPlugin.simulateRoute)
                             .build()
@@ -215,6 +267,10 @@ class NavigationFragment : Fragment(), OnNavigationReadyCallback, NavigationList
 
     private fun getLastKnownLocation(): Point {
         return Point.fromLngLat(lastKnownLocation?.longitude!!, lastKnownLocation?.latitude!!)
+    }
+
+    private fun getCurrentDestination(): Point {
+        return Point.fromLngLat(currentDestination?.longitude()!!, currentDestination?.latitude()!!)
     }
 
     private fun getInitialCameraPosition(): CameraPosition {
@@ -234,11 +290,15 @@ class NavigationFragment : Fragment(), OnNavigationReadyCallback, NavigationList
         if (route == null) {
             return
         }
-        val options = NavigationViewOptions.builder()
+        val options = NavigationViewOptions.builder(this.context!!)
+                .routeProgressObserver(this)
+                .locationObserver(this)
+                .arrivalObserver(this)
+                .navigationListener(this)
+                .speechAnnouncementListener(this)
+                .bannerInstructionsListener(this)
                 .directionsRoute(route)
-                .shouldSimulateRoute(true)
-                .navigationListener(this@NavigationFragment)
-                .progressChangeListener(this)
+                .shouldSimulateRoute(FlutterMapboxNavigationPlugin.simulateRoute)
                 .build()
         navigationView!!.startNavigation(options)
     }
@@ -307,48 +367,39 @@ class NavigationFragment : Fragment(), OnNavigationReadyCallback, NavigationList
         PluginUtilities.sendEvent(MapBoxEvents.NAVIGATION_RUNNING)
     }
 
-    override fun onProgressChange(location: Location, routeProgress: RouteProgress) {
-        lastKnownLocation = location
-        val progressEvent = MapBoxRouteProgressEvent(routeProgress, location)
-        FlutterMapboxNavigationPlugin.distanceRemaining = routeProgress.distanceRemaining()
-        FlutterMapboxNavigationPlugin.durationRemaining = routeProgress.durationRemaining()
+    override fun onRouteProgressChanged(routeProgress: RouteProgress) {
+        val progressEvent = MapBoxRouteProgressEvent(routeProgress)
+        FlutterMapboxNavigationPlugin.distanceRemaining = routeProgress.distanceRemaining
+        FlutterMapboxNavigationPlugin.durationRemaining = routeProgress.durationRemaining
         PluginUtilities.sendEvent(progressEvent)
     }
 
-    override fun userOffRoute(location: Location) {
-        PluginUtilities.sendEvent(MapBoxEvents.USER_OFF_ROUTE,
-                MapBoxLocation(
-                        latitude = location.latitude,
-                        longitude = location.longitude
-                ).toString())
+    override fun onEnhancedLocationChanged(enhancedLocation: Location, keyPoints: List<Location>) {
+        lastKnownLocation = enhancedLocation
     }
 
-    override fun onRunning(running: Boolean) {
-        PluginUtilities.sendEvent(MapBoxEvents.NAVIGATION_RUNNING)
+    override fun onRawLocationChanged(rawLocation: Location) {
+        lastKnownLocation = rawLocation
     }
 
-    override fun allowRerouteFrom(offRoutePoint: Point?): Boolean {
-        TODO("Not yet implemented")
+    override fun willVoice(announcement: VoiceInstructions?): VoiceInstructions {
+
+        PluginUtilities.sendEvent(MapBoxEvents.SPEECH_ANNOUNCEMENT,
+                "${announcement?.announcement()}")
+        return announcement!!
     }
 
-    override fun onOffRoute(offRoutePoint: Point?) {
-        TODO("Not yet implemented")
+    override fun willDisplay(instructions: BannerInstructions?): BannerInstructions {
+        PluginUtilities.sendEvent(MapBoxEvents.BANNER_INSTRUCTION,
+                "${instructions?.primary()?.text()}")
+        return instructions!!
     }
 
-    override fun onRerouteAlong(directionsRoute: DirectionsRoute?) {
-        TODO("Not yet implemented")
-    }
-
-    override fun onFailedReroute(errorMessage: String?) {
-        TODO("Not yet implemented")
-    }
-
-    override fun onArrival() {
+    //onArrival
+    override fun onFinalDestinationArrival(routeProgress: RouteProgress) {
         PluginUtilities.sendEvent(MapBoxEvents.ON_ARRIVAL)
         if (points.isNotEmpty()) {
             fetchRoute(getLastKnownLocation(), points.removeAt(0))
-            dropoffDialogShown = true // Accounts for multiple arrival events
-            //Toast.makeText(this, "You have arrived!", Toast.LENGTH_SHORT).show()
         }
         else
         {
@@ -356,19 +407,11 @@ class NavigationFragment : Fragment(), OnNavigationReadyCallback, NavigationList
         }
     }
 
-    override fun onMilestoneEvent(routeProgress: RouteProgress, instruction: String, milestone: Milestone) {
+    override fun onNextRouteLegStart(routeLegProgress: RouteLegProgress) {
         TODO("Not yet implemented")
     }
 
-    override fun willDisplay(instructions: BannerInstructions?): BannerInstructions {
-        TODO("Not yet implemented")
-    }
-
-    override fun fasterRouteFound(directionsRoute: DirectionsRoute) {
-        TODO("Not yet implemented")
-    }
-
-    override fun willVoice(announcement: SpeechAnnouncement?): SpeechAnnouncement {
+    override fun onRoutesChanged(routes: List<DirectionsRoute>) {
         TODO("Not yet implemented")
     }
 }

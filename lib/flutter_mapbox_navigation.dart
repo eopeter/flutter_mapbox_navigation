@@ -2,7 +2,7 @@ part of navigation;
 
 /// Turn-By-Turn Navigation Provider
 class MapBoxNavigation {
-  factory MapBoxNavigation({ValueSetter<RouteEvent> onRouteEvent}) {
+  factory MapBoxNavigation({ValueSetter<RouteEvent>? onRouteEvent}) {
     if (_instance == null) {
       final MethodChannel methodChannel =
           const MethodChannel('flutter_mapbox_navigation');
@@ -11,21 +11,21 @@ class MapBoxNavigation {
       _instance =
           MapBoxNavigation.private(methodChannel, eventChannel, onRouteEvent);
     }
-    return _instance;
+    return _instance!;
   }
 
   @visibleForTesting
   MapBoxNavigation.private(
       this._methodChannel, this._routeEventchannel, this._routeEventNotifier);
 
-  static MapBoxNavigation _instance;
+  static MapBoxNavigation? _instance;
 
   final MethodChannel _methodChannel;
   final EventChannel _routeEventchannel;
-  final ValueSetter<RouteEvent> _routeEventNotifier;
+  final ValueSetter<RouteEvent>? _routeEventNotifier;
 
-  Stream<RouteEvent> _onRouteEvent;
-  StreamSubscription<RouteEvent> _routeEventSubscription;
+  Stream<RouteEvent>? _onRouteEvent;
+  late StreamSubscription<RouteEvent> _routeEventSubscription;
 
   ///Current Device OS Version
   Future<String> get platformVersion => _methodChannel
@@ -51,18 +51,17 @@ class MapBoxNavigation {
   int currentLegIndex = 0;
   int legsCount = 0;
   Future startNavigation(
-      {List<WayPoint> wayPoints, MapBoxOptions options}) async {
-    assert(wayPoints != null);
+      {required List<WayPoint> wayPoints,
+      required MapBoxOptions options}) async {
     assert(wayPoints.length > 1);
     if (Platform.isIOS && wayPoints.length > 3) {
       assert(options.mode != MapBoxNavigationMode.drivingWithTraffic,
           "Error: Cannot use drivingWithTraffic Mode when you have more than 3 Stops");
     }
-    var pointList = List<Map<String, Object>>();
+    List<Map<String, Object?>> pointList = [];
 
     for (int i = 0; i < wayPoints.length; i++) {
       var wayPoint = wayPoints[i];
-      assert(wayPoint != null);
       assert(wayPoint.name != null);
       assert(wayPoint.latitude != null);
       assert(wayPoint.longitude != null);
@@ -85,27 +84,27 @@ class MapBoxNavigation {
     currentLegIndex = 0;
     legsCount = wayPoints.length - 1;
 
-    _routeEventSubscription = _streamRouteEvent.listen(_onProgressData);
+    _routeEventSubscription = _streamRouteEvent!.listen(_onProgressData);
     await _methodChannel
         .invokeMethod('startNavigation', args)
         .then<String>((dynamic result) => result);
   }
 
   ///Ends Navigation and Closes the Navigation View
-  Future<bool> finishNavigation() async {
+  Future<bool?> finishNavigation() async {
     var success = await _methodChannel.invokeMethod('finishNavigation', null);
     return success;
   }
 
   /// Will download the navigation engine and the user's region to allow offline routing
-  Future<bool> enableOfflineRouting() async {
+  Future<bool?> enableOfflineRouting() async {
     var success =
         await _methodChannel.invokeMethod('enableOfflineRouting', null);
     return success;
   }
 
   void _onProgressData(RouteEvent event) {
-    if (_routeEventNotifier != null) _routeEventNotifier(event);
+    if (_routeEventNotifier != null) _routeEventNotifier!(event);
 
     if (event.eventType == MapBoxEvent.on_arrival) {
       if (currentLegIndex >= legsCount - 1)
@@ -116,7 +115,7 @@ class MapBoxNavigation {
       _routeEventSubscription.cancel();
   }
 
-  Stream<RouteEvent> get _streamRouteEvent {
+  Stream<RouteEvent>? get _streamRouteEvent {
     if (_onRouteEvent == null) {
       _onRouteEvent = _routeEventchannel
           .receiveBroadcastStream()
@@ -129,7 +128,7 @@ class MapBoxNavigation {
     RouteEvent event;
     var map = json.decode(jsonString);
     var progressEvent = RouteProgressEvent.fromJson(map);
-    if (progressEvent != null && progressEvent.isProgressEvent) {
+    if (progressEvent.isProgressEvent!) {
       event = RouteEvent(
           eventType: MapBoxEvent.progress_change, data: progressEvent);
     } else

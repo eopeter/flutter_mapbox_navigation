@@ -8,9 +8,11 @@ import android.os.Build
 import androidx.annotation.NonNull;
 import com.dormmom.flutter_mapbox_navigation.activity.NavigationLauncher
 import com.dormmom.flutter_mapbox_navigation.factory.MapViewFactory
+
 import com.mapbox.api.directions.v5.DirectionsCriteria
 import com.mapbox.api.directions.v5.models.DirectionsRoute
 import com.mapbox.geojson.Point
+import com.mapbox.navigation.core.MapboxNavigation
 
 import io.flutter.embedding.engine.plugins.FlutterPlugin
 import io.flutter.embedding.engine.plugins.activity.ActivityAware
@@ -74,12 +76,12 @@ public class FlutterMapboxNavigationPlugin: FlutterPlugin, MethodCallHandler, Ev
     var simulateRoute = false
     var mapStyleUrlDay: String? = null
     var mapStyleUrlNight: String? = null
-    var navigationLanguage = Locale("en")
+    var navigationLanguage = "en"
     var navigationVoiceUnits = DirectionsCriteria.IMPERIAL
     var zoom = 15.0
     var bearing = 0.0
     var tilt = 0.0
-    var distanceRemaining: Double? = null
+    var distanceRemaining: Float? = null
     var durationRemaining: Double? = null
     var platformViewRegistry: PlatformViewRegistry? = null
     var binaryMessenger: BinaryMessenger? = null
@@ -165,7 +167,7 @@ public class FlutterMapboxNavigationPlugin: FlutterPlugin, MethodCallHandler, Ev
 
     val language = arguments?.get("language") as? String
     if(language != null)
-      navigationLanguage = Locale(language)
+      navigationLanguage = language
 
     val units = arguments?.get("units") as? String
 
@@ -213,7 +215,7 @@ public class FlutterMapboxNavigationPlugin: FlutterPlugin, MethodCallHandler, Ev
 
   private fun beginNavigation(wayPoints: List<Point>)
   {
-      NavigationLauncher.startNavigation(currentActivity, wayPoints, null);
+      NavigationLauncher.startNavigation(currentActivity, wayPoints);
   }
 
 

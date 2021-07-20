@@ -7,7 +7,6 @@
     <application>
         <activity android:name=".activity.NavigationActivity" />
         <activity android:name=".activity.NavigationFragmentActivity" />
-        <activity android:name=".activity.RouteMapActivity" />
     </application>
 
 </manifest>

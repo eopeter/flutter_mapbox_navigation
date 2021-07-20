@@ -1,4 +1,24 @@
+## 0.0.26
+* not implemented bug for onNextLegStart
+
+## 0.0.25
+* bug fixes
+
+## 0.0.24
+* bug fixes
+
+## 0.0.22
+* bug fixes
+
+## 0.0.21
+* Fix static analysis bug
+
+## 0.0.20
+* Upgrade Mapbox Libraries
+* Upgrade to Null Safety
+
 ## 0.0.19
+* Upgrade MapBox Android to v1.0.1
 * Gradle Updates
 * Bug Fixes
 

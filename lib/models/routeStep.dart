@@ -4,10 +4,10 @@ part of navigation;
 ///The route step object corresponds to a single instruction the user must follow to complete a portion of the route.
 ///For example, a step might require the user to turn then follow a road.
 class RouteStep {
-  String name;
-  String instructions;
-  double distance;
-  double expectedTravelTime;
+  String? name;
+  String? instructions;
+  double? distance;
+  double? expectedTravelTime;
 
   RouteStep(
       this.name, this.instructions, this.distance, this.expectedTravelTime);

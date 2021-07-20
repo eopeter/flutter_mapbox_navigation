@@ -10,9 +10,7 @@ import io.flutter.plugin.common.StandardMessageCodec
 import io.flutter.plugin.platform.PlatformView
 import io.flutter.plugin.platform.PlatformViewFactory
 
-
 class MapViewFactory(private val messenger: BinaryMessenger, private val activity: Activity) : PlatformViewFactory(StandardMessageCodec.INSTANCE) {
-    
     override fun create(context: Context?, viewId: Int, args: Any?): PlatformView {
         var accessToken = PluginUtilities.getResourceFromContext(context!!, "mapbox_access_token")
         Mapbox.getInstance(context, accessToken)

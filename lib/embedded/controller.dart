@@ -2,13 +2,13 @@ part of navigation;
 
 /// Controller for a single MapBox Navigation instance running on the host platform.
 class MapBoxNavigationViewController {
-  MethodChannel _methodChannel;
-  EventChannel _eventChannel;
+  late MethodChannel _methodChannel;
+  late EventChannel _eventChannel;
 
-  ValueSetter<RouteEvent> _routeEventNotifier;
+  ValueSetter<RouteEvent>? _routeEventNotifier;
 
   MapBoxNavigationViewController(
-      int id, ValueSetter<RouteEvent> eventNotifier) {
+      int id, ValueSetter<RouteEvent>? eventNotifier) {
     _methodChannel = new MethodChannel('flutter_mapbox_navigation/$id');
     _methodChannel.setMethodCallHandler(_handleMethod);
 
@@ -16,8 +16,8 @@ class MapBoxNavigationViewController {
     _routeEventNotifier = eventNotifier;
   }
 
-  Stream<RouteEvent> _onRouteEvent;
-  StreamSubscription<RouteEvent> _routeEventSubscription;
+  Stream<RouteEvent>? _onRouteEvent;
+  late StreamSubscription<RouteEvent> _routeEventSubscription;
 
   ///Current Device OS Version
   Future<String> get platformVersion => _methodChannel
@@ -40,18 +40,16 @@ class MapBoxNavigationViewController {
   /// [options] options used to generate the route and used while navigating
   ///
   Future<bool> buildRoute(
-      {List<WayPoint> wayPoints, MapBoxOptions options}) async {
-    assert(wayPoints != null);
+      {required List<WayPoint> wayPoints, MapBoxOptions? options}) async {
     assert(wayPoints.length > 1);
     if (Platform.isIOS && wayPoints.length > 3 && options?.mode != null) {
-      assert(options.mode != MapBoxNavigationMode.drivingWithTraffic,
+      assert(options!.mode != MapBoxNavigationMode.drivingWithTraffic,
           "Error: Cannot use drivingWithTraffic Mode when you have more than 3 Stops");
     }
-    var pointList = List<Map<String, Object>>();
+    List<Map<String, Object?>> pointList = [];
 
     for (int i = 0; i < wayPoints.length; i++) {
       var wayPoint = wayPoints[i];
-      assert(wayPoint != null);
       assert(wayPoint.name != null);
       assert(wayPoint.latitude != null);
       assert(wayPoint.longitude != null);
@@ -72,7 +70,7 @@ class MapBoxNavigationViewController {
     if (options != null) args = options.toMap();
     args["wayPoints"] = wayPointMap;
 
-    _routeEventSubscription = _streamRouteEvent.listen(_onProgressData);
+    _routeEventSubscription = _streamRouteEvent!.listen(_onProgressData);
     return await _methodChannel
         .invokeMethod('buildRoute', args)
         .then<bool>((dynamic result) => result);
@@ -80,24 +78,24 @@ class MapBoxNavigationViewController {
 
   /// starts listening for events
   Future<void> initialize() async {
-    _routeEventSubscription = _streamRouteEvent.listen(_onProgressData);
+    _routeEventSubscription = _streamRouteEvent!.listen(_onProgressData);
   }
 
   /// Clear the built route and resets the map
-  Future<bool> clearRoute() async {
+  Future<bool?> clearRoute() async {
     return _methodChannel.invokeMethod('clearRoute', null);
   }
 
   /// Starts the Navigation
-  Future<bool> startNavigation({MapBoxOptions options}) async {
-    Map<String, dynamic> args;
+  Future<bool?> startNavigation({MapBoxOptions? options}) async {
+    Map<String, dynamic>? args;
     if (options != null) args = options.toMap();
     //_routeEventSubscription = _streamRouteEvent.listen(_onProgressData);
     return _methodChannel.invokeMethod('startNavigation', args);
   }
 
   ///Ends Navigation and Closes the Navigation View
-  Future<bool> finishNavigation() async {
+  Future<bool?> finishNavigation() async {
     var success = await _methodChannel.invokeMethod('finishNavigation', null);
     return success;
   }
@@ -106,19 +104,19 @@ class MapBoxNavigationViewController {
   Future<dynamic> _handleMethod(MethodCall call) async {
     switch (call.method) {
       case 'sendFromNative':
-        String text = call.arguments as String;
+        String? text = call.arguments as String?;
         return new Future.value("Text from native: $text");
     }
   }
 
   void _onProgressData(RouteEvent event) {
-    if (_routeEventNotifier != null) _routeEventNotifier(event);
+    if (_routeEventNotifier != null) _routeEventNotifier!(event);
 
     if (event.eventType == MapBoxEvent.on_arrival)
       _routeEventSubscription.cancel();
   }
 
-  Stream<RouteEvent> get _streamRouteEvent {
+  Stream<RouteEvent>? get _streamRouteEvent {
     if (_onRouteEvent == null) {
       _onRouteEvent = _eventChannel
           .receiveBroadcastStream()
@@ -131,7 +129,7 @@ class MapBoxNavigationViewController {
     RouteEvent event;
     var map = json.decode(jsonString);
     var progressEvent = RouteProgressEvent.fromJson(map);
-    if (progressEvent != null && progressEvent.isProgressEvent) {
+    if (progressEvent.isProgressEvent!) {
       event = RouteEvent(
           eventType: MapBoxEvent.progress_change, data: progressEvent);
     } else

@@ -4,19 +4,19 @@ part of navigation;
 ///This progress includes information for the current route, leg and step the user is traversing along.
 ///With every new valid location update, a new route progress will be generated using the latest information.
 class RouteProgressEvent {
-  bool arrived;
-  double distance;
-  double duration;
-  double distanceTraveled;
-  double currentLegDistanceTraveled;
-  double currentLegDistanceRemaining;
-  String currentStepInstruction;
-  RouteLeg currentLeg;
-  RouteLeg priorLeg;
-  List<RouteLeg> remainingLegs;
-  int legIndex;
-  int stepIndex;
-  bool isProgressEvent;
+  bool? arrived;
+  double? distance;
+  double? duration;
+  double? distanceTraveled;
+  double? currentLegDistanceTraveled;
+  double? currentLegDistanceRemaining;
+  String? currentStepInstruction;
+  RouteLeg? currentLeg;
+  RouteLeg? priorLeg;
+  List<RouteLeg>? remainingLegs;
+  int? legIndex;
+  int? stepIndex;
+  bool? isProgressEvent;
 
   RouteProgressEvent(
       {this.arrived,
@@ -35,7 +35,7 @@ class RouteProgressEvent {
 
   RouteProgressEvent.fromJson(Map<String, dynamic> json) {
     isProgressEvent = json['arrived'] != null;
-    arrived = json['arrived'] == null ? false : json['arrived'] as bool;
+    arrived = json['arrived'] == null ? false : json['arrived'] as bool?;
     distance = _isNullOrZero(json['distance']) ? 0.0 : json["distance"] + .0;
     duration = _isNullOrZero(json['duration']) ? 0.0 : json["duration"] + .0;
     distanceTraveled = _isNullOrZero(json['distanceTraveled'])
@@ -56,10 +56,11 @@ class RouteProgressEvent {
     priorLeg = json['priorLeg'] == null
         ? null
         : RouteLeg.fromJson(json['priorLeg'] as Map<String, dynamic>);
-    remainingLegs = (json['remainingLegs'] as List)
+    remainingLegs = (json['remainingLegs'] as List?)
         ?.map((e) =>
             e == null ? null : RouteLeg.fromJson(e as Map<String, dynamic>))
-        ?.toList();
+        .cast<RouteLeg>()
+        .toList();
     legIndex = json['legIndex'];
     stepIndex = json['stepIndex'];
   }
