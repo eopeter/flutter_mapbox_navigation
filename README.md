@@ -34,7 +34,7 @@ Add Turn By Turn Navigation to Your Flutter Application Using MapBox. Never leav
 </resources>
 ```
 
-1. Add the following permissions to the app level Android Manifest
+2. Add the following permissions to the app level Android Manifest
 ```xml
 <manifest>
     ...
@@ -45,6 +45,10 @@ Add Turn By Turn Navigation to Your Flutter Application Using MapBox. Never leav
 </manifest>
 ```
 
+3. Add the MapBox Access token to your gradle.properties to enable downloading the MapBox binaries from the repository
+```text
+MAPBOX_DOWNLOADS_TOKEN=sk.XXXXXXXXXXXXXXX
+```
 ## Usage
 
 
