@@ -45,7 +45,7 @@ Add Turn By Turn Navigation to Your Flutter Application Using MapBox. Never leav
 </manifest>
 ```
 
-3. Add the MapBox Access token to your gradle.properties to enable downloading the MapBox binaries from the repository
+3. Add the MapBox Downloads token with the ```downloads:read``` scope to your gradle.properties file in Android folder to enable downloading the MapBox binaries from the repository
 ```text
 MAPBOX_DOWNLOADS_TOKEN=sk.XXXXXXXXXXXXXXX
 ```
