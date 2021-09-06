@@ -49,7 +49,6 @@ Add Turn By Turn Navigation to Your Flutter Application Using MapBox. Never leav
 ```text
 MAPBOX_DOWNLOADS_TOKEN=sk.XXXXXXXXXXXXXXX
 ```
-## Usage
 
 After adding the above, your gradle.properties file may look something like this:
 ```text
@@ -58,6 +57,9 @@ android.useAndroidX=true
 android.enableJetifier=true
 MAPBOX_DOWNLOADS_TOKEN=sk.epe9nE9peAcmwNzKVNqSbFfp2794YtnNepe9nE9peAcmwNzKVNqSbFfp2794YtnN.-HrbMMQmLdHwYb8r
 ```
+
+## Usage
+
 #### Declare an instance
 
 ```dart
