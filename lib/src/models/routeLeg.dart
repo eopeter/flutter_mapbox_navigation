@@ -1,4 +1,6 @@
-part of navigation;
+import 'wayPoint.dart';
+import 'routeStep.dart';
+import '../helpers.dart';
 
 ///A RouteLeg object defines a single leg of a route between two waypoints.
 ///If the overall route has only two waypoints, it has a single RouteLeg object that covers the entire route.
@@ -19,8 +21,8 @@ class RouteLeg {
   RouteLeg.fromJson(Map<String, dynamic> json) {
     profileIdentifier = json["profileIdentifier"];
     name = json["name"];
-    distance = _isNullOrZero(json["distance"]) ? 0.0 : json["distance"] + .0;
-    expectedTravelTime = _isNullOrZero(json["expectedTravelTime"])
+    distance = isNullOrZero(json["distance"]) ? 0.0 : json["distance"] + .0;
+    expectedTravelTime = isNullOrZero(json["expectedTravelTime"])
         ? 0.0
         : json["expectedTravelTime"] + .0;
     source = json['source'] == null

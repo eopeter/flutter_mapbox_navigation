@@ -1,5 +1,3 @@
-part of navigation;
-
 ///A Geo-coordinate Point used for navigation.
 class WayPoint {
   String? name;

@@ -1,4 +1,4 @@
-part of navigation;
+import '../helpers.dart';
 
 ///A RouteStep object represents a single distinct maneuver along a route and the approach to the next maneuver.
 ///The route step object corresponds to a single instruction the user must follow to complete a portion of the route.
@@ -15,8 +15,8 @@ class RouteStep {
   RouteStep.fromJson(Map<String, dynamic> json) {
     name = json["name"];
     instructions = json["instructions"];
-    distance = _isNullOrZero(json["distance"]) ? 0.0 : json["distance"] + .0;
-    expectedTravelTime = _isNullOrZero(json["expectedTravelTime"])
+    distance = isNullOrZero(json["distance"]) ? 0.0 : json["distance"] + .0;
+    expectedTravelTime = isNullOrZero(json["expectedTravelTime"])
         ? 0.0
         : json["expectedTravelTime"] + .0;
   }

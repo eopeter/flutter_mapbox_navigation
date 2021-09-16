@@ -1,3 +1,8 @@
+## 0.1.0
+* breaking changes
+* Android Gradle Upgrade
+* Bug Fixes
+
 ## 0.0.26
 * not implemented bug for onNextLegStart
 

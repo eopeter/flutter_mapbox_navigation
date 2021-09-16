@@ -1,4 +1,10 @@
-part of navigation;
+import 'dart:async';
+import 'dart:convert';
+import 'dart:io';
+
+import 'package:flutter/services.dart';
+import 'package:flutter/widgets.dart';
+import '../models/models.dart';
 
 /// Controller for a single MapBox Navigation instance running on the host platform.
 class MapBoxNavigationViewController {

@@ -1,4 +1,10 @@
-part of navigation;
+import 'dart:io';
+
+import 'package:flutter/services.dart';
+import 'package:flutter/widgets.dart';
+
+import 'controller.dart';
+import '../models/models.dart';
 
 /// Callback method for when the navigation view is ready to be used.
 ///

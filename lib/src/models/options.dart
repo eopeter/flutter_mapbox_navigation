@@ -1,4 +1,7 @@
-part of navigation;
+import 'package:flutter/widgets.dart';
+
+import 'navmode.dart';
+import 'voiceUnits.dart';
 
 /// Configuration options for the MapBoxNavigation.
 ///

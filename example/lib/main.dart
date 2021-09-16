@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'dart:async';
 
 import 'package:flutter/services.dart';
-import 'package:flutter_mapbox_navigation/library.dart';
+import 'package:flutter_mapbox_navigation/flutter_mapbox_navigation.dart';
 
 void main() => runApp(MyApp());
 
