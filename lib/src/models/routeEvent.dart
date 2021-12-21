@@ -12,9 +12,14 @@ class RouteEvent {
   RouteEvent.fromJson(Map<String, dynamic> json) {
     if (json['eventType'] is int)
       eventType = MapBoxEvent.values[json['eventType']];
-    else
-      eventType = MapBoxEvent.values
-          .firstWhere((e) => e.toString().split(".").last == json['eventType']);
+    else {
+      try {
+        eventType = MapBoxEvent.values.firstWhere(
+            (e) => e.toString().split(".").last == json['eventType']);
+      } on StateError {
+        //When the list is empty or eventType not found (Bad State: No Element)
+      } catch (e) {}
+    }
     var dataJson = json['data'];
     if (eventType == MapBoxEvent.progress_change) {
       data = RouteProgressEvent.fromJson(dataJson);

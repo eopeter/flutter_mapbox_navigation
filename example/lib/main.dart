@@ -74,6 +74,7 @@ class _MyAppState extends State<MyApp> {
         simulateRoute: false,
         animateBuildRoute: true,
         longPressDestinationEnabled: true,
+        mapStyleUrlDay: "mapbox://styles/eopeter/ckffcmgtl0car1ap80jhp4hsr",
         language: "en");
 
     String platformVersion;

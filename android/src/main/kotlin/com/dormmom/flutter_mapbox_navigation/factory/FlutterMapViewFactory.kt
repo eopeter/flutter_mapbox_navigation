@@ -21,6 +21,7 @@ import com.dormmom.flutter_mapbox_navigation.models.MapBoxMileStone
 import com.dormmom.flutter_mapbox_navigation.models.MapBoxRouteProgressEvent
 import com.dormmom.flutter_mapbox_navigation.utilities.PluginUtilities
 import com.mapbox.android.core.location.LocationEngine
+import com.mapbox.android.core.permissions.PermissionsListener
 import com.mapbox.android.core.permissions.PermissionsManager
 import com.mapbox.api.directions.v5.DirectionsCriteria
 import com.mapbox.api.directions.v5.models.*
@@ -43,6 +44,7 @@ import com.mapbox.mapboxsdk.style.layers.PropertyFactory
 import com.mapbox.mapboxsdk.style.layers.PropertyFactory.*
 import com.mapbox.mapboxsdk.style.layers.SymbolLayer
 import com.mapbox.mapboxsdk.style.sources.GeoJsonSource
+import com.mapbox.navigation.base.internal.extensions.applyDefaultParams
 import com.mapbox.navigation.base.internal.extensions.coordinates
 import com.mapbox.navigation.base.options.NavigationOptions
 import com.mapbox.navigation.base.trip.model.RouteLegProgress
@@ -94,7 +96,7 @@ class FlutterMapViewFactory :
         SpeechAnnouncementListener,
         ArrivalObserver,
         LocationObserver,
-
+        PermissionsListener,
         MapboxMap.OnMapLongClickListener {
 
     private val activity: Activity
@@ -112,6 +114,8 @@ class FlutterMapViewFactory :
     private var currentRoute: DirectionsRoute? = null
     private var navigationView: NavigationView? = null
 
+
+    private var permissionsManager: PermissionsManager = PermissionsManager(this)
 
     //private val routeRefresh = RouteRefresh(Mapbox.getAccessToken()!!)
     private var navigationMapRoute: NavigationMapRoute? = null
@@ -562,6 +566,7 @@ class FlutterMapViewFactory :
         destinationPoint = Point.fromLngLat(wayPoints[1].longitude(), wayPoints[1].latitude())
         navigation.requestRoutes(
         RouteOptions.builder()
+                .applyDefaultParams()
                 .accessToken(Mapbox.getAccessToken()!!)
                 .coordinates(originPoint!!, destination = destinationPoint!!)
                 .language(navigationLanguage)
@@ -634,7 +639,7 @@ class FlutterMapViewFactory :
         try {
             mapView.onStart()
         } catch (e: java.lang.Exception) {
-            Timber.i(String.format("onActivityStarted, %s", "Error: ${e.message}"))
+            Timber.i(String.format("onActivityStarted, Error: ${e.message}"))
         }
     }
 
@@ -731,9 +736,31 @@ class FlutterMapViewFactory :
                         moveCamera(location)
                     }
                 } catch (e: Exception) {
-                    Timber.i(String.format("enableLocationComponent, %s", "Error: ${e.message}"))
+                    Timber.i(String.format("enableLocationComponent %s Error: ${e.message}"))
                 }
             }
+        }
+        else{
+            //request location permission
+            permissionsManager = PermissionsManager(this);
+            permissionsManager.requestLocationPermissions(this.activity);
+        }
+    }
+
+    fun onRequestPermissionsResult(requestCode: Int, permissions: Array<String>, grantResults: IntArray) {
+        permissionsManager.onRequestPermissionsResult(requestCode, permissions, grantResults)
+    }
+
+    override fun onExplanationNeeded(permissionsToExplain: List<String>) {
+        //Toast.makeText(this, R.string.user_location_permission_explanation, Toast.LENGTH_LONG).show()
+    }
+
+    override fun onPermissionResult(granted: Boolean) {
+        if (granted) {
+            enableLocationComponent(mapBoxMap?.style!!)
+        } else {
+            //Toast.makeText(this, R.string.user_location_permission_not_granted, Toast.LENGTH_LONG).show()
+            //finish()
         }
     }
 

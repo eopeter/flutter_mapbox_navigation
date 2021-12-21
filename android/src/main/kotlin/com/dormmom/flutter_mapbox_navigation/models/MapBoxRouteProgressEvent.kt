@@ -26,7 +26,9 @@ class MapBoxRouteProgressEvent(progress: RouteProgress) {
         distanceTraveled = progress.distanceTraveled
         legIndex = progress.currentLegProgress?.legIndex
         //stepIndex = progress.stepIndex
-        currentLeg = progress.currentLegProgress?.routeLeg?.let { MapBoxRouteLeg(it) }!!
+        val leg = progress.currentLegProgress?.routeLeg
+        if (leg != null)
+            currentLeg = MapBoxRouteLeg(leg)
         currentStepInstruction = progress.bannerInstructions?.primary()?.text()
         currentLegDistanceTraveled = progress.currentLegProgress?.distanceTraveled
         currentLegDistanceRemaining = progress.currentLegProgress?.distanceRemaining
