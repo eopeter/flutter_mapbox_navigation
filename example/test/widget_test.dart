@@ -8,12 +8,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
-import 'package:flutter_mapbox_navigation_example/main.dart';
+import 'package:flutter_mapbox_navigation_example/app.dart';
 
 void main() {
   testWidgets('Verify Platform version', (WidgetTester tester) async {
     // Build our app and trigger a frame.
-    await tester.pumpWidget(MyApp());
+    await tester.pumpWidget(SampleNavigationApp());
 
     // Verify that platform version is retrieved.
     expect(

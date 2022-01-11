@@ -16,7 +16,7 @@ public class FlutterMapboxNavigationView : NavigationFactory, NavigationMapViewD
 
     var navigationMapView: NavigationMapView!
     var arguments: NSDictionary?
-    var route: Route?
+
     var routeResponse: RouteResponse?
     var routeOptions: NavigationRouteOptions?
 
@@ -86,12 +86,12 @@ public class FlutterMapboxNavigationView : NavigationFactory, NavigationMapViewD
             return navigationMapView
         }
 
-        bindMapView()
+        setupMapView()
 
         return navigationMapView
     }
 
-    private func bindMapView()
+    private func setupMapView()
     {
         navigationMapView = NavigationMapView(frame: frame)
         navigationMapView.delegate = self
@@ -148,15 +148,15 @@ public class FlutterMapboxNavigationView : NavigationFactory, NavigationMapViewD
 
     func clearRoute(arguments: NSDictionary?, result: @escaping FlutterResult)
     {
-        if route == nil
+        if routeResponse == nil
         {
             return
         }
 
-        bindMapView()
+        setupMapView()
         self.view().setNeedsDisplay()
 
-        route = nil
+        routeResponse = nil
         sendEvent(eventType: MapBoxEventType.navigation_cancelled)
 
 
@@ -209,7 +209,7 @@ public class FlutterMapboxNavigationView : NavigationFactory, NavigationMapViewD
         _mapStyleUrlDay = arguments?["mapStyleUrlDay"] as? String
         _mapStyleUrlNight = arguments?["mapStyleUrlNight"] as? String
 
-        var mode: DirectionsProfileIdentifier = .automobileAvoidingTraffic
+        var mode: ProfileIdentifier = .automobileAvoidingTraffic
 
         if (_navigationMode == "cycling")
         {
@@ -233,40 +233,27 @@ public class FlutterMapboxNavigationView : NavigationFactory, NavigationMapViewD
 
         routeOptions.distanceMeasurementSystem = _voiceUnits == "imperial" ? .imperial : .metric
         routeOptions.locale = Locale(identifier: _language)
-
+        self.routeOptions = routeOptions
 
         // Generate the route object and draw it on the map
         _ = Directions.shared.calculate(routeOptions) { [weak self] (session, result) in
 
-            guard case let .success(response) = result, let route = response.routes?.first, let strongSelf = self else {
+            guard case let .success(response) = result, let strongSelf = self else {
                 flutterResult(false)
                 self?.sendEvent(eventType: MapBoxEventType.route_build_failed)
                 return
             }
+            strongSelf.routeResponse = response
             strongSelf.sendEvent(eventType: MapBoxEventType.route_built)
-            strongSelf.route = route
-            strongSelf.routeOptions = routeOptions
-
-            strongSelf.navigationMapView?.show(response.routes!)
-            strongSelf.navigationMapView?.showWaypoints(on: strongSelf.route!)
-            // Draw the route on the map after creating it
-            //strongSelf.drawRoute(route: route)
-
-            // Mauna Kea, Hawaii
-            let center = strongSelf._wayPoints.first?.coordinate
-
-            // Optionally set a starting point.
-            ///strongSelf.mapView.setCenter(center!, zoomLevel: 2, direction: 0, animated: false)
-            strongSelf.moveCameraToCenter()
+            strongSelf.navigationMapView?.showcase(response.routes!, routesPresentationStyle: .all(shouldFit: true), animated: true)
             flutterResult(true)
-            //strongSelf.startEmbeddedNavigation()
         }
     }
 
 
     func startEmbeddedNavigation(arguments: NSDictionary?, result: @escaping FlutterResult) {
 
-        guard let response = routeResponse else { return }
+        guard let response = self.routeResponse else { return }
         let navigationService = MapboxNavigationService(routeResponse: response, routeIndex: 0, routeOptions: routeOptions!, simulating: self._simulateRoute ? .always : .onPoorGPS)
         var dayStyle = CustomDayStyle()
         if(_mapStyleUrlDay != nil){
