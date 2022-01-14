@@ -5,7 +5,7 @@ import MapboxDirections
 import MapboxCoreNavigation
 import MapboxNavigation
 
-public class NavigationFactory : NSObject, FlutterStreamHandler, NavigationViewControllerDelegate
+public class NavigationFactory : NSObject, FlutterStreamHandler
 {
     var _navigationViewController: NavigationViewController? = nil
     var _eventSink: FlutterEventSink? = nil
@@ -34,7 +34,7 @@ public class NavigationFactory : NSObject, FlutterStreamHandler, NavigationViewC
     var _bearing: Double = 0.0
     var _animateBuildRoute = true
     var _longPressDestinationEnabled = true
-
+    var _shouldReRoute = true
     var navigationDirections: Directions?
 
     func startNavigation(arguments: NSDictionary?, result: @escaping FlutterResult)
@@ -100,7 +100,7 @@ public class NavigationFactory : NSObject, FlutterStreamHandler, NavigationViewC
     {
         let simulationMode: SimulationMode = _simulateRoute ? .always : .never
 
-        var mode: DirectionsProfileIdentifier = .automobileAvoidingTraffic
+        var mode: ProfileIdentifier = .automobileAvoidingTraffic
 
         if (_navigationMode == "cycling")
         {
@@ -146,7 +146,6 @@ public class NavigationFactory : NSObject, FlutterStreamHandler, NavigationViewC
                 }
                 else
                 {
-                    let route = routes.first!
                     let navigationService = MapboxNavigationService(routeResponse: response, routeIndex: 0, routeOptions: options, simulating: simulationMode)
                     var dayStyle = CustomDayStyle()
                     if(strongSelf._mapStyleUrlDay != nil){
@@ -192,13 +191,11 @@ public class NavigationFactory : NSObject, FlutterStreamHandler, NavigationViewC
                 //TODO: if more than one route found, give user option to select one: DOES NOT WORK
                 if(routes.count > 1 && strongSelf.ALLOW_ROUTE_SELECTION)
                 {
-                    //show map to select a specific route
+                    //TODO: show map to select a specific route
 
                 }
                 else
                 {
-                    let route = routes.first!
-                    //strongSelf._navigationViewController?.navigationService.route = route
                     strongSelf._navigationViewController?.navigationService.start()
                 }
             }
@@ -290,6 +287,23 @@ public class NavigationFactory : NSObject, FlutterStreamHandler, NavigationViewC
         }
          */
     }
+    
+
+
+    //MARK: EventListener Delegates
+    public func onListen(withArguments arguments: Any?, eventSink events: @escaping FlutterEventSink) -> FlutterError? {
+        _eventSink = events
+        return nil
+    }
+
+    public func onCancel(withArguments arguments: Any?) -> FlutterError? {
+        _eventSink = nil
+        return nil
+    }
+}
+
+
+extension NavigationFactory : NavigationViewControllerDelegate {
     //MARK: NavigationViewController Delegates
     public func navigationViewController(_ navigationViewController: NavigationViewController, didUpdate progress: RouteProgress, with location: CLLocation, rawLocation: CLLocation) {
         _lastKnownLocation = location
@@ -335,16 +349,8 @@ public class NavigationFactory : NSObject, FlutterStreamHandler, NavigationViewC
         }
         endNavigation(result: nil)
     }
-
-
-    //MARK: EventListener Delegates
-    public func onListen(withArguments arguments: Any?, eventSink events: @escaping FlutterEventSink) -> FlutterError? {
-        _eventSink = events
-        return nil
-    }
-
-    public func onCancel(withArguments arguments: Any?) -> FlutterError? {
-        _eventSink = nil
-        return nil
+    
+    public func navigationViewController(_ navigationViewController: NavigationViewController, shouldRerouteFrom location: CLLocation) -> Bool {
+        return _shouldReRoute
     }
 }

@@ -5,4 +5,5 @@
 .pub/
 .idea/
 
+/example/android/app/src/main/res/values/developer-config.xml
 build/

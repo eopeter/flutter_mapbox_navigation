@@ -27,10 +27,20 @@ class _SampleNavigationAppState extends State<SampleNavigationApp> {
       name: "Way Point 4",
       latitude: 38.909650771013034,
       longitude: -77.03850388526917);
-  final _stop4 = WayPoint(
+  final _destination = WayPoint(
       name: "Way Point 5",
       latitude: 38.90894949285854,
       longitude: -77.03651905059814);
+
+  final _home = WayPoint(
+      name: "Home",
+      latitude: 37.77440680146262,
+      longitude: -122.43539772352648);
+
+  final _store = WayPoint(
+      name: "Store",
+      latitude: 37.76556957793795,
+      longitude: -122.42409811526268);
 
   MapBoxNavigation _directions;
   MapBoxOptions _options;
@@ -68,7 +78,7 @@ class _SampleNavigationAppState extends State<SampleNavigationApp> {
         allowsUTurnAtWayPoints: true,
         mode: MapBoxNavigationMode.drivingWithTraffic,
         units: VoiceUnits.imperial,
-        simulateRoute: false,
+        simulateRoute: true,
         animateBuildRoute: true,
         longPressDestinationEnabled: true,
         language: "en");
@@ -122,8 +132,8 @@ class _SampleNavigationAppState extends State<SampleNavigationApp> {
                           child: Text("Start A to B"),
                           onPressed: () async {
                             var wayPoints = <WayPoint>[];
-                            wayPoints.add(_origin);
-                            wayPoints.add(_stop1);
+                            wayPoints.add(_home);
+                            wayPoints.add(_store);
 
                             await _directions.startNavigation(
                                 wayPoints: wayPoints,
@@ -147,7 +157,7 @@ class _SampleNavigationAppState extends State<SampleNavigationApp> {
                             wayPoints.add(_stop1);
                             wayPoints.add(_stop2);
                             wayPoints.add(_stop3);
-                            wayPoints.add(_stop4);
+                            wayPoints.add(_destination);
                             wayPoints.add(_origin);
 
                             await _directions.startNavigation(
@@ -188,12 +198,8 @@ class _SampleNavigationAppState extends State<SampleNavigationApp> {
                               _controller.clearRoute();
                             } else {
                               var wayPoints = <WayPoint>[];
-                              wayPoints.add(_origin);
-                              wayPoints.add(_stop1);
-                              wayPoints.add(_stop2);
-                              wayPoints.add(_stop3);
-                              wayPoints.add(_stop4);
-                              wayPoints.add(_origin);
+                              wayPoints.add(_home);
+                              wayPoints.add(_store);
                               _isMultipleStop = wayPoints.length > 2;
                               _controller.buildRoute(
                                   wayPoints: wayPoints);

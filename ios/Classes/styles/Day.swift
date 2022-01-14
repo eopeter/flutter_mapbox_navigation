@@ -1,7 +1,6 @@
 import MapboxMaps
-import MapboxDirections
-import MapboxCoreNavigation
 import MapboxNavigation
+import MapboxMaps
 
 class CustomDayStyle: DayStyle {
 
@@ -11,21 +10,20 @@ class CustomDayStyle: DayStyle {
     }
 
     init(url: String?){
-
         super.init()
         initStyle()
         if(url != nil)
         {
-            ///mapStyleURL = URL(string: url!) ?? MGLStyle.navigationDayStyleURL
-            ///previewMapStyleURL = URL(string: url!) ?? MGLStyle.navigationDayStyleURL
+            mapStyleURL = URL(string: url!) ?? URL(string: StyleURI.navigationDay.rawValue)!
+            previewMapStyleURL = mapStyleURL
         }
     }
 
     func initStyle()
     {
         // Use a custom map style.
-        ///mapStyleURL = MGLStyle.navigationDayStyleURL
-        ///previewMapStyleURL = MGLStyle.navigationDayStyleURL
+        mapStyleURL = URL(string: StyleURI.navigationDay.rawValue)!
+        previewMapStyleURL = mapStyleURL
 
         // Specify that the style should be used during the day.
         styleType = .day
@@ -33,7 +31,6 @@ class CustomDayStyle: DayStyle {
 
     override func apply() {
         super.apply()
-
         // Begin styling the UI
         //BottomBannerView.appearance().backgroundColor = .orange
     }

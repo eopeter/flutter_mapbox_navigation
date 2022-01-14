@@ -22,8 +22,8 @@
 	<string>$(FLUTTER_BUILD_NUMBER)</string>
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
-	<key>MGLMapboxAccessToken</key>
-	<string>MAPBOX_ACCESS_TOKEN_HERE</string>
+    <key>MBXAccessToken</key>
+    <string>YOUR_MAPBOX_ACCESS_TOKEN</string>
 	<key>MGLMapboxMetricsEnabledSettingShownInApp</key>
 	<string>YES</string>
 	<key>NSLocationWhenInUseUsageDescription</key>
