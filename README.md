@@ -1,3 +1,5 @@
+[![Pub][pub_badge]][pub] [![BuyMeACoffee][buy_me_a_coffee_badge]][buy_me_a_coffee]
+
 # flutter_mapbox_navigation
 
 Add Turn By Turn Navigation to Your Flutter Application Using MapBox. Never leave your app when you need to navigate your users to a location.
@@ -238,3 +240,9 @@ Add the following to your `info.plist` file
 * [DONE] Stream Events like relevant navigation notifications, metrics, current location, etc. 
 * [DONE] Embeddable Navigation View 
 * Offline Routing
+
+<!-- Links -->
+[pub_badge]: https://img.shields.io/pub/v/flutter_mapbox_navigation.svg
+[pub]: https://pub.dev/packages/flutter_mapbox_navigation
+[buy_me_a_coffee]: https://www.buymeacoffee.com/eopeter
+[buy_me_a_coffee_badge]: https://img.buymeacoffee.com/button-api/?text=Donate&emoji=&slug=eopeter&button_colour=29b6f6&font_colour=000000&font_family=Cookie&outline_colour=000000&coffee_colour=FFDD00
