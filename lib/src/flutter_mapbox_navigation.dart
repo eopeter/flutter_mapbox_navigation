@@ -42,14 +42,14 @@ class MapBoxNavigation {
       .then<String>((dynamic result) => result);
 
   ///Total distance remaining in meters along route.
-  Future<double> get distanceRemaining => _methodChannel
-      .invokeMethod<double>('getDistanceRemaining')
-      .then<double>((dynamic result) => result);
+  Future<double?> get distanceRemaining => _methodChannel
+      .invokeMethod<double?>('getDistanceRemaining')
+      .then<double?>((dynamic result) => result);
 
   ///Total seconds remaining on all legs.
-  Future<double> get durationRemaining => _methodChannel
-      .invokeMethod<double>('getDurationRemaining')
-      .then<double>((dynamic result) => result);
+  Future<double?> get durationRemaining => _methodChannel
+      .invokeMethod<double?>('getDurationRemaining')
+      .then<double?>((dynamic result) => result);
 
   ///Show the Navigation View and Begins Direction Routing
   ///

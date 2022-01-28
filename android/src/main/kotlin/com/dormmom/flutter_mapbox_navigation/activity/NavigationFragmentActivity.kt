@@ -18,7 +18,7 @@ class NavigationFragmentActivity : AppCompatActivity(){
         if (savedInstanceState == null) {
             val transaction: FragmentTransaction = fragmentManager.beginTransaction()
             transaction.disallowAddToBackStack()
-            transaction.add(R.id.navigation_fragment_frame, NavigationFragment()).commit()
+            transaction.add(R.id.mapView, NavigationFragment()).commit()
         }
     }
 }

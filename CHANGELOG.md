@@ -2,6 +2,8 @@
 * breaking changes
 * Android Gradle Upgrade
 * Bug Fixes
+* MapBox Library Upgrade
+* iOS MapBox Token Property Name in info.plist is now MBXAccessToken
 
 ## 0.0.26
 * not implemented bug for onNextLegStart

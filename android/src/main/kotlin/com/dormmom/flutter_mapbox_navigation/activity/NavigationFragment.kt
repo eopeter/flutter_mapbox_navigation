@@ -1,5 +1,11 @@
 package com.dormmom.flutter_mapbox_navigation.activity
 
+import androidx.fragment.app.Fragment
+
+class NavigationFragment : Fragment() {
+
+}
+/*
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.SharedPreferences
@@ -415,3 +421,5 @@ class NavigationFragment : Fragment(), OnNavigationReadyCallback,
         TODO("Not yet implemented")
     }
 }
+
+ */
