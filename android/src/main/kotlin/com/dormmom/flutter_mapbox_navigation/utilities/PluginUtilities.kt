@@ -48,7 +48,7 @@ class PluginUtilities {
                     "  \"eventType\": \"${MapBoxEvents.PROGRESS_CHANGE.value}\"," +
                     "  \"data\": $dataString" +
                     "}"
-            FlutterMapboxNavigationPlugin.eventSink?.success(dataString)
+            FlutterMapboxNavigationPlugin.eventSink?.success(jsonString)
         }
 
         fun sendEvent(event: MapBoxEvents, data: String = "") {

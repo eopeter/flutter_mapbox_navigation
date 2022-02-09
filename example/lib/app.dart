@@ -202,7 +202,7 @@ class _SampleNavigationAppState extends State<SampleNavigationApp> {
                               wayPoints.add(_store);
                               _isMultipleStop = wayPoints.length > 2;
                               _controller.buildRoute(
-                                  wayPoints: wayPoints);
+                                  wayPoints: wayPoints, options: _options);
                             }
                           },
                         ),

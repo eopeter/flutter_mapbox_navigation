@@ -8,7 +8,7 @@ import android.os.Build
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog
 import com.dormmom.flutter_mapbox_navigation.activity.NavigationLauncher
-import com.dormmom.flutter_mapbox_navigation.factory.MapViewFactory
+import com.dormmom.flutter_mapbox_navigation.factory.EmbeddedNavigationViewFactory
 
 import com.mapbox.api.directions.v5.DirectionsCriteria
 import com.mapbox.api.directions.v5.models.DirectionsRoute
@@ -243,7 +243,7 @@ public class FlutterMapboxNavigationPlugin: FlutterPlugin, MethodCallHandler, Ev
 
     if(platformViewRegistry != null && binaryMessenger != null && currentActivity != null)
     {
-      platformViewRegistry?.registerViewFactory(view_name, MapViewFactory(binaryMessenger!!, currentActivity!!))
+      platformViewRegistry?.registerViewFactory(view_name, EmbeddedNavigationViewFactory(binaryMessenger!!, currentActivity!!))
     }
 
   }
