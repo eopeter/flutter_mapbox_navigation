@@ -6,13 +6,13 @@ import android.content.Context
 import android.content.pm.PackageManager
 import android.os.Build
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.AlertDialog
 import com.dormmom.flutter_mapbox_navigation.activity.NavigationLauncher
-import com.dormmom.flutter_mapbox_navigation.factory.MapViewFactory
+import com.dormmom.flutter_mapbox_navigation.factory.EmbeddedNavigationViewFactory
 
 import com.mapbox.api.directions.v5.DirectionsCriteria
 import com.mapbox.api.directions.v5.models.DirectionsRoute
 import com.mapbox.geojson.Point
-import com.mapbox.navigation.core.MapboxNavigation
 
 import io.flutter.embedding.engine.plugins.FlutterPlugin
 import io.flutter.embedding.engine.plugins.activity.ActivityAware
@@ -29,10 +29,7 @@ import java.util.*
 
 /** FlutterMapboxNavigationPlugin */
 public class FlutterMapboxNavigationPlugin: FlutterPlugin, MethodCallHandler, EventChannel.StreamHandler, ActivityAware {
-  /// The MethodChannel that will the communication between Flutter and native Android
-  ///
-  /// This local reference serves to register the plugin with the Flutter Engine and unregister it
-  /// when the Flutter Engine is detached from the Activity
+
   private lateinit var channel : MethodChannel
   private lateinit var progressEventChannel: EventChannel
 
@@ -50,16 +47,8 @@ public class FlutterMapboxNavigationPlugin: FlutterPlugin, MethodCallHandler, Ev
 
   }
 
-  // This static function is optional and equivalent to onAttachedToEngine. It supports the old
-  // pre-Flutter-1.12 Android projects. You are encouraged to continue supporting
-  // plugin registration via this function while apps migrate to use the new Android APIs
-  // post-flutter-1.12 via https://flutter.dev/go/android-project-migration.
-  //
-  // It is encouraged to share logic between onAttachedToEngine and registerWith to keep
-  // them functionally equivalent. Only one of onAttachedToEngine or registerWith will be called
-  // depending on the user's project. onAttachedToEngine or registerWith must both be defined
-  // in the same class.
   companion object {
+
     private var currentActivity: Activity? = null
     private lateinit var currentContext: Context
     var eventSink:EventChannel.EventSink? = null
@@ -71,6 +60,7 @@ public class FlutterMapboxNavigationPlugin: FlutterPlugin, MethodCallHandler, Ev
     val wayPoints: MutableList<Point> = mutableListOf()
 
     var showAlternateRoutes: Boolean = true
+    val allowsClickToSetDestination: Boolean = false
     var allowsUTurnsAtWayPoints: Boolean = false
     var navigationMode =  DirectionsCriteria.PROFILE_DRIVING_TRAFFIC
     var simulateRoute = false
@@ -252,7 +242,9 @@ public class FlutterMapboxNavigationPlugin: FlutterPlugin, MethodCallHandler, Ev
     currentContext = binding.activity.applicationContext
 
     if(platformViewRegistry != null && binaryMessenger != null && currentActivity != null)
-      platformViewRegistry?.registerViewFactory(view_name, MapViewFactory(binaryMessenger!!, currentActivity!!))
+    {
+      platformViewRegistry?.registerViewFactory(view_name, EmbeddedNavigationViewFactory(binaryMessenger!!, currentActivity!!))
+    }
 
   }
 
@@ -286,4 +278,21 @@ public class FlutterMapboxNavigationPlugin: FlutterPlugin, MethodCallHandler, Ev
     //super.onRequestPermissionsResult(requestCode, permissions, grantResults)
 
   }
+
+  private fun isMapboxTokenProvided() =
+    currentContext.getString(R.string.mapbox_access_token) != MAPBOX_ACCESS_TOKEN_PLACEHOLDER
+
+  private fun showNoTokenErrorDialog() {
+    AlertDialog.Builder(currentContext)
+      .setTitle(currentContext.getString(R.string.noTokenDialogTitle))
+      .setMessage(currentContext.getString(R.string.noTokenDialogBody))
+      .setCancelable(false)
+      .setPositiveButton("Ok") { _, _ ->
+        currentActivity?.finish()
+      }
+      .show()
+  }
+
 }
+
+private const val MAPBOX_ACCESS_TOKEN_PLACEHOLDER = "YOUR_MAPBOX_ACCESS_TOKEN_GOES_HERE"
