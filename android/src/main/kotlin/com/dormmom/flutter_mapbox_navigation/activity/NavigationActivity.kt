@@ -211,17 +211,17 @@ class NavigationActivity : AppCompatActivity() {
                 .build()
         )
 
-//        // initialize voice instructions api and the voice instruction player
-//        speechApi = MapboxSpeechApi(
-//            this,
-//            accessToken,
-//            Locale.US.language
-//        )
-//        voiceInstructionsPlayer = MapboxVoiceInstructionsPlayer(
-//            this,
-//            accessToken,
-//            Locale.US.language
-//        )
+        // initialize voice instructions api and the voice instruction player
+        speechApi = MapboxSpeechApi(
+            this,
+            accessToken!!,
+            Locale.US.language
+        )
+        voiceInstructionsPlayer = MapboxVoiceInstructionsPlayer(
+            this,
+            accessToken!!,
+            Locale.US.language
+        )
 
         // initialize route line, the withRouteLineBelowLayerId is specified to place
         // the route line below road labels layer on the map
