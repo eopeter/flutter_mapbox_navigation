@@ -1,4 +1,4 @@
-group 'com.dormmom.flutter_mapbox_navigation'
+group 'com.eopeter.flutter_mapbox_navigation'
 version '1.0-SNAPSHOT'
 
 buildscript {
@@ -76,6 +76,7 @@ android {
     buildFeatures{
         viewBinding = true
     }
+
 }
 
 dependencies {

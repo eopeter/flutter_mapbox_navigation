@@ -1,4 +1,4 @@
-package com.dormmom.flutter_mapbox_navigation.activity
+package com.eopeter.flutter_mapbox_navigation.activity
 
 import android.annotation.SuppressLint
 import android.content.*
@@ -8,24 +8,14 @@ import android.location.Location
 import android.os.Bundle
 import android.view.View
 import android.widget.Toast
-import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 
-import com.dormmom.flutter_mapbox_navigation.FlutterMapboxNavigationPlugin
-import com.dormmom.flutter_mapbox_navigation.R
-import com.dormmom.flutter_mapbox_navigation.databinding.ActivityNavigationBinding
-import com.dormmom.flutter_mapbox_navigation.models.MapBoxEvents
-import com.dormmom.flutter_mapbox_navigation.models.MapBoxLocation
-import com.dormmom.flutter_mapbox_navigation.models.MapBoxMileStone
-import com.dormmom.flutter_mapbox_navigation.models.MapBoxRouteProgressEvent
-import com.dormmom.flutter_mapbox_navigation.utilities.PluginUtilities
-import com.dormmom.flutter_mapbox_navigation.utilities.PluginUtilities.Companion.sendEvent
-import com.mapbox.android.core.location.LocationEngine
-import com.mapbox.android.core.location.LocationEngineProvider
-import com.mapbox.android.core.permissions.PermissionsListener
+import com.eopeter.flutter_mapbox_navigation.FlutterMapboxNavigationPlugin
+import com.eopeter.flutter_mapbox_navigation.models.MapBoxRouteProgressEvent
+import com.eopeter.flutter_mapbox_navigation.utilities.PluginUtilities
+import com.eopeter.flutter_mapbox_navigation.utilities.PluginUtilities.Companion.sendEvent
 
-import com.mapbox.api.directions.v5.DirectionsCriteria
 import com.mapbox.api.directions.v5.models.*
 
 import com.mapbox.api.directions.v5.models.Bearing
@@ -89,6 +79,8 @@ import com.mapbox.navigation.ui.voice.model.SpeechAnnouncement
 import com.mapbox.navigation.ui.voice.model.SpeechError
 import com.mapbox.navigation.ui.voice.model.SpeechValue
 import com.mapbox.navigation.ui.voice.model.SpeechVolume
+import eopeter.flutter_mapbox_navigation.R
+import eopeter.flutter_mapbox_navigation.databinding.NavigationActivityBinding
 import java.util.Locale
 
 class NavigationActivity : AppCompatActivity() {
@@ -102,7 +94,7 @@ class NavigationActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setTheme(R.style.Theme_AppCompat_NoActionBar)
-        binding = ActivityNavigationBinding.inflate(layoutInflater)
+        binding = NavigationActivityBinding.inflate(layoutInflater)
         setContentView(binding.root)
         accessToken = PluginUtilities.getResourceFromContext(this.applicationContext, "mapbox_access_token")
         mapboxMap = binding.mapView.getMapboxMap()
@@ -520,7 +512,7 @@ class NavigationActivity : AppCompatActivity() {
     /**
      * Bindings to the Navigation Activity.
      */
-    private lateinit var binding: ActivityNavigationBinding// MapboxActivityTurnByTurnExperienceBinding
+    private lateinit var binding: NavigationActivityBinding// MapboxActivityTurnByTurnExperienceBinding
 
     /**
      * Mapbox Maps entry point obtained from the [MapView].

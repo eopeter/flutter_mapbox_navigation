@@ -1,21 +1,15 @@
-package com.dormmom.flutter_mapbox_navigation.utilities;
+package com.eopeter.flutter_mapbox_navigation.utilities;
 
 import android.content.Context
-import android.graphics.BitmapFactory
 import android.net.ConnectivityManager
 import android.net.NetworkCapabilities
 import android.os.Build
 import androidx.annotation.NonNull
-import com.dormmom.flutter_mapbox_navigation.FlutterMapboxNavigationPlugin
-import com.dormmom.flutter_mapbox_navigation.R
-import com.dormmom.flutter_mapbox_navigation.models.MapBoxEvents
-import com.dormmom.flutter_mapbox_navigation.models.MapBoxRouteProgressEvent
+import com.eopeter.flutter_mapbox_navigation.FlutterMapboxNavigationPlugin
+import com.eopeter.flutter_mapbox_navigation.models.MapBoxEvents
+import com.eopeter.flutter_mapbox_navigation.models.MapBoxRouteProgressEvent
 import com.google.gson.Gson
 import com.mapbox.mapboxsdk.geometry.LatLng
-import com.mapbox.mapboxsdk.maps.Style
-import com.mapbox.mapboxsdk.style.layers.PropertyFactory
-import com.mapbox.mapboxsdk.style.layers.SymbolLayer
-import com.mapbox.mapboxsdk.style.sources.GeoJsonSource
 import io.flutter.plugin.common.MethodCall
 import java.io.ByteArrayInputStream
 import java.io.InputStream

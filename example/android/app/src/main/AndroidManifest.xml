@@ -1,5 +1,5 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.dormmom.flutter_mapbox_navigation_example">
+    package="com.eopeter.flutter_mapbox_navigation_example">
     <!-- io.flutter.app.FlutterApplication is an android.app.Application that
          calls FlutterMain.startInitialization(this); in its onCreate method.
          In most cases you can leave this as-is, but you if you want to provide
@@ -14,7 +14,7 @@
         android:icon="@mipmap/ic_launcher">
         <activity
             android:exported="true"
-            android:name=".MainActivity"
+            android:name="com.eopeter.flutter_mapbox_navigation_example.MainActivity"
             android:launchMode="singleTop"
             android:theme="@style/LaunchTheme"
             android:configChanges="orientation|keyboardHidden|keyboard|screenSize|smallestScreenSize|locale|layoutDirection|fontScale|screenLayout|density|uiMode"

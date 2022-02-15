@@ -1,18 +1,18 @@
-package com.dormmom.flutter_mapbox_navigation.views
+package com.eopeter.flutter_mapbox_navigation.views
 
 import android.app.Activity
 import android.view.View
 import android.content.Context
 
-import com.dormmom.flutter_mapbox_navigation.TurnByTurn
-import com.dormmom.flutter_mapbox_navigation.databinding.ActivityNavigationBinding
+import com.eopeter.flutter_mapbox_navigation.TurnByTurn
+import eopeter.flutter_mapbox_navigation.databinding.NavigationActivityBinding
 import io.flutter.plugin.common.BinaryMessenger
 import io.flutter.plugin.common.EventChannel
 import io.flutter.plugin.common.MethodChannel
 import io.flutter.plugin.platform.PlatformView
 
 
-class EmbeddedNavigationMapView(context: Context, activity: Activity, binding: ActivityNavigationBinding, binaryMessenger: BinaryMessenger, vId: Int, args: Any?, accessToken: String)
+class EmbeddedNavigationMapView(context: Context, activity: Activity, binding: NavigationActivityBinding, binaryMessenger: BinaryMessenger, vId: Int, args: Any?, accessToken: String)
     : PlatformView, TurnByTurn(context, activity, binding, accessToken) {
     private val viewId: Int = vId
     private val messenger: BinaryMessenger = binaryMessenger

@@ -1,4 +1,4 @@
-package com.dormmom.flutter_mapbox_navigation.activity;
+package com.eopeter.flutter_mapbox_navigation.activity;
 
 import android.app.Activity;
 import android.content.Intent;

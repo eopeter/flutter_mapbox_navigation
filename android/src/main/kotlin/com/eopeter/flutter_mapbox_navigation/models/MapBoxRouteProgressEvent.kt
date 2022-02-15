@@ -1,6 +1,5 @@
-package com.dormmom.flutter_mapbox_navigation.models
+package com.eopeter.flutter_mapbox_navigation.models
 
-import android.location.Location
 import com.mapbox.navigation.base.trip.model.RouteProgress
 
 class MapBoxRouteProgressEvent(progress: RouteProgress) {

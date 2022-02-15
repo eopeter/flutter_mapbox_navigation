@@ -1,4 +1,4 @@
-package com.dormmom.flutter_mapbox_navigation.models
+package com.eopeter.flutter_mapbox_navigation.models
 
 class MapBoxLocation(val name: String = "", val latitude: Double?, val longitude: Double?) {
 

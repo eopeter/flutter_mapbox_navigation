@@ -1,4 +1,4 @@
-package com.dormmom.flutter_mapbox_navigation
+package com.eopeter.flutter_mapbox_navigation
 
 import android.app.Activity
 import android.app.Application
@@ -10,10 +10,11 @@ import android.os.Bundle
 import android.view.View
 import android.widget.Toast
 import androidx.core.content.ContextCompat
-import com.dormmom.flutter_mapbox_navigation.databinding.ActivityNavigationBinding
-import com.dormmom.flutter_mapbox_navigation.models.MapBoxEvents
-import com.dormmom.flutter_mapbox_navigation.models.MapBoxRouteProgressEvent
-import com.dormmom.flutter_mapbox_navigation.utilities.PluginUtilities
+import eopeter.flutter_mapbox_navigation.databinding.NavigationActivityBinding
+import eopeter.flutter_mapbox_navigation.R
+import com.eopeter.flutter_mapbox_navigation.models.MapBoxEvents
+import com.eopeter.flutter_mapbox_navigation.models.MapBoxRouteProgressEvent
+import com.eopeter.flutter_mapbox_navigation.utilities.PluginUtilities
 import com.mapbox.api.directions.v5.DirectionsCriteria
 import com.mapbox.api.directions.v5.models.DirectionsRoute
 import com.mapbox.api.directions.v5.models.RouteOptions
@@ -74,13 +75,14 @@ import com.mapbox.navigation.ui.voice.model.SpeechAnnouncement
 import com.mapbox.navigation.ui.voice.model.SpeechError
 import com.mapbox.navigation.ui.voice.model.SpeechValue
 import com.mapbox.navigation.ui.voice.model.SpeechVolume
+
 import io.flutter.plugin.common.EventChannel
 import io.flutter.plugin.common.MethodCall
 import io.flutter.plugin.common.MethodChannel
 import java.util.*
 
 
-open class TurnByTurn(ctx: Context, act: Activity, bind: ActivityNavigationBinding, accessToken: String):  MethodChannel.MethodCallHandler, EventChannel.StreamHandler,
+open class TurnByTurn(ctx: Context, act: Activity, bind: NavigationActivityBinding, accessToken: String):  MethodChannel.MethodCallHandler, EventChannel.StreamHandler,
     Application.ActivityLifecycleCallbacks {
 
     open fun initFlutterChannelHandlers() {
@@ -681,7 +683,7 @@ open class TurnByTurn(ctx: Context, act: Activity, bind: ActivityNavigationBindi
     /**
      * Bindings to the example layout.
      */
-    open val binding: ActivityNavigationBinding = bind
+    open val binding: NavigationActivityBinding = bind
 
     /**
      * Mapbox Maps entry point obtained from the [MapView].

@@ -1,4 +1,4 @@
-package com.dormmom.flutter_mapbox_navigation.models
+package com.eopeter.flutter_mapbox_navigation.models
 
 data class MapBoxMileStone (var identifier: Int?,
                        val distanceTraveled: Double?,
