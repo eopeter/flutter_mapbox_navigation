@@ -23,7 +23,6 @@ import io.flutter.plugin.common.MethodCall
 import io.flutter.plugin.common.MethodChannel
 import io.flutter.plugin.common.MethodChannel.MethodCallHandler
 import io.flutter.plugin.common.MethodChannel.Result
-import io.flutter.plugin.common.PluginRegistry.Registrar
 import io.flutter.plugin.platform.PlatformViewRegistry
 import java.util.*
 
@@ -32,6 +31,8 @@ public class FlutterMapboxNavigationPlugin: FlutterPlugin, MethodCallHandler, Ev
 
   private lateinit var channel : MethodChannel
   private lateinit var progressEventChannel: EventChannel
+  private var currentActivity: Activity? = null
+  private lateinit var currentContext: Context
 
   override fun onAttachedToEngine(@NonNull flutterPluginBinding: FlutterPlugin.FlutterPluginBinding) {
     val messenger = flutterPluginBinding.binaryMessenger
@@ -49,8 +50,6 @@ public class FlutterMapboxNavigationPlugin: FlutterPlugin, MethodCallHandler, Ev
 
   companion object {
 
-    private var currentActivity: Activity? = null
-    private lateinit var currentContext: Context
     var eventSink:EventChannel.EventSink? = null
 
     var PERMISSION_REQUEST_CODE: Int = 367
@@ -76,26 +75,9 @@ public class FlutterMapboxNavigationPlugin: FlutterPlugin, MethodCallHandler, Ev
     var platformViewRegistry: PlatformViewRegistry? = null
     var binaryMessenger: BinaryMessenger? = null
 
-    @JvmStatic
     var view_name = "FlutterMapboxNavigationView"
-
-    @JvmStatic
-    fun registerWith(registrar: Registrar) {
-      val messenger = registrar.messenger()
-      val instance = FlutterMapboxNavigationPlugin()
-
-      val channel = MethodChannel(messenger, "flutter_mapbox_navigation")
-      channel.setMethodCallHandler(instance)
-
-      val progressEventChannel = EventChannel(messenger, "flutter_mapbox_navigation/events")
-      progressEventChannel.setStreamHandler(instance)
-
-      platformViewRegistry = registrar.platformViewRegistry()
-      binaryMessenger = messenger;
-
-    }
   }
-  
+
   override fun onMethodCall(@NonNull call: MethodCall, @NonNull result: Result) {
     when(call.method)
     {
@@ -277,20 +259,6 @@ public class FlutterMapboxNavigationPlugin: FlutterPlugin, MethodCallHandler, Ev
     }
     //super.onRequestPermissionsResult(requestCode, permissions, grantResults)
 
-  }
-
-  private fun isMapboxTokenProvided() =
-    currentContext.getString(R.string.mapbox_access_token) != MAPBOX_ACCESS_TOKEN_PLACEHOLDER
-
-  private fun showNoTokenErrorDialog() {
-    AlertDialog.Builder(currentContext)
-      .setTitle(currentContext.getString(R.string.noTokenDialogTitle))
-      .setMessage(currentContext.getString(R.string.noTokenDialogBody))
-      .setCancelable(false)
-      .setPositiveButton("Ok") { _, _ ->
-        currentActivity?.finish()
-      }
-      .show()
   }
 
 }
