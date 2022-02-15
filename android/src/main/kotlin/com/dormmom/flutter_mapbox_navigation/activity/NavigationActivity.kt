@@ -96,6 +96,7 @@ class NavigationActivity : AppCompatActivity() {
     var receiver: BroadcastReceiver? = null
     private var points: MutableList<Point> = mutableListOf()
     private var canResetRoute: Boolean = false
+    private var accessToken: String? = null
 
     @SuppressLint("MissingPermission")
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -103,6 +104,7 @@ class NavigationActivity : AppCompatActivity() {
         setTheme(R.style.Theme_AppCompat_NoActionBar)
         binding = ActivityNavigationBinding.inflate(layoutInflater)
         setContentView(binding.root)
+        accessToken = PluginUtilities.getResourceFromContext(this.applicationContext, "mapbox_access_token")
         mapboxMap = binding.mapView.getMapboxMap()
 
         receiver = object : BroadcastReceiver() {
@@ -134,7 +136,7 @@ class NavigationActivity : AppCompatActivity() {
             if (FlutterMapboxNavigationPlugin.simulateRoute){
                 MapboxNavigationProvider.create(
                     NavigationOptions.Builder(this.applicationContext)
-                        .accessToken(getString(R.string.mapbox_access_token))
+                        .accessToken(accessToken)
                         // comment out the location engine setting block to disable simulation
                         .locationEngine(replayLocationEngine)
                         .build()
@@ -142,7 +144,7 @@ class NavigationActivity : AppCompatActivity() {
             }else{
                 MapboxNavigationProvider.create(
                     NavigationOptions.Builder(this.applicationContext)
-                        .accessToken(getString(R.string.mapbox_access_token))
+                        .accessToken(accessToken)
                         .build()
                 )
             }
@@ -209,17 +211,17 @@ class NavigationActivity : AppCompatActivity() {
                 .build()
         )
 
-        // initialize voice instructions api and the voice instruction player
-        speechApi = MapboxSpeechApi(
-            this,
-            getString(R.string.mapbox_access_token),
-            Locale.US.language
-        )
-        voiceInstructionsPlayer = MapboxVoiceInstructionsPlayer(
-            this,
-            getString(R.string.mapbox_access_token),
-            Locale.US.language
-        )
+//        // initialize voice instructions api and the voice instruction player
+//        speechApi = MapboxSpeechApi(
+//            this,
+//            accessToken,
+//            Locale.US.language
+//        )
+//        voiceInstructionsPlayer = MapboxVoiceInstructionsPlayer(
+//            this,
+//            accessToken,
+//            Locale.US.language
+//        )
 
         // initialize route line, the withRouteLineBelowLayerId is specified to place
         // the route line below road labels layer on the map
@@ -436,7 +438,6 @@ class NavigationActivity : AppCompatActivity() {
         // set routes, where the first route in the list is the primary route that
         // will be used for active guidance
         mapboxNavigation.setRoutes(routes)
-
         // show the "Reset the route" button
         canResetRoute = true
     }

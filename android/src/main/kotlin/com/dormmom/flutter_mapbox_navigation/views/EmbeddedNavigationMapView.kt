@@ -11,8 +11,9 @@ import io.flutter.plugin.common.EventChannel
 import io.flutter.plugin.common.MethodChannel
 import io.flutter.plugin.platform.PlatformView
 
-class EmbeddedNavigationMapView(context: Context, activity: Activity, binding: ActivityNavigationBinding, binaryMessenger: BinaryMessenger, vId: Int, args: Any?) : PlatformView, TurnByTurn(context, activity, binding) {
 
+class EmbeddedNavigationMapView(context: Context, activity: Activity, binding: ActivityNavigationBinding, binaryMessenger: BinaryMessenger, vId: Int, args: Any?, accessToken: String)
+    : PlatformView, TurnByTurn(context, activity, binding, accessToken) {
     private val viewId: Int = vId
     private val messenger: BinaryMessenger = binaryMessenger
 

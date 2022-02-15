@@ -79,7 +79,8 @@ import io.flutter.plugin.common.MethodCall
 import io.flutter.plugin.common.MethodChannel
 import java.util.*
 
-open class TurnByTurn(ctx: Context, act: Activity, bind: ActivityNavigationBinding):  MethodChannel.MethodCallHandler, EventChannel.StreamHandler,
+
+open class TurnByTurn(ctx: Context, act: Activity, bind: ActivityNavigationBinding, accessToken: String):  MethodChannel.MethodCallHandler, EventChannel.StreamHandler,
     Application.ActivityLifecycleCallbacks {
 
     open fun initFlutterChannelHandlers() {
@@ -109,7 +110,7 @@ open class TurnByTurn(ctx: Context, act: Activity, bind: ActivityNavigationBindi
         } else {
             MapboxNavigationProvider.create(
                 NavigationOptions.Builder(this.context)
-                    .accessToken(activity.getString(R.string.mapbox_access_token))
+                    .accessToken(token)
                     // comment out the location engine setting block to disable simulation
                     .locationEngine(replayLocationEngine)
                     .build()
@@ -179,12 +180,12 @@ open class TurnByTurn(ctx: Context, act: Activity, bind: ActivityNavigationBindi
         // initialize voice instructions api and the voice instruction player
         speechApi = MapboxSpeechApi(
             activity,
-            activity.getString(R.string.mapbox_access_token),
+            token,
             Locale.US.language
         )
         voiceInstructionsPlayer = MapboxVoiceInstructionsPlayer(
             activity,
-            activity.getString(R.string.mapbox_access_token),
+            token,
             Locale.US.language
         )
 
@@ -619,6 +620,7 @@ open class TurnByTurn(ctx: Context, act: Activity, bind: ActivityNavigationBindi
     
     val context: Context = ctx
     val activity: Activity = act
+    val token: String = accessToken
     open var methodChannel: MethodChannel? = null
     open var eventChannel: EventChannel? = null
 
