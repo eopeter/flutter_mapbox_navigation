@@ -438,7 +438,6 @@ class NavigationActivity : AppCompatActivity() {
         // set routes, where the first route in the list is the primary route that
         // will be used for active guidance
         mapboxNavigation.setRoutes(routes)
-
         // show the "Reset the route" button
         canResetRoute = true
     }

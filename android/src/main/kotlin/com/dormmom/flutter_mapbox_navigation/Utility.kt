@@ -79,9 +79,9 @@ import io.flutter.plugin.common.MethodCall
 import io.flutter.plugin.common.MethodChannel
 import java.util.*
 
+
 open class TurnByTurn(ctx: Context, act: Activity, bind: ActivityNavigationBinding, accessToken: String):  MethodChannel.MethodCallHandler, EventChannel.StreamHandler,
     Application.ActivityLifecycleCallbacks {
-
 
     open fun initFlutterChannelHandlers() {
         methodChannel?.setMethodCallHandler(this)
