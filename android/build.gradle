@@ -80,6 +80,7 @@ android {
 }
 
 dependencies {
+    implementation 'androidx.work:work-runtime-ktx:2.7.1'
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
     implementation "com.mapbox.navigation:android:2.2.1"
     implementation 'com.mapbox.mapboxsdk:mapbox-android-plugin-markerview-v9:0.4.0'
