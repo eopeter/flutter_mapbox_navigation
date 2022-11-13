@@ -13,10 +13,10 @@ import io.flutter.plugin.platform.PlatformView
 import io.flutter.plugin.platform.PlatformViewFactory
 
 class EmbeddedNavigationViewFactory(private val messenger: BinaryMessenger, private val activity: Activity) : PlatformViewFactory(StandardMessageCodec.INSTANCE) {
-    override fun create(context: Context, viewId: Int, args: Any?): PlatformView {
+    override fun create(context: Context?, viewId: Int, args: Any?): PlatformView {
         val binding = NavigationActivityBinding.inflate(this.activity.layoutInflater)
-        val accessToken = PluginUtilities.getResourceFromContext( context,"mapbox_access_token")
-        val view = EmbeddedNavigationMapView(context, activity, binding, messenger, viewId, args, accessToken)
+        val accessToken = PluginUtilities.getResourceFromContext(context,"mapbox_access_token")
+        val view = EmbeddedNavigationMapView(context!!, activity, binding, messenger, viewId, args, accessToken)
         activity.setTheme(R.style.Theme_AppCompat_NoActionBar)
         return view
     }
