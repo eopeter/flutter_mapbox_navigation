@@ -53,17 +53,27 @@ apply plugin: 'com.android.library'
 apply plugin: 'kotlin-android'
 
 android {
-    compileSdkVersion 31
+    compileSdkVersion 32
 
     sourceSets {
         main.java.srcDirs += 'src/main/kotlin'
     }
     defaultConfig {
         minSdkVersion 21
+        targetSdkVersion 32
+        multiDexEnabled true
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
+
+    dexOptions {
+        maxProcessCount 8
+        javaMaxHeapSize "2g"
+        preDexLibraries true
+    }
+
     lintOptions {
         disable 'InvalidPackage'
+        abortOnError false
     }
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_8

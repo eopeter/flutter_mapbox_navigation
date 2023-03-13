@@ -92,6 +92,9 @@ public class FlutterMapboxNavigationPlugin: FlutterPlugin, MethodCallHandler, Ev
       "startNavigation" -> {
         checkPermissionAndBeginNavigation(call, result)
       }
+      "addWayPoints" -> {
+        addWayPointsToNavigation(call, result)
+      }
       "finishNavigation" -> {
         NavigationLauncher.stopNavigation(currentActivity)
       }
@@ -189,6 +192,18 @@ public class FlutterMapboxNavigationPlugin: FlutterPlugin, MethodCallHandler, Ev
       NavigationLauncher.startNavigation(currentActivity, wayPoints);
   }
 
+  private fun addWayPointsToNavigation(@NonNull call: MethodCall, @NonNull result: MethodChannel.Result) {
+    val arguments = call.arguments as? Map<String, Any>
+    val points = arguments?.get("wayPoints") as HashMap<Int, Any>
+    for (item in points)
+    {
+      val point = item.value as HashMap<*, *>
+      val latitude = point["Latitude"] as Double
+      val longitude = point["Longitude"] as Double
+      wayPoints.add(Point.fromLngLat(longitude, latitude))
+    }
+    NavigationLauncher.addWayPoints(currentActivity, wayPoints);
+  }
 
   override fun onListen(args: Any?, events: EventChannel.EventSink?) {
     eventSink = events;

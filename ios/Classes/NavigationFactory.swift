@@ -18,6 +18,7 @@ public class NavigationFactory : NSObject, FlutterStreamHandler
     var _durationRemaining: Double?
     var _navigationMode: String?
     var _routes: [Route]?
+    var _wayPointOrder = [Int:Waypoint]()
     var _wayPoints = [Waypoint]()
     var _lastKnownLocation: CLLocation?
 
@@ -37,24 +38,41 @@ public class NavigationFactory : NSObject, FlutterStreamHandler
     var _shouldReRoute = true
     var navigationDirections: Directions?
 
+    func addWayPoints(arguments: NSDictionary?, result: @escaping FlutterResult)
+    {
+        guard let oWayPoints = arguments?["wayPoints"] as? NSDictionary else {return}
+        guard var locations = getLocationsFromWayPointDictionary(waypoints: oWayPoints) else { return }
+        if(!_isOptimized)
+        {
+            //waypoints must be in the right order
+            locations.sort(by: {$0.order ?? 0 < $1.order ?? 0})
+        }
+
+        var nextIndex = 1
+        for loc in locations
+        {
+            let wayPoint = Waypoint(coordinate: CLLocationCoordinate2D(latitude: loc.latitude!, longitude: loc.longitude!), name: loc.name)
+            if (_wayPoints.count >= nextIndex) {
+                _wayPoints.insert(wayPoint, at: nextIndex)
+            }
+            else {
+                _wayPoints.append(wayPoint)
+            }
+            nextIndex += 1
+        }
+        
+        startNavigationWithWayPoints(wayPoints: _wayPoints, flutterResult: result, isUpdatingWaypoints: true)
+    }
+    
+    
     func startNavigation(arguments: NSDictionary?, result: @escaping FlutterResult)
     {
         _wayPoints.removeAll()
+        _wayPointOrder.removeAll()
 
         guard let oWayPoints = arguments?["wayPoints"] as? NSDictionary else {return}
 
-        var locations = [Location]()
-
-        for item in oWayPoints as NSDictionary
-        {
-            let point = item.value as! NSDictionary
-            guard let oName = point["Name"] as? String else {return}
-            guard let oLatitude = point["Latitude"] as? Double else {return}
-            guard let oLongitude = point["Longitude"] as? Double else {return}
-            let order = point["Order"] as? Int
-            let location = Location(name: oName, latitude: oLatitude, longitude: oLongitude, order: order)
-            locations.append(location)
-        }
+        guard var locations = getLocationsFromWayPointDictionary(waypoints: oWayPoints) else { return }
 
         if(!_isOptimized)
         {
@@ -67,6 +85,7 @@ public class NavigationFactory : NSObject, FlutterStreamHandler
         {
             let location = Waypoint(coordinate: CLLocationCoordinate2D(latitude: loc.latitude!, longitude: loc.longitude!), name: loc.name)
             _wayPoints.append(location)
+            _wayPointOrder[loc.order!] = location
         }
 
         _language = arguments?["language"] as? String ?? _language
@@ -86,17 +105,17 @@ public class NavigationFactory : NSObject, FlutterStreamHandler
         {
             if(IsMultipleUniqueRoutes)
             {
-                startNavigationWithWayPoints(wayPoints: [_wayPoints.remove(at: 0), _wayPoints.remove(at: 0)], flutterResult: result)
+                startNavigationWithWayPoints(wayPoints: [_wayPoints.remove(at: 0), _wayPoints.remove(at: 0)], flutterResult: result, isUpdatingWaypoints: false)
             }
             else
             {
-                startNavigationWithWayPoints(wayPoints: _wayPoints, flutterResult: result)
+                startNavigationWithWayPoints(wayPoints: _wayPoints, flutterResult: result, isUpdatingWaypoints: false)
             }
 
         }
     }
 
-    func startNavigationWithWayPoints(wayPoints: [Waypoint], flutterResult: @escaping FlutterResult)
+    func startNavigationWithWayPoints(wayPoints: [Waypoint], flutterResult: @escaping FlutterResult, isUpdatingWaypoints: Bool)
     {
         let simulationMode: SimulationMode = _simulateRoute ? .always : .never
 
@@ -156,7 +175,18 @@ public class NavigationFactory : NSObject, FlutterStreamHandler
                         nightStyle.mapStyleURL = URL(string: strongSelf._mapStyleUrlNight!)!
                     }
                     let navigationOptions = NavigationOptions(styles: [dayStyle, nightStyle], navigationService: navigationService)
-                    strongSelf.startNavigation(routeResponse: response, options: options, navOptions: navigationOptions)
+                    if (isUpdatingWaypoints) {
+                        strongSelf._navigationViewController?.navigationService.router.updateRoute(with: IndexedRouteResponse(routeResponse: response, routeIndex: 0), routeOptions: strongSelf._options) { success in
+                            if (success) {
+                                flutterResult("true")
+                            } else {
+                                flutterResult("failed to add stop")
+                            }
+                        }
+                    }
+                    else {
+                        strongSelf.startNavigation(routeResponse: response, options: options, navOptions: navigationOptions)
+                    }
                 }
             }
         }
@@ -227,6 +257,22 @@ public class NavigationFactory : NSObject, FlutterStreamHandler
             }
         }
 
+    }
+    
+    func getLocationsFromWayPointDictionary(waypoints: NSDictionary) -> [Location]? {
+        var locations = [Location]()
+
+        for item in waypoints as NSDictionary
+        {
+            let point = item.value as! NSDictionary
+            guard let oName = point["Name"] as? String else {return nil }
+            guard let oLatitude = point["Latitude"] as? Double else {return nil}
+            guard let oLongitude = point["Longitude"] as? Double else {return nil}
+            let order = point["Order"] as? Int
+            let location = Location(name: oName, latitude: oLatitude, longitude: oLongitude, order: order)
+            locations.append(location)
+        }
+        return locations
     }
 
     func getLastKnownLocation() -> Waypoint
@@ -330,7 +376,6 @@ extension NavigationFactory : NavigationViewControllerDelegate {
     }
 
     public func navigationViewController(_ navigationViewController: NavigationViewController, didArriveAt waypoint: Waypoint) -> Bool {
-
         sendEvent(eventType: MapBoxEventType.on_arrival, data: "true")
         if(!_wayPoints.isEmpty && IsMultipleUniqueRoutes)
         {

@@ -9,14 +9,14 @@ Pod::Spec.new do |s|
   s.description      = <<-DESC
 Add Turn By Turn Navigation to Your Flutter Application Using MapBox. Never leave your app when you need to navigate your users to a location.
                        DESC
-  s.homepage         = 'http://dormmom.com'
+  s.homepage         = 'http://eopeter.com'
   s.license          = { :file => '../LICENSE' }
-  s.author           = { 'Dorm Mom, Inc.' => 'eopeter@gmail.com' }
+  s.author           = { 'Emmanuel Peter Oche' => 'eopeter@gmail.com' }
   s.source           = { :path => '.' }
   s.source_files = 'Classes/**/*'
   s.dependency 'Flutter'
-  s.dependency 'MapboxCoreNavigation', '~> 2.0'
-  s.dependency 'MapboxNavigation', '~> 2.1'
+  s.dependency 'MapboxCoreNavigation', '~> 2.6'
+  s.dependency 'MapboxNavigation', '~> 2.6'
   s.platform = :ios, '11.0'
 
   # Flutter.framework does not contain a i386 slice. Only x86_64 simulators are supported.

@@ -16,8 +16,6 @@ import com.eopeter.flutter_mapbox_navigation.models.MapBoxRouteProgressEvent
 import com.eopeter.flutter_mapbox_navigation.utilities.PluginUtilities
 import com.eopeter.flutter_mapbox_navigation.utilities.PluginUtilities.Companion.sendEvent
 
-import com.mapbox.api.directions.v5.models.*
-
 import com.mapbox.api.directions.v5.models.Bearing
 import com.mapbox.api.directions.v5.models.DirectionsRoute
 import com.mapbox.api.directions.v5.models.RouteOptions
@@ -85,7 +83,8 @@ import java.util.Locale
 
 class NavigationActivity : AppCompatActivity() {
 
-    var receiver: BroadcastReceiver? = null
+    var finishBroadcastReceiver: BroadcastReceiver? = null
+    var addWayPointsBroadcastReceiver: BroadcastReceiver? = null
     private var points: MutableList<Point> = mutableListOf()
     private var canResetRoute: Boolean = false
     private var accessToken: String? = null
@@ -99,12 +98,29 @@ class NavigationActivity : AppCompatActivity() {
         accessToken = PluginUtilities.getResourceFromContext(this.applicationContext, "mapbox_access_token")
         mapboxMap = binding.mapView.getMapboxMap()
 
-        receiver = object : BroadcastReceiver() {
+        finishBroadcastReceiver = object : BroadcastReceiver() {
             override fun onReceive(context: Context, intent: Intent) {
                 finish()
             }
         }
-        registerReceiver(receiver, IntentFilter(NavigationLauncher.KEY_STOP_NAVIGATION))
+
+        addWayPointsBroadcastReceiver = object : BroadcastReceiver() {
+            override fun onReceive(context: Context, intent: Intent) {
+                //get waypoints
+                val stops = intent.getSerializableExtra("waypoints") as? MutableList<Point>
+                val nextIndex = 1
+                if (stops != null) {
+                    //append to points
+                    if (points.count() >= nextIndex)
+                        points.addAll(nextIndex, stops)
+                    else
+                        points.addAll(stops)
+                }
+            }
+        }
+
+        registerReceiver(finishBroadcastReceiver, IntentFilter(NavigationLauncher.KEY_STOP_NAVIGATION))
+        registerReceiver(addWayPointsBroadcastReceiver, IntentFilter(NavigationLauncher.KEY_ADD_WAYPOINTS))
 
         val p = intent.getSerializableExtra("waypoints") as? MutableList<Point>
         if(p != null) points = p
@@ -690,6 +706,7 @@ class NavigationActivity : AppCompatActivity() {
 
         override fun onNewRawLocation(rawLocation: Location) {
             // not handled
+            print(rawLocation)
         }
 
         override fun onNewLocationMatcherResult(locationMatcherResult: LocationMatcherResult) {

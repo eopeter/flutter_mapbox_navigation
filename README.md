@@ -70,29 +70,9 @@ MAPBOX_DOWNLOADS_TOKEN=sk.epe9nE9peAcmwNzKVNqSbFfp2794YtnNepe9nE9peAcmwNzKVNqSbF
 
 ## Usage
 
-#### Declare an instance
-
+#### Set Default Route Options (Optional)
 ```dart
-
-  MapBoxNavigation _directions;
-
-```
-
-#### Initialize It
-
-```dart
-
-    initState()
-    {
-      _directions = MapBoxNavigation(onRouteEvent: _onRouteEvent);
-    }
-    
-  
-```
-
-#### Set Route Options
-```dart
-    _options = MapBoxOptions(
+    MapBoxNavigation.instance.defaultOptions = MapBoxOptions(
                      initialLatitude: 36.1175275,
                      initialLongitude: -115.1839524,
                      zoom: 13.0,
@@ -114,7 +94,8 @@ MAPBOX_DOWNLOADS_TOKEN=sk.epe9nE9peAcmwNzKVNqSbFfp2794YtnNepe9nE9peAcmwNzKVNqSbF
 #### Listen for Events
 
 ```dart
-    Future<void> _onRouteEvent(e) async {
+  MapBoxNavigation.instance.onRouteEvent = _onRouteEvent;
+  Future<void> _onRouteEvent(e) async {
 
         _distanceRemaining = await _directions.distanceRemaining;
         _durationRemaining = await _directions.durationRemaining;
@@ -167,7 +148,7 @@ MAPBOX_DOWNLOADS_TOKEN=sk.epe9nE9peAcmwNzKVNqSbFfp2794YtnNepe9nE9peAcmwNzKVNqSbF
     wayPoints.add(cityHall);
     wayPoints.add(downtown);
     
-    await _directions.startNavigation(wayPoints: wayPoints, options: _options);
+    await MapBoxNavigation.instance.startNavigation(wayPoints: wayPoints);
 ```
 
 #### Screenshots
