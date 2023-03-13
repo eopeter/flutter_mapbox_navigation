@@ -274,16 +274,22 @@ public class FlutterMapboxNavigationView : NavigationFactory, FlutterPlatformVie
             nightStyle.mapStyleURL = URL(string: _mapStyleUrlNight!)!
         }
         let navigationOptions = NavigationOptions(styles: [dayStyle, nightStyle], navigationService: navigationService)
+        
+        // Remove previous navigation view and controller if any
+        if(_navigationViewController?.view != nil){
+            _navigationViewController!.view.removeFromSuperview()
+            _navigationViewController?.removeFromParent()
+        }
+
         _navigationViewController = NavigationViewController(for: response, routeIndex: selectedRouteIndex, routeOptions: routeOptions!, navigationOptions: navigationOptions)
         _navigationViewController!.delegate = self
 
         let flutterViewController = UIApplication.shared.delegate?.window?!.rootViewController as! FlutterViewController
         flutterViewController.addChild(_navigationViewController!)
 
-        let container = self.view()
-        container.addSubview(_navigationViewController!.view)
+        self.navigationMapView.addSubview(_navigationViewController!.view)
         _navigationViewController!.view.translatesAutoresizingMaskIntoConstraints = false
-        constraintsWithPaddingBetween(holderView: container, topView: _navigationViewController!.view, padding: 0.0)
+        constraintsWithPaddingBetween(holderView: self.navigationMapView, topView: _navigationViewController!.view, padding: 0.0)
         flutterViewController.didMove(toParent: flutterViewController)
         result(true)
 
