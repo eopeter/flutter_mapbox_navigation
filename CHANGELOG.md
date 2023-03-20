@@ -4,6 +4,7 @@
 * Bug Fixes
 * MapBox Library Upgrade
 * iOS MapBox Token Property Name in info.plist is now MBXAccessToken
+* Embedded Nav Broken in Android - Working On It
 
 ## 0.0.26
 * not implemented bug for onNextLegStart
