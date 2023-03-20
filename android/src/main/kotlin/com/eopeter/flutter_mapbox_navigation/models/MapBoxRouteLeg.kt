@@ -2,7 +2,7 @@ package com.eopeter.flutter_mapbox_navigation.models
 
 import com.mapbox.api.directions.v5.models.RouteLeg
 
-class MapBoxRouteLeg{
+class MapBoxRouteLeg {
 
     val profileIdentifier: String? = null
     val name: String? = null
@@ -12,13 +12,11 @@ class MapBoxRouteLeg{
     val destination: MapBoxLocation = MapBoxLocation("", 0.0, 0.0)
     var steps: MutableList<MapBoxRouteStep> = mutableListOf()
 
-    constructor(leg: RouteLeg)
-    {
+    constructor(leg: RouteLeg) {
         distance = leg.distance()
         expectedTravelTime = leg.duration()
 
-        for (step in leg.steps()!!)
-        {
+        for (step in leg.steps()!!) {
             steps.add(MapBoxRouteStep(step))
         }
     }

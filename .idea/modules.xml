@@ -4,7 +4,6 @@
     <modules>
       <module fileurl="file://$PROJECT_DIR$/flutter_mapbox_navigation.iml" filepath="$PROJECT_DIR$/flutter_mapbox_navigation.iml" />
       <module fileurl="file://$PROJECT_DIR$/android/flutter_mapbox_navigation_android.iml" filepath="$PROJECT_DIR$/android/flutter_mapbox_navigation_android.iml" />
-      <module fileurl="file://$PROJECT_DIR$/example/android/flutter_mapbox_navigation_example_android.iml" filepath="$PROJECT_DIR$/example/android/flutter_mapbox_navigation_example_android.iml" />
     </modules>
   </component>
 </project>
