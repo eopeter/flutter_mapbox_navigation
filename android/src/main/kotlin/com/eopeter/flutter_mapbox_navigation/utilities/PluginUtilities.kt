@@ -1,5 +1,6 @@
 package com.eopeter.flutter_mapbox_navigation.utilities;
 
+import android.app.Activity
 import android.content.Context
 import android.net.ConnectivityManager
 import android.net.NetworkCapabilities
@@ -9,34 +10,29 @@ import com.eopeter.flutter_mapbox_navigation.FlutterMapboxNavigationPlugin
 import com.eopeter.flutter_mapbox_navigation.models.MapBoxEvents
 import com.eopeter.flutter_mapbox_navigation.models.MapBoxRouteProgressEvent
 import com.google.gson.Gson
-import com.mapbox.mapboxsdk.geometry.LatLng
 import io.flutter.plugin.common.MethodCall
 import java.io.ByteArrayInputStream
 import java.io.InputStream
+import java.io.Serializable
 import java.util.*
 
 class PluginUtilities {
     companion object {
         @JvmStatic
-        fun getResourceFromContext(@NonNull context: Context?, resName: String): String {
+        fun getResourceFromContext(context: Context?, resName: String): String {
             if (context == null) {
                 throw IllegalArgumentException("null context")
             }
             val stringRes = context.resources.getIdentifier(resName, "string", context.packageName)
             if (stringRes == 0) {
-                throw IllegalArgumentException(String.format("The 'R.string.%s' value it's not defined in your project's resources file.", resName))
+                throw IllegalArgumentException(
+                    String.format(
+                        "The 'R.string.%s' value it's not defined in your project's resources file.",
+                        resName
+                    )
+                )
             }
             return context.getString(stringRes)
-        }
-
-        fun getRandomLatLng(bbox: DoubleArray): LatLng {
-            val random = Random()
-
-            val randomLat: Double = bbox.get(1) + (bbox.get(3) - bbox.get(1)) * random.nextDouble()
-            val randomLon: Double = bbox.get(0) + (bbox.get(2) - bbox.get(0)) * random.nextDouble()
-
-            val latLng = LatLng(randomLat, randomLon)
-            return latLng
         }
 
         fun sendEvent(event: MapBoxRouteProgressEvent) {
@@ -49,13 +45,14 @@ class PluginUtilities {
         }
 
         fun sendEvent(event: MapBoxEvents, data: String = "") {
-            val jsonString = if (MapBoxEvents.MILESTONE_EVENT == event || event == MapBoxEvents.USER_OFF_ROUTE) "{" +
-                    "  \"eventType\": \"${event.value}\"," +
-                    "  \"data\": $data" +
-                    "}" else "{" +
-                    "  \"eventType\": \"${event.value}\"," +
-                    "  \"data\": \"$data\"" +
-                    "}";
+            val jsonString =
+                if (MapBoxEvents.MILESTONE_EVENT == event || event == MapBoxEvents.USER_OFF_ROUTE) "{" +
+                        "  \"eventType\": \"${event.value}\"," +
+                        "  \"data\": $data" +
+                        "}" else "{" +
+                        "  \"eventType\": \"${event.value}\"," +
+                        "  \"data\": \"$data\"" +
+                        "}";
             FlutterMapboxNavigationPlugin.eventSink?.success(jsonString)
         }
 
@@ -121,7 +118,8 @@ class PluginUtilities {
         }
 
         fun isNetworkAvailable(context: Context): Boolean {
-            val connectivityManager = context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+            val connectivityManager =
+                context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
                 val nw = connectivityManager.activeNetwork ?: return false
                 val actNw = connectivityManager.getNetworkCapabilities(nw) ?: return false
@@ -138,6 +136,17 @@ class PluginUtilities {
                 val nwInfo = connectivityManager.activeNetworkInfo ?: return false
                 return nwInfo.isConnected
             }
+        }
+
+        fun <T : Serializable?> getSerializable(
+            activity: Activity,
+            name: String,
+            clazz: Class<T>
+        ): T {
+            return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU)
+                activity.intent.getSerializableExtra(name, clazz)!!
+            else
+                activity.intent.getSerializableExtra(name) as T
         }
     }
 

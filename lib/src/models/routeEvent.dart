@@ -10,9 +10,9 @@ class RouteEvent {
   RouteEvent({this.eventType, this.data});
 
   RouteEvent.fromJson(Map<String, dynamic> json) {
-    if (json['eventType'] is int)
+    if (json['eventType'] is int) {
       eventType = MapBoxEvent.values[json['eventType']];
-    else {
+    } else {
       try {
         eventType = MapBoxEvent.values.firstWhere(
             (e) => e.toString().split(".").last == json['eventType']);
@@ -24,7 +24,7 @@ class RouteEvent {
     if (eventType == MapBoxEvent.progress_change) {
       data = RouteProgressEvent.fromJson(dataJson);
     } else {
-      data = jsonEncode(json['data']);
+      data = jsonEncode(dataJson);
     }
   }
 }

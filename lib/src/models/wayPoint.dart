@@ -21,6 +21,6 @@ class WayPoint {
     name = json["name"];
     latitude = json["latitude"] as double?;
     longitude = json["longitude"] as double?;
-    isSilent = json["isSilent"] as bool;
+    //isSilent = json["isSilent"] as bool;
   }
 }

@@ -3,7 +3,7 @@ package com.eopeter.flutter_mapbox_navigation.models
 import com.mapbox.navigation.base.trip.model.RouteProgress
 
 class MapBoxRouteProgressEvent(progress: RouteProgress) {
- 
+
     var arrived: Boolean? = null
     private var distance: Float? = null
     private var duration: Double? = null
