@@ -1,4 +1,4 @@
-import 'routeLeg.dart';
+import 'route_leg.dart';
 import '../helpers.dart';
 
 ///This class contains all progress information at any given time during a navigation session.

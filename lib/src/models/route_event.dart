@@ -1,6 +1,6 @@
 import 'dart:convert';
 import 'events.dart';
-import 'routeProgressEvent.dart';
+import 'route_progress_event.dart';
 
 /// Represents an event sent by the navigation service
 class RouteEvent {

@@ -15,7 +15,7 @@ class MapBoxNavigationViewController {
 
   MapBoxNavigationViewController(
       int id, ValueSetter<RouteEvent>? eventNotifier) {
-    _methodChannel = new MethodChannel('flutter_mapbox_navigation/$id');
+    _methodChannel = MethodChannel('flutter_mapbox_navigation/$id');
     _methodChannel.setMethodCallHandler(_handleMethod);
 
     _eventChannel = EventChannel('flutter_mapbox_navigation/$id/events');
@@ -70,9 +70,9 @@ class MapBoxNavigationViewController {
     }
     var i = 0;
     var wayPointMap =
-        Map.fromIterable(pointList, key: (e) => i++, value: (e) => e);
+        { for (var e in pointList) i++ : e };
 
-    Map<String, dynamic> args = Map<String, dynamic>();
+    Map<String, dynamic> args = <String, dynamic>{};
     if (options != null) args = options.toMap();
     args["wayPoints"] = wayPointMap;
 
@@ -111,23 +111,22 @@ class MapBoxNavigationViewController {
     switch (call.method) {
       case 'sendFromNative':
         String? text = call.arguments as String?;
-        return new Future.value("Text from native: $text");
+        return Future.value("Text from native: $text");
     }
   }
 
   void _onProgressData(RouteEvent event) {
     if (_routeEventNotifier != null) _routeEventNotifier!(event);
 
-    if (event.eventType == MapBoxEvent.on_arrival)
+    if (event.eventType == MapBoxEvent.on_arrival) {
       _routeEventSubscription.cancel();
+    }
   }
 
   Stream<RouteEvent>? get _streamRouteEvent {
-    if (_onRouteEvent == null) {
-      _onRouteEvent = _eventChannel
+    _onRouteEvent ??= _eventChannel
           .receiveBroadcastStream()
           .map((dynamic event) => _parseRouteEvent(event));
-    }
     return _onRouteEvent;
   }
 
@@ -138,8 +137,9 @@ class MapBoxNavigationViewController {
     if (progressEvent.isProgressEvent!) {
       event = RouteEvent(
           eventType: MapBoxEvent.progress_change, data: progressEvent);
-    } else
+    } else {
       event = RouteEvent.fromJson(map);
+    }
     return event;
   }
 }

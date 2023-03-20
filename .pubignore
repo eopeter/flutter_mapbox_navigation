@@ -1,0 +1,5 @@
+.idea/.gitignore
+.idea/misc.xml
+.idea/modules.xml
+flutter_mapbox_navigation.iml
+pubspec.lock

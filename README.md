@@ -72,7 +72,7 @@ MAPBOX_DOWNLOADS_TOKEN=sk.epe9nE9peAcmwNzKVNqSbFfp2794YtnNepe9nE9peAcmwNzKVNqSbF
 
 #### Set Default Route Options (Optional)
 ```dart
-    MapBoxNavigation.instance.defaultOptions = MapBoxOptions(
+    MapBoxNavigation.instance.setDefaultOptions(MapBoxOptions(
                      initialLatitude: 36.1175275,
                      initialLongitude: -115.1839524,
                      zoom: 13.0,
@@ -88,13 +88,13 @@ MAPBOX_DOWNLOADS_TOKEN=sk.epe9nE9peAcmwNzKVNqSbFfp2794YtnNepe9nE9peAcmwNzKVNqSbF
                      mapStyleUrlNight: "https://url_to_night_style",
                      units: VoiceUnits.imperial,
                      simulateRoute: true,
-                     language: "en")
+                     language: "en"))
 ```
 
 #### Listen for Events
 
 ```dart
-  MapBoxNavigation.instance.onRouteEvent = _onRouteEvent;
+  MapBoxNavigation.instance.registerRouteEventListener(_onRouteEvent);
   Future<void> _onRouteEvent(e) async {
 
         _distanceRemaining = await _directions.distanceRemaining;

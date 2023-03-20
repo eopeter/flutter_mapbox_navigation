@@ -1,5 +1,5 @@
-import 'wayPoint.dart';
-import 'routeStep.dart';
+import 'way_point.dart';
+import 'route_step.dart';
 import '../helpers.dart';
 
 ///A RouteLeg object defines a single leg of a route between two waypoints.

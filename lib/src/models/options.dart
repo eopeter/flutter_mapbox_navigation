@@ -1,7 +1,7 @@
 import 'package:flutter/widgets.dart';
 
 import 'navmode.dart';
-import 'voiceUnits.dart';
+import 'voice_units.dart';
 
 /// Configuration options for the MapBoxNavigation.
 ///
