@@ -10,8 +10,10 @@ import com.eopeter.flutter_mapbox_navigation.models.MapBoxRouteProgressEvent
 import com.eopeter.flutter_mapbox_navigation.utilities.PluginUtilities
 import com.eopeter.flutter_mapbox_navigation.utilities.PluginUtilities.Companion.sendEvent
 import com.mapbox.api.directions.v5.models.Bearing
+import com.mapbox.api.directions.v5.models.DirectionsResponse
 import com.mapbox.api.directions.v5.models.DirectionsRoute
 import com.mapbox.api.directions.v5.models.RouteOptions
+import com.mapbox.bindgen.Expected
 import com.mapbox.geojson.Point
 import com.mapbox.maps.MapView
 import com.mapbox.maps.Style
@@ -24,6 +26,9 @@ import com.mapbox.navigation.base.route.*
 import com.mapbox.navigation.base.trip.model.RouteLegProgress
 import com.mapbox.navigation.base.trip.model.RouteProgress
 import com.mapbox.navigation.core.MapboxNavigation
+import com.mapbox.navigation.core.RoutesSetCallback
+import com.mapbox.navigation.core.RoutesSetError
+import com.mapbox.navigation.core.RoutesSetSuccess
 import com.mapbox.navigation.core.arrival.ArrivalObserver
 import com.mapbox.navigation.core.lifecycle.MapboxNavigationApp
 import com.mapbox.navigation.core.trip.session.LocationMatcherResult
@@ -35,6 +40,7 @@ import com.mapbox.navigation.ui.tripprogress.model.*
 import com.mapbox.navigation.utils.internal.ifNonNull
 import eopeter.flutter_mapbox_navigation.R
 import eopeter.flutter_mapbox_navigation.databinding.NavigationActivityBinding
+import org.json.JSONObject
 import java.util.*
 
 class NavigationActivity : AppCompatActivity() {
@@ -107,6 +113,7 @@ class NavigationActivity : AppCompatActivity() {
         val p = intent.getSerializableExtra("waypoints") as? MutableList<Point>
         if (p != null) points = p
 
+        val predefinedRoute = intent.getSerializableExtra("predefinedRoute") as? Map<String, Any>
         // TODO set the style Uri
         var styleUrl = FlutterMapboxNavigationPlugin.mapStyleUrlDay
         if (styleUrl == null) styleUrl = Style.MAPBOX_STREETS
@@ -114,7 +121,12 @@ class NavigationActivity : AppCompatActivity() {
         binding.navigationView.customizeViewStyles {
 
         }
-        requestRoutes(points)
+
+        if (predefinedRoute != null) {
+            setNavigationRoutes(points, predefinedRoute)
+        } else {
+            requestRoutes(points)
+        }
     }
 
     override fun onDestroy() {
@@ -133,6 +145,38 @@ class NavigationActivity : AppCompatActivity() {
 
     override fun onStop() {
         super.onStop()
+    }
+
+    private fun setNavigationRoutes(points: List<Point>, predefinedRoute: Map<String, Any>) {
+        sendEvent(MapBoxEvents.ROUTE_BUILDING)
+
+        val jsonRoutes = JSONObject(predefinedRoute).toString()
+        val predefinedRouteObj = NavigationRoute.create(
+            DirectionsResponse.builder()
+                .routes(
+                    listOf(
+                        DirectionsRoute.fromJson(jsonRoutes)
+                    )
+                )
+                .code("200")
+                .build(),
+            routeOptions = RouteOptions
+                .builder()
+                .applyDefaultNavigationOptions()
+                .applyLanguageAndVoiceUnitOptions(this)
+                .coordinatesList(points)
+                .language(FlutterMapboxNavigationPlugin.navigationLanguage)
+                .alternatives(FlutterMapboxNavigationPlugin.showAlternateRoutes)
+                .build(),
+        );
+
+        sendEvent(MapBoxEvents.ROUTE_BUILT)
+        if (predefinedRouteObj.isEmpty()) {
+            sendEvent(MapBoxEvents.ROUTE_BUILD_NO_ROUTES_FOUND)
+            return
+        }
+        binding.navigationView.api.routeReplayEnabled(FlutterMapboxNavigationPlugin.simulateRoute)
+        binding.navigationView.api.startActiveGuidance(predefinedRouteObj)
     }
 
     private fun requestRoutes(points: List<Point>) {

@@ -7,15 +7,17 @@ import com.mapbox.geojson.Point;
 
 import java.io.Serializable;
 import java.util.List;
+import java.util.Map;
 
 public class NavigationLauncher {
 
     public static final String KEY_ADD_WAYPOINTS = "com.my.mapbox.broadcast.ADD_WAYPOINTS";
     public static final String KEY_STOP_NAVIGATION = "com.my.mapbox.broadcast.STOP_NAVIGATION";
 
-    public static void startNavigation(Activity activity, List<Point> wayPoints) {
+    public static void startNavigation(Activity activity, List<Point> wayPoints, Map predefinedRoute) {
         Intent navigationIntent = new Intent(activity, NavigationActivity.class);
         navigationIntent.putExtra("waypoints", (Serializable) wayPoints);
+        navigationIntent.putExtra("predefinedRoute", (Serializable) predefinedRoute);
         activity.startActivity(navigationIntent);
     }
 

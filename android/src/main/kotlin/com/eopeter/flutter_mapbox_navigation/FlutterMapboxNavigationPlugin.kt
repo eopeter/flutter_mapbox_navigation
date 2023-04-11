@@ -166,11 +166,13 @@ public class FlutterMapboxNavigationPlugin : FlutterPlugin, MethodCallHandler,
             wayPoints.add(Point.fromLngLat(longitude, latitude))
         }
 
-        checkPermissionAndBeginNavigation(wayPoints)
+        val predefinedRoute = arguments?.get("predefinedRoute") as? Map<String, Any>
+
+        checkPermissionAndBeginNavigation(wayPoints, predefinedRoute)
 
     }
 
-    private fun checkPermissionAndBeginNavigation(wayPoints: List<Point>) {
+    private fun checkPermissionAndBeginNavigation(wayPoints: List<Point>, predefinedRoute: Map<String, Any>?) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             val haspermission =
                 currentActivity?.checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION)
@@ -180,15 +182,15 @@ public class FlutterMapboxNavigationPlugin : FlutterPlugin, MethodCallHandler,
                     arrayOf(Manifest.permission.ACCESS_FINE_LOCATION),
                     PERMISSION_REQUEST_CODE
                 )
-                beginNavigation(wayPoints)
+                beginNavigation(wayPoints, predefinedRoute)
             } else
-                beginNavigation(wayPoints)
+                beginNavigation(wayPoints, predefinedRoute)
         } else
-            beginNavigation(wayPoints)
+            beginNavigation(wayPoints, predefinedRoute)
     }
 
-    private fun beginNavigation(wayPoints: List<Point>) {
-        NavigationLauncher.startNavigation(currentActivity, wayPoints);
+    private fun beginNavigation(wayPoints: List<Point>, predefinedRoute: Map<String, Any>?) {
+        NavigationLauncher.startNavigation(currentActivity, wayPoints, predefinedRoute);
     }
 
     private fun addWayPointsToNavigation(
@@ -251,36 +253,36 @@ public class FlutterMapboxNavigationPlugin : FlutterPlugin, MethodCallHandler,
         //To change body of created functions use File | Settings | File Templates.
     }
 
-    fun onRequestPermissionsResult(
-        requestCode: Int,
-        permissions: Array<out String>,
-        grantResults: IntArray
-    ) {
-        when (requestCode) {
-            367 -> {
-
-                for (permission in permissions) {
-                    if (permission == Manifest.permission.ACCESS_FINE_LOCATION) {
-                        val haspermission = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                            currentActivity?.checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION)
-                        } else {
-                            TODO("VERSION.SDK_INT < M")
-                        }
-                        if (haspermission == PackageManager.PERMISSION_GRANTED) {
-                            if (wayPoints.count() > 0)
-                                beginNavigation(wayPoints)
-                        }
-                        // Not all permissions granted. Show some message and return.
-                        return
-                    }
-                }
-
-                // All permissions are granted. Do the work accordingly.
-            }
-        }
-        //super.onRequestPermissionsResult(requestCode, permissions, grantResults)
-
-    }
+//    fun onRequestPermissionsResult(
+//        requestCode: Int,
+//        permissions: Array<out String>,
+//        grantResults: IntArray
+//    ) {
+//        when (requestCode) {
+//            367 -> {
+//
+//                for (permission in permissions) {
+//                    if (permission == Manifest.permission.ACCESS_FINE_LOCATION) {
+//                        val haspermission = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+//                            currentActivity?.checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION)
+//                        } else {
+//                            TODO("VERSION.SDK_INT < M")
+//                        }
+//                        if (haspermission == PackageManager.PERMISSION_GRANTED) {
+//                            if (wayPoints.count() > 0)
+//                                beginNavigation(wayPoints)
+//                        }
+//                        // Not all permissions granted. Show some message and return.
+//                        return
+//                    }
+//                }
+//
+//                // All permissions are granted. Do the work accordingly.
+//            }
+//        }
+//        //super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+//
+//    }
 
 }
 
