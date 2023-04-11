@@ -2,14 +2,12 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
+
 import 'flutter_mapbox_navigation_platform_interface.dart';
-
 import 'models/models.dart';
-
 
 /// Turn-By-Turn Navigation Provider
 class MapBoxNavigation {
-
   static final MapBoxNavigation _instance = MapBoxNavigation();
   static MapBoxNavigation get instance => _instance;
 
@@ -56,8 +54,9 @@ class MapBoxNavigation {
   ///
   /// [wayPoints] must not be null and have at least 1 item. The way points will
   /// be inserted after the currently navigating waypoint in the existing navigation
-  Future addWayPoints({required wayPoints }) async {
-    return FlutterMapboxNavigationPlatform.instance.addWayPoints(wayPoints: wayPoints);
+  Future addWayPoints({required wayPoints}) async {
+    return FlutterMapboxNavigationPlatform.instance
+        .addWayPoints(wayPoints: wayPoints);
   }
 
   ///Show the Navigation View and Begins Direction Routing
@@ -66,10 +65,14 @@ class MapBoxNavigation {
   /// [options] options used to generate the route and used while navigating
   /// Begins to generate Route Progress
   ///
-  Future<bool?> startNavigation(
-      {required List<WayPoint> wayPoints, MapBoxOptions? options}) async {
+  Future<bool?> startNavigation({
+    required List<WayPoint> wayPoints,
+    MapBoxOptions? options,
+    Map<String, dynamic>? predefinedRoute,
+  }) async {
     options ??= _defaultOptions;
-    return FlutterMapboxNavigationPlatform.instance.startNavigation(wayPoints, options);
+    return FlutterMapboxNavigationPlatform.instance
+        .startNavigation(wayPoints, options, predefinedRoute);
   }
 
   ///Ends Navigation and Closes the Navigation View
@@ -83,7 +86,7 @@ class MapBoxNavigation {
   }
 
   Future registerRouteEventListener(ValueSetter<RouteEvent> listener) async {
-    return FlutterMapboxNavigationPlatform.instance.registerRouteEventListener(listener);
+    return FlutterMapboxNavigationPlatform.instance
+        .registerRouteEventListener(listener);
   }
-
 }

@@ -10,7 +10,8 @@ abstract class FlutterMapboxNavigationPlatform extends PlatformInterface {
 
   static final Object _token = Object();
 
-  static FlutterMapboxNavigationPlatform _instance = MethodChannelFlutterMapboxNavigation();
+  static FlutterMapboxNavigationPlatform _instance =
+      MethodChannelFlutterMapboxNavigation();
 
   /// The default instance of [FlutterMapboxNavigationPlatform] to use.
   ///
@@ -32,12 +33,14 @@ abstract class FlutterMapboxNavigationPlatform extends PlatformInterface {
 
   ///Total distance remaining in meters along route.
   Future<double?> getDistanceRemaining() {
-    throw UnimplementedError('getDistanceRemaining() has not been implemented.');
+    throw UnimplementedError(
+        'getDistanceRemaining() has not been implemented.');
   }
 
   ///Total seconds remaining on all legs.
   Future<double?> getDurationRemaining() {
-    throw UnimplementedError('getDurationRemaining() has not been implemented.');
+    throw UnimplementedError(
+        'getDurationRemaining() has not been implemented.');
   }
 
   ///Show the Navigation View and Begins Direction Routing
@@ -46,7 +49,11 @@ abstract class FlutterMapboxNavigationPlatform extends PlatformInterface {
   /// [options] options used to generate the route and used while navigating
   /// Begins to generate Route Progress
   ///
-  Future<bool?> startNavigation(List<WayPoint> wayPoints, MapBoxOptions options) async {
+  Future<bool?> startNavigation(
+    List<WayPoint> wayPoints,
+    MapBoxOptions options,
+    Map<String, dynamic>? predefinedRoute,
+  ) async {
     throw UnimplementedError('startNavigation() has not been implemented.');
   }
 
@@ -54,8 +61,9 @@ abstract class FlutterMapboxNavigationPlatform extends PlatformInterface {
   ///
   /// [wayPoints] must not be null and have at least 1 item. The way points will
   /// be inserted after the currently navigating waypoint in the existing navigation
-  Future addWayPoints({required wayPoints }) {
-    throw UnimplementedError('addWayPoints({required wayPoints }) has not been implemented.');
+  Future addWayPoints({required wayPoints}) {
+    throw UnimplementedError(
+        'addWayPoints({required wayPoints }) has not been implemented.');
   }
 
   ///Ends Navigation and Closes the Navigation View
@@ -65,10 +73,12 @@ abstract class FlutterMapboxNavigationPlatform extends PlatformInterface {
 
   /// Will download the navigation engine and the user's region to allow offline routing
   Future<bool?> enableOfflineRouting() async {
-    throw UnimplementedError('enableOfflineRouting() has not been implemented.');
+    throw UnimplementedError(
+        'enableOfflineRouting() has not been implemented.');
   }
 
   Future registerRouteEventListener(ValueSetter<RouteEvent> listener) async {
-    throw UnimplementedError('registerEventListener() has not been implemented.');
+    throw UnimplementedError(
+        'registerEventListener() has not been implemented.');
   }
 }
