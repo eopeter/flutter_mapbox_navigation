@@ -6,34 +6,37 @@ Add Turn By Turn Navigation to Your Flutter Application Using MapBox. Never leav
 
 ## Features
 
-* A full-fledged turn-by-turn navigation UI for Flutter that’s ready to drop into your application
-* [Professionally designed map styles](https://www.mapbox.com/maps/) for daytime and nighttime driving
-* Worldwide driving, cycling, and walking directions powered by [open data](https://www.mapbox.com/about/open/) and user feedback
-* Traffic avoidance and proactive rerouting based on current conditions in [over 55 countries](https://docs.mapbox.com/help/how-mapbox-works/directions/#traffic-data)
-* Natural-sounding turn instructions powered by [Amazon Polly](https://aws.amazon.com/polly/) (no configuration needed)
-* [Support for over two dozen languages](https://docs.mapbox.com/ios/navigation/overview/localization-and-internationalization/)
+- A full-fledged turn-by-turn navigation UI for Flutter that’s ready to drop into your application
+- [Professionally designed map styles](https://www.mapbox.com/maps/) for daytime and nighttime driving
+- Worldwide driving, cycling, and walking directions powered by [open data](https://www.mapbox.com/about/open/) and user feedback
+- Traffic avoidance and proactive rerouting based on current conditions in [over 55 countries](https://docs.mapbox.com/help/how-mapbox-works/directions/#traffic-data)
+- Natural-sounding turn instructions powered by [Amazon Polly](https://aws.amazon.com/polly/) (no configuration needed)
+- [Support for over two dozen languages](https://docs.mapbox.com/ios/navigation/overview/localization-and-internationalization/)
 
 ## IOS Configuration
 
 1. Go to your [Mapbox account dashboard](https://account.mapbox.com/) and create an access token that has the `DOWNLOADS:READ` scope. **PLEASE NOTE: This is not the same as your production Mapbox API token. Make sure to keep it private and do not insert it into any Info.plist file.** Create a file named `.netrc` in your home directory if it doesn’t already exist, then add the following lines to the end of the file:
+
    ```
    machine api.mapbox.com
      login mapbox
      password PRIVATE_MAPBOX_API_TOKEN
    ```
+
    where _PRIVATE_MAPBOX_API_TOKEN_ is your Mapbox API token with the `DOWNLOADS:READ` scope.
-   
+
 1. Mapbox APIs and vector tiles require a Mapbox account and API access token. In the project editor, select the application target, then go to the Info tab. Under the “Custom iOS Target Properties” section, set `MBXAccessToken` to your access token. You can obtain an access token from the [Mapbox account page](https://account.mapbox.com/access-tokens/).
 
 1. In order for the SDK to track the user’s location as they move along the route, set `NSLocationWhenInUseUsageDescription` to:
+
    > Shows your location on the map and helps improve OpenStreetMap.
 
 1. Users expect the SDK to continue to track the user’s location and deliver audible instructions even while a different application is visible or the device is locked. Go to the Capabilities tab. Under the Background Modes section, enable “Audio, AirPlay, and Picture in Picture” and “Location updates”. (Alternatively, add the `audio` and `location` values to the `UIBackgroundModes` array in the Info tab.)
 
-
 ## Android Configuration
 
 1. Mapbox APIs and vector tiles require a Mapbox account and API access token. Add your token in strings.xml file of your android apps res/values/ path. The string key should be "mapbox_access_token". You can obtain an access token from the [Mapbox account page](https://account.mapbox.com/access-tokens/).
+
 ```xml
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
@@ -45,6 +48,7 @@ Add Turn By Turn Navigation to Your Flutter Application Using MapBox. Never leav
 ```
 
 2. Add the following permissions to the app level Android Manifest
+
 ```xml
 <manifest>
     ...
@@ -55,12 +59,14 @@ Add Turn By Turn Navigation to Your Flutter Application Using MapBox. Never leav
 </manifest>
 ```
 
-3. Add the MapBox Downloads token with the ```downloads:read``` scope to your gradle.properties file in Android folder to enable downloading the MapBox binaries from the repository. To secure this token from getting checked into source control, you can add it to the gradle.properties of your GRADLE_HOME which is usually at $USER_HOME/.gradle for Mac. This token can be retrieved from your [MapBox Dashboard](https://account.mapbox.com/access-tokens/). You can review the [Token Guide](https://docs.mapbox.com/accounts/guides/tokens/) to learn more about download tokens
+3. Add the MapBox Downloads token with the `downloads:read` scope to your gradle.properties file in Android folder to enable downloading the MapBox binaries from the repository. To secure this token from getting checked into source control, you can add it to the gradle.properties of your GRADLE_HOME which is usually at \$USER_HOME/.gradle for Mac. This token can be retrieved from your [MapBox Dashboard](https://account.mapbox.com/access-tokens/). You can review the [Token Guide](https://docs.mapbox.com/accounts/guides/tokens/) to learn more about download tokens
+
 ```text
 MAPBOX_DOWNLOADS_TOKEN=sk.XXXXXXXXXXXXXXX
 ```
 
 After adding the above, your gradle.properties file may look something like this:
+
 ```text
 org.gradle.jvmargs=-Xmx1536M
 android.useAndroidX=true
@@ -71,6 +77,7 @@ MAPBOX_DOWNLOADS_TOKEN=sk.epe9nE9peAcmwNzKVNqSbFfp2794YtnNepe9nE9peAcmwNzKVNqSbF
 ## Usage
 
 #### Set Default Route Options (Optional)
+
 ```dart
     MapBoxNavigation.instance.setDefaultOptions(MapBoxOptions(
                      initialLatitude: 36.1175275,
@@ -99,7 +106,7 @@ MAPBOX_DOWNLOADS_TOKEN=sk.epe9nE9peAcmwNzKVNqSbFfp2794YtnNepe9nE9peAcmwNzKVNqSbF
 
         _distanceRemaining = await _directions.distanceRemaining;
         _durationRemaining = await _directions.durationRemaining;
-    
+
         switch (e.eventType) {
           case MapBoxEvent.progress_change:
             var progressEvent = e.data as RouteProgressEvent;
@@ -147,26 +154,46 @@ MAPBOX_DOWNLOADS_TOKEN=sk.epe9nE9peAcmwNzKVNqSbFfp2794YtnNepe9nE9peAcmwNzKVNqSbF
     var wayPoints = List<WayPoint>();
     wayPoints.add(cityHall);
     wayPoints.add(downtown);
-    
+
     await MapBoxNavigation.instance.startNavigation(wayPoints: wayPoints);
 ```
 
+#### Begin Navigation following predefined route
+
+Is it possible to create a predefined route with the [Direction API Playground](https://docs.mapbox.com/playground/directions/). In the response box behind the map, you can copy the route that you like and use inside `MapBoxNavigation.instance.startNavigation` method in the `predefinedRoute` parameter. Check the example [here](example/lib/app.dart).
+
+```dart
+ElevatedButton(
+  child: const Text("Start predefined Route"),
+  onPressed: () async {
+    await MapBoxNavigation.instance.startNavigation(
+      wayPoints: [_home, _store, _home],
+      options: MapBoxOptions(
+        language: 'en',
+        bannerInstructionsEnabled: true,
+      ),
+      predefinedRoute: predefinedRouteExample,
+    );
+  },
+),
+```
+
 #### Screenshots
-![Navigation View](screenshots/screenshot1.png?raw=true "iOS View") | ![Android View](screenshots/screenshot2.png?raw=true "Android View")
-|:---:|:---:|
-| iOS View | Android View |
 
-
+| ![Navigation View](screenshots/screenshot1.png?raw=true "iOS View") | ![Android View](screenshots/screenshot2.png?raw=true "Android View") |
+| :-----------------------------------------------------------------: | :------------------------------------------------------------------: |
+|                              iOS View                               |                             Android View                             |
 
 ## Embedding Navigation View
 
-
 #### Declare Controller
+
 ```dart
       MapBoxNavigationViewController _controller;
 ```
 
 #### Add Navigation View to Widget Tree
+
 ```dart
             Container(
                 color: Colors.grey,
@@ -179,6 +206,7 @@ MAPBOX_DOWNLOADS_TOKEN=sk.epe9nE9peAcmwNzKVNqSbFfp2794YtnNepe9nE9peAcmwNzKVNqSbF
                     }),
               ),
 ```
+
 #### Build Route
 
 ```dart
@@ -199,6 +227,7 @@ MAPBOX_DOWNLOADS_TOKEN=sk.epe9nE9peAcmwNzKVNqSbFfp2794YtnNepe9nE9peAcmwNzKVNqSbF
 ```
 
 ### Additional IOS Configuration
+
 Add the following to your `info.plist` file
 
 ```xml
@@ -211,18 +240,21 @@ Add the following to your `info.plist` file
 ```
 
 ### Embedding Navigation Screenshots
-![Navigation View](screenshots/screenshot3.png?raw=true "Embedded iOS View") | ![Navigation View](screenshots/screenshot4.png?raw=true "Embedded Android View")
-|:---:|:---:|
-| Embedded iOS View | Embedded Android View |
+
+| ![Navigation View](screenshots/screenshot3.png?raw=true "Embedded iOS View") | ![Navigation View](screenshots/screenshot4.png?raw=true "Embedded Android View") |
+| :--------------------------------------------------------------------------: | :------------------------------------------------------------------------------: |
+|                              Embedded iOS View                               |                              Embedded Android View                               |
 
 ## To Do
-* [DONE] Android Implementation
-* [DONE] Add more settings like Navigation Mode (driving, walking, etc)
-* [DONE] Stream Events like relevant navigation notifications, metrics, current location, etc. 
-* [DONE] Embeddable Navigation View 
-* Offline Routing
+
+- [DONE] Android Implementation
+- [DONE] Add more settings like Navigation Mode (driving, walking, etc)
+- [DONE] Stream Events like relevant navigation notifications, metrics, current location, etc.
+- [DONE] Embeddable Navigation View
+- Offline Routing
 
 <!-- Links -->
+
 [pub_badge]: https://img.shields.io/pub/v/flutter_mapbox_navigation.svg
 [pub]: https://pub.dev/packages/flutter_mapbox_navigation
 [buy_me_a_coffee]: https://www.buymeacoffee.com/eopeter
