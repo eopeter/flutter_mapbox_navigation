@@ -115,8 +115,7 @@ class _SampleNavigationAppState extends State<SampleNavigationApp> {
                         )),
                       ),
                     ),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
+                    Wrap(
                       children: [
                         ElevatedButton(
                           child: const Text("Start predefined Route"),
@@ -130,6 +129,9 @@ class _SampleNavigationAppState extends State<SampleNavigationApp> {
                               predefinedRoute: predefinedRouteExample,
                             );
                           },
+                        ),
+                        const SizedBox(
+                          width: 10,
                         ),
                         ElevatedButton(
                           child: const Text("Start A to B"),
