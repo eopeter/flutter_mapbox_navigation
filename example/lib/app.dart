@@ -115,14 +115,13 @@ class _SampleNavigationAppState extends State<SampleNavigationApp> {
                         )),
                       ),
                     ),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
+                    Wrap(
                       children: [
                         ElevatedButton(
                           child: const Text("Start predefined Route"),
                           onPressed: () async {
                             await MapBoxNavigation.instance.startNavigation(
-                              wayPoints: [_home, _store, _home],
+                              wayPoints: [_home, _store],
                               options: MapBoxOptions(
                                 language: 'en',
                                 bannerInstructionsEnabled: true,
@@ -130,6 +129,9 @@ class _SampleNavigationAppState extends State<SampleNavigationApp> {
                               predefinedRoute: predefinedRouteExample,
                             );
                           },
+                        ),
+                        const SizedBox(
+                          width: 10,
                         ),
                         ElevatedButton(
                           child: const Text("Start A to B"),
