@@ -46,6 +46,42 @@ class _SampleNavigationAppState extends State<SampleNavigationApp> {
       latitude: 37.76556957793795,
       longitude: -122.42409811526268);
 
+  final list = [
+    [9.225944, 45.48102],
+    [9.228679, 45.481974],
+    [9.228936, 45.482061],
+    [9.228994, 45.482083],
+    [9.231063, 45.482804],
+    [9.231013, 45.482947],
+    [9.230078, 45.482623],
+    [9.229959, 45.482582],
+    [9.229964, 45.482176],
+    [9.229965, 45.482089],
+    [9.229975, 45.481049],
+    [9.229982, 45.480335],
+    [9.229992, 45.479461],
+    [9.229992, 45.479386],
+    [9.229994, 45.479303],
+    [9.229994, 45.47924],
+    [9.231505, 45.479245],
+    [9.231683, 45.479266],
+    [9.231654, 45.47934],
+    [9.231629, 45.479404],
+    [9.231544, 45.479393],
+    [9.230166, 45.479387],
+    [9.229921, 45.479385],
+    [9.229845, 45.479385],
+    [9.227458, 45.479366],
+    [9.227026, 45.479363],
+    [9.226761, 45.479358],
+    [9.226676, 45.479359],
+    [9.226527, 45.479357],
+    [9.226244, 45.479354],
+    [9.225691, 45.479355],
+    [9.225577, 45.479355],
+    [9.224954, 45.479659],
+  ];
+
   bool _isMultipleStop = false;
   double? _distanceRemaining, _durationRemaining;
   MapBoxNavigationViewController? _controller;
@@ -120,12 +156,14 @@ class _SampleNavigationAppState extends State<SampleNavigationApp> {
                         ElevatedButton(
                           child: const Text("Start predefined Route"),
                           onPressed: () async {
+                            var po = list
+                                .map((e) => WayPoint(
+                                    name: e[0].toString(),
+                                    latitude: e[1],
+                                    longitude: e[0]))
+                                .toList();
                             await MapBoxNavigation.instance.startNavigation(
-                              wayPoints: [_home, _store, _home],
-                              options: MapBoxOptions(
-                                language: 'en',
-                                bannerInstructionsEnabled: true,
-                              ),
+                              wayPoints: po,
                               predefinedRoute: predefinedRouteExample,
                             );
                           },

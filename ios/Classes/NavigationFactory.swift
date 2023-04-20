@@ -101,10 +101,12 @@ public class NavigationFactory : NSObject, FlutterStreamHandler
         _mapStyleUrlDay = arguments?["mapStyleUrlDay"] as? String
         _mapStyleUrlNight = arguments?["mapStyleUrlNight"] as? String
         
-        guard let predefinedRoute = arguments?["predefinedRoute"] as? NSDictionary else { return }
-        let jsonData: NSData? = try? JSONSerialization.data(withJSONObject: predefinedRoute, options: JSONSerialization.WritingOptions.prettyPrinted) as NSData
-        let dataString = NSString(data: jsonData! as Data, encoding: NSUTF8StringEncoding)! as String
-        
+        let predefinedRoute = arguments?["predefinedRoute"] as? NSDictionary
+        var dataString: String?
+        if (predefinedRoute != nil) {
+            let jsonData: NSData? = try? JSONSerialization.data(withJSONObject: predefinedRoute!, options: JSONSerialization.WritingOptions.prettyPrinted) as NSData
+            dataString = NSString(data: jsonData! as Data, encoding: NSUTF8StringEncoding)! as String
+        }
         if(_wayPoints.count > 0)
         {
             if(IsMultipleUniqueRoutes)
@@ -169,7 +171,7 @@ public class NavigationFactory : NSObject, FlutterStreamHandler
                                                                     customRoutingProvider: NavigationSettings.shared.directions,
                                                                     credentials: NavigationSettings.shared.directions.credentials,
                                                                     simulating: simulationMode)
-                    
+                     
                     let strongSelf = self
                     strongSelf._options = options
                     
