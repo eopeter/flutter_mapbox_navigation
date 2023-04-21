@@ -1,6 +1,5 @@
-package com.eopeter.flutter_mapbox_navigation.utilities
+package com.eopeter.flutter_mapbox_navigation.models
 
-import com.eopeter.flutter_mapbox_navigation.models.SimpleWaypoint
 import com.mapbox.api.directions.v5.models.RouteOptions
 import com.mapbox.geojson.Point
 
@@ -9,11 +8,15 @@ import com.mapbox.geojson.Point
  * 1. It stores waypoints
  * 2. Converts the stored waypoints to the [RouteOptions] params
  */
-class WaypointsSet {
+class WaypointSet {
 
     private val waypoints = mutableListOf<Waypoint>()
 
     val isEmpty get() = waypoints.isEmpty()
+
+    fun addNamed(point: Point, name: String) {
+        waypoints.add(Waypoint(point, WaypointType.Named(name)))
+    }
 
     fun addSimpleWaypoint(simpleWaypoint: SimpleWaypoint) {
         if (simpleWaypoint.isSilent) {
@@ -26,10 +29,6 @@ class WaypointsSet {
         } else {
             addRegular(Point.fromLngLat(simpleWaypoint.longitude, simpleWaypoint.latitude))
         }
-    }
-
-    fun addNamed(point: Point, name: String) {
-        waypoints.add(Waypoint(point, WaypointType.Named(name)))
     }
 
     fun addRegular(point: Point) {
@@ -96,4 +95,3 @@ class WaypointsSet {
         return !isLastWaypoint && !isFirstWaypoint
     }
 }
-

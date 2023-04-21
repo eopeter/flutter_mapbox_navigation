@@ -7,6 +7,8 @@ import androidx.appcompat.app.AppCompatActivity
 import com.eopeter.flutter_mapbox_navigation.FlutterMapboxNavigationPlugin
 import com.eopeter.flutter_mapbox_navigation.models.MapBoxEvents
 import com.eopeter.flutter_mapbox_navigation.models.MapBoxRouteProgressEvent
+import com.eopeter.flutter_mapbox_navigation.models.SimpleWaypoint
+import com.eopeter.flutter_mapbox_navigation.models.WaypointSet
 import com.eopeter.flutter_mapbox_navigation.utilities.PluginUtilities
 import com.eopeter.flutter_mapbox_navigation.utilities.PluginUtilities.Companion.sendEvent
 import com.mapbox.api.directions.v5.models.Bearing
@@ -41,7 +43,8 @@ class NavigationActivity : AppCompatActivity() {
 
     private var finishBroadcastReceiver: BroadcastReceiver? = null
     private var addWayPointsBroadcastReceiver: BroadcastReceiver? = null
-    private var points: MutableList<Point> = mutableListOf()
+    private var points: MutableList<SimpleWaypoint> = mutableListOf()
+    private var waypointSet: WaypointSet = WaypointSet()
     private var canResetRoute: Boolean = false
     private var accessToken: String? = null
     private var lastLocation: Location? = null
@@ -82,7 +85,7 @@ class NavigationActivity : AppCompatActivity() {
         addWayPointsBroadcastReceiver = object : BroadcastReceiver() {
             override fun onReceive(context: Context, intent: Intent) {
                 //get waypoints
-                val stops = intent.getSerializableExtra("waypoints") as? MutableList<Point>
+                val stops = intent.getSerializableExtra("waypoints") as? MutableList<SimpleWaypoint>
                 val nextIndex = 1
                 if (stops != null) {
                     //append to points
@@ -104,17 +107,16 @@ class NavigationActivity : AppCompatActivity() {
             IntentFilter(NavigationLauncher.KEY_ADD_WAYPOINTS)
         )
 
-        val p = intent.getSerializableExtra("waypoints") as? MutableList<Point>
+        val p = intent.getSerializableExtra("waypoints") as? MutableList<SimpleWaypoint>
         if (p != null) points = p
 
         // TODO set the style Uri
         var styleUrl = FlutterMapboxNavigationPlugin.mapStyleUrlDay
         if (styleUrl == null) styleUrl = Style.MAPBOX_STREETS
         // set map style
-        binding.navigationView.customizeViewStyles {
-
-        }
-        requestRoutes(points)
+        binding.navigationView.customizeViewStyles {}
+        points.map { waypointSet.addSimpleWaypoint(it) }
+        requestRoutes(waypointSet)
     }
 
     override fun onDestroy() {
@@ -135,14 +137,16 @@ class NavigationActivity : AppCompatActivity() {
         super.onStop()
     }
 
-    private fun requestRoutes(points: List<Point>) {
+    private fun requestRoutes(waypointSet: WaypointSet) {
         sendEvent(MapBoxEvents.ROUTE_BUILDING)
         MapboxNavigationApp.current()!!.requestRoutes(
             routeOptions = RouteOptions
                 .builder()
                 .applyDefaultNavigationOptions()
                 .applyLanguageAndVoiceUnitOptions(this)
-                .coordinatesList(points)
+                .coordinatesList(waypointSet.coordinatesList())
+                .waypointIndicesList(waypointSet.waypointsIndices())
+                .waypointNamesList(waypointSet.waypointsNames())
                 .language(FlutterMapboxNavigationPlugin.navigationLanguage)
                 .alternatives(FlutterMapboxNavigationPlugin.showAlternateRoutes)
                 .build(),
@@ -255,7 +259,7 @@ class NavigationActivity : AppCompatActivity() {
     /**
      * Helper class that keeps added waypoints and transforms them to the [RouteOptions] params.
      */
-    private val addedWaypoints = WaypointsSet()
+    private val addedWaypoints = WaypointSet()
 
 
     /**
@@ -320,89 +324,12 @@ class NavigationActivity : AppCompatActivity() {
 
         override fun onMapLongClick(point: Point): Boolean {
             ifNonNull(lastLocation) {
-                requestRoutes(listOf(Point.fromLngLat(it.longitude, it.latitude), point))
+                val waypointSet = WaypointSet()
+                waypointSet.addRegular(Point.fromLngLat(it.longitude, it.latitude))
+                waypointSet.addRegular(point)
+                requestRoutes(waypointSet)
             }
             return false
         }
-    }
-}
-
-/**
- * Helper class that that does 2 things:
- * 1. It stores waypoints
- * 2. Converts the stored waypoints to the [RouteOptions] params
- */
-class WaypointsSet {
-
-    private val waypoints = mutableListOf<Waypoint>()
-
-    val isEmpty get() = waypoints.isEmpty()
-
-    fun addNamed(point: Point, name: String) {
-        waypoints.add(Waypoint(point, WaypointType.Named(name)))
-    }
-
-    fun addRegular(point: Point) {
-        waypoints.add(Waypoint(point, WaypointType.Regular))
-    }
-
-    fun addSilent(point: Point) {
-        waypoints.add(Waypoint(point, WaypointType.Silent))
-    }
-
-    fun clear() {
-        waypoints.clear()
-    }
-
-    /***
-     * Silent waypoint isn't really a waypoint.
-     * It's just a coordinate that used to build a route.
-     * That's why to make a waypoint silent we exclude its index from the waypointsIndices.
-     */
-    fun waypointsIndices(): List<Int> {
-        return waypoints.mapIndexedNotNull { index, _ ->
-            if (waypoints.isSilentWaypoint(index)) {
-                null
-            } else index
-        }
-    }
-
-    /**
-     * Returns names for added waypoints.
-     * Silent waypoint can't have a name unless they're converted to regular because of position.
-     * First and last waypoint can't be silent.
-     */
-    fun waypointsNames(): List<String> = waypoints
-        // silent waypoints can't have a name
-        .filterIndexed { index, _ ->
-            !waypoints.isSilentWaypoint(index)
-        }
-        .map {
-            when (it.type) {
-                is WaypointType.Named -> it.type.name
-                else -> ""
-            }
-        }
-
-    fun coordinatesList(): List<Point> {
-        return waypoints.map { it.point }
-    }
-
-    private sealed class WaypointType {
-        data class Named(val name: String) : WaypointType()
-        object Regular : WaypointType()
-        object Silent : WaypointType()
-    }
-
-    private data class Waypoint(val point: Point, val type: WaypointType)
-
-    private fun List<Waypoint>.isSilentWaypoint(index: Int) =
-        this[index].type == WaypointType.Silent && canWaypointBeSilent(index)
-
-    // the first and the last waypoint can't be silent
-    private fun List<Waypoint>.canWaypointBeSilent(index: Int): Boolean {
-        val isLastWaypoint = index == this.size - 1
-        val isFirstWaypoint = index == 0
-        return !isLastWaypoint && !isFirstWaypoint
     }
 }

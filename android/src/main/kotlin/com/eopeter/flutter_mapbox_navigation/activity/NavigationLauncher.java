@@ -3,6 +3,7 @@ package com.eopeter.flutter_mapbox_navigation.activity;
 import android.app.Activity;
 import android.content.Intent;
 
+import com.eopeter.flutter_mapbox_navigation.models.SimpleWaypoint;
 import com.mapbox.geojson.Point;
 
 import java.io.Serializable;
@@ -13,13 +14,13 @@ public class NavigationLauncher {
     public static final String KEY_ADD_WAYPOINTS = "com.my.mapbox.broadcast.ADD_WAYPOINTS";
     public static final String KEY_STOP_NAVIGATION = "com.my.mapbox.broadcast.STOP_NAVIGATION";
 
-    public static void startNavigation(Activity activity, List<Point> wayPoints) {
+    public static void startNavigation(Activity activity, List<SimpleWaypoint> wayPoints) {
         Intent navigationIntent = new Intent(activity, NavigationActivity.class);
         navigationIntent.putExtra("waypoints", (Serializable) wayPoints);
         activity.startActivity(navigationIntent);
     }
 
-    public static void addWayPoints(Activity activity, List<Point> wayPoints) {
+    public static void addWayPoints(Activity activity, List<SimpleWaypoint> wayPoints) {
         Intent navigationIntent = new Intent(activity, NavigationActivity.class);
         navigationIntent.setAction(KEY_ADD_WAYPOINTS);
         navigationIntent.putExtra("isAddingWayPoints", true);
