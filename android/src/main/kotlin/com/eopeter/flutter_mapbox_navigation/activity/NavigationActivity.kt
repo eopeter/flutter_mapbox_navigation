@@ -7,11 +7,10 @@ import androidx.appcompat.app.AppCompatActivity
 import com.eopeter.flutter_mapbox_navigation.FlutterMapboxNavigationPlugin
 import com.eopeter.flutter_mapbox_navigation.models.MapBoxEvents
 import com.eopeter.flutter_mapbox_navigation.models.MapBoxRouteProgressEvent
-import com.eopeter.flutter_mapbox_navigation.models.SimpleWaypoint
+import com.eopeter.flutter_mapbox_navigation.models.Waypoint
 import com.eopeter.flutter_mapbox_navigation.models.WaypointSet
 import com.eopeter.flutter_mapbox_navigation.utilities.PluginUtilities
 import com.eopeter.flutter_mapbox_navigation.utilities.PluginUtilities.Companion.sendEvent
-import com.mapbox.api.directions.v5.models.Bearing
 import com.mapbox.api.directions.v5.models.DirectionsRoute
 import com.mapbox.api.directions.v5.models.RouteOptions
 import com.mapbox.geojson.Point
@@ -25,25 +24,21 @@ import com.mapbox.navigation.base.options.NavigationOptions
 import com.mapbox.navigation.base.route.*
 import com.mapbox.navigation.base.trip.model.RouteLegProgress
 import com.mapbox.navigation.base.trip.model.RouteProgress
-import com.mapbox.navigation.core.MapboxNavigation
 import com.mapbox.navigation.core.arrival.ArrivalObserver
 import com.mapbox.navigation.core.lifecycle.MapboxNavigationApp
 import com.mapbox.navigation.core.trip.session.LocationMatcherResult
 import com.mapbox.navigation.core.trip.session.LocationObserver
 import com.mapbox.navigation.core.trip.session.RouteProgressObserver
 import com.mapbox.navigation.dropin.map.MapViewObserver
-import com.mapbox.navigation.ui.app.internal.startArrival
-import com.mapbox.navigation.ui.tripprogress.model.*
 import com.mapbox.navigation.utils.internal.ifNonNull
 import eopeter.flutter_mapbox_navigation.R
 import eopeter.flutter_mapbox_navigation.databinding.NavigationActivityBinding
-import java.util.*
 
 class NavigationActivity : AppCompatActivity() {
 
     private var finishBroadcastReceiver: BroadcastReceiver? = null
     private var addWayPointsBroadcastReceiver: BroadcastReceiver? = null
-    private var points: MutableList<SimpleWaypoint> = mutableListOf()
+    private var points: MutableList<Waypoint> = mutableListOf()
     private var waypointSet: WaypointSet = WaypointSet()
     private var canResetRoute: Boolean = false
     private var accessToken: String? = null
@@ -85,7 +80,7 @@ class NavigationActivity : AppCompatActivity() {
         addWayPointsBroadcastReceiver = object : BroadcastReceiver() {
             override fun onReceive(context: Context, intent: Intent) {
                 //get waypoints
-                val stops = intent.getSerializableExtra("waypoints") as? MutableList<SimpleWaypoint>
+                val stops = intent.getSerializableExtra("waypoints") as? MutableList<Waypoint>
                 val nextIndex = 1
                 if (stops != null) {
                     //append to points
@@ -107,7 +102,7 @@ class NavigationActivity : AppCompatActivity() {
             IntentFilter(NavigationLauncher.KEY_ADD_WAYPOINTS)
         )
 
-        val p = intent.getSerializableExtra("waypoints") as? MutableList<SimpleWaypoint>
+        val p = intent.getSerializableExtra("waypoints") as? MutableList<Waypoint>
         if (p != null) points = p
 
         // TODO set the style Uri
@@ -115,7 +110,7 @@ class NavigationActivity : AppCompatActivity() {
         if (styleUrl == null) styleUrl = Style.MAPBOX_STREETS
         // set map style
         binding.navigationView.customizeViewStyles {}
-        points.map { waypointSet.addSimpleWaypoint(it) }
+        points.map { waypointSet.add(it) }
         requestRoutes(waypointSet)
     }
 
@@ -185,16 +180,16 @@ class NavigationActivity : AppCompatActivity() {
 
         // we always start a route from the current location
         if (addedWaypoints.isEmpty) {
-            addedWaypoints.addRegular(originPoint)
+            addedWaypoints.add(Waypoint(originPoint))
         }
 
-        if (name != null) {
+        if (!name.isNullOrBlank()) {
             // When you add named waypoints, the string you use here inside "" would be shown in `Maneuver` and played in `Voice` instructions.
             // In this example waypoint names will be visible in the logcat.
-            addedWaypoints.addNamed(destination, name)
+            addedWaypoints.add(Waypoint(name, destination))
         } else {
             // When you add silent waypoints, make sure it is followed by a regular or named waypoint, otherwise silent waypoint is treated as a regular waypoint
-            addedWaypoints.addSilent(destination)
+            addedWaypoints.add(Waypoint(destination, true))
         }
 
         // execute a route request
@@ -325,8 +320,8 @@ class NavigationActivity : AppCompatActivity() {
         override fun onMapLongClick(point: Point): Boolean {
             ifNonNull(lastLocation) {
                 val waypointSet = WaypointSet()
-                waypointSet.addRegular(Point.fromLngLat(it.longitude, it.latitude))
-                waypointSet.addRegular(point)
+                waypointSet.add(Waypoint(Point.fromLngLat(it.longitude, it.latitude)))
+                waypointSet.add(Waypoint(point))
                 requestRoutes(waypointSet)
             }
             return false

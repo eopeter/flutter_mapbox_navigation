@@ -14,29 +14,8 @@ class WaypointSet {
 
     val isEmpty get() = waypoints.isEmpty()
 
-    fun addNamed(point: Point, name: String) {
-        waypoints.add(Waypoint(point, WaypointType.Named(name)))
-    }
-
-    fun addSimpleWaypoint(simpleWaypoint: SimpleWaypoint) {
-        if (simpleWaypoint.isSilent) {
-            addSilent(Point.fromLngLat(simpleWaypoint.longitude, simpleWaypoint.latitude))
-        } else if (simpleWaypoint.name.isNotBlank()) {
-            addNamed(
-                Point.fromLngLat(simpleWaypoint.longitude, simpleWaypoint.latitude),
-                simpleWaypoint.name
-            )
-        } else {
-            addRegular(Point.fromLngLat(simpleWaypoint.longitude, simpleWaypoint.latitude))
-        }
-    }
-
-    fun addRegular(point: Point) {
-        waypoints.add(Waypoint(point, WaypointType.Regular))
-    }
-
-    fun addSilent(point: Point) {
-        waypoints.add(Waypoint(point, WaypointType.Silent))
+    fun add(waypoint: Waypoint) {
+        waypoints.add(waypoint)
     }
 
     fun clear() {
@@ -67,26 +46,16 @@ class WaypointSet {
             !waypoints.isSilentWaypoint(index)
         }
         .map {
-            when (it.type) {
-                is WaypointType.Named -> it.type.name
-                else -> ""
-            }
+            it.name
         }
 
     fun coordinatesList(): List<Point> {
         return waypoints.map { it.point }
     }
 
-    private sealed class WaypointType {
-        data class Named(val name: String) : WaypointType()
-        object Regular : WaypointType()
-        object Silent : WaypointType()
-    }
-
-    private data class Waypoint(val point: Point, val type: WaypointType)
-
     private fun List<Waypoint>.isSilentWaypoint(index: Int) =
-        this[index].type == WaypointType.Silent && canWaypointBeSilent(index)
+        //this[index].type == WaypointType.Silent && canWaypointBeSilent(index)
+        this[index].isSilent && canWaypointBeSilent(index)
 
     // the first and the last waypoint can't be silent
     private fun List<Waypoint>.canWaypointBeSilent(index: Int): Boolean {

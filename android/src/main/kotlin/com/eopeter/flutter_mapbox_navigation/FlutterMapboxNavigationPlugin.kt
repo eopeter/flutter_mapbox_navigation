@@ -7,11 +7,10 @@ import android.content.pm.PackageManager
 import android.os.Build
 import com.eopeter.flutter_mapbox_navigation.activity.NavigationLauncher
 import com.eopeter.flutter_mapbox_navigation.factory.EmbeddedNavigationViewFactory
-import com.eopeter.flutter_mapbox_navigation.models.SimpleWaypoint
+import com.eopeter.flutter_mapbox_navigation.models.Waypoint
 
 import com.mapbox.api.directions.v5.DirectionsCriteria
 import com.mapbox.api.directions.v5.models.DirectionsRoute
-import com.mapbox.geojson.Point
 
 import io.flutter.embedding.engine.plugins.FlutterPlugin
 import io.flutter.embedding.engine.plugins.activity.ActivityAware
@@ -56,8 +55,7 @@ public class FlutterMapboxNavigationPlugin : FlutterPlugin, MethodCallHandler,
 
         lateinit var routes: List<DirectionsRoute>
         private var currentRoute: DirectionsRoute? = null
-        //val wayPoints: MutableList<Point> = mutableListOf()
-        val wayPoints: MutableList<SimpleWaypoint> = mutableListOf()
+        val wayPoints: MutableList<Waypoint> = mutableListOf()
 
         var showAlternateRoutes: Boolean = true
         val allowsClickToSetDestination: Boolean = false
@@ -167,14 +165,14 @@ public class FlutterMapboxNavigationPlugin : FlutterPlugin, MethodCallHandler,
             val latitude = point["Latitude"] as Double
             val longitude = point["Longitude"] as Double
             val isSilent = point["IsSilent"] as Boolean
-            wayPoints.add(SimpleWaypoint(name, longitude, latitude, isSilent))
+            wayPoints.add(Waypoint(name, longitude, latitude, isSilent))
         }
 
         checkPermissionAndBeginNavigation(wayPoints)
 
     }
 
-    private fun checkPermissionAndBeginNavigation(wayPoints: List<SimpleWaypoint>) {
+    private fun checkPermissionAndBeginNavigation(wayPoints: List<Waypoint>) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             val haspermission =
                 currentActivity?.checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION)
@@ -191,7 +189,7 @@ public class FlutterMapboxNavigationPlugin : FlutterPlugin, MethodCallHandler,
             beginNavigation(wayPoints)
     }
 
-    private fun beginNavigation(wayPoints: List<SimpleWaypoint>) {
+    private fun beginNavigation(wayPoints: List<Waypoint>) {
         NavigationLauncher.startNavigation(currentActivity, wayPoints);
     }
 
@@ -208,7 +206,7 @@ public class FlutterMapboxNavigationPlugin : FlutterPlugin, MethodCallHandler,
             val latitude = point["Latitude"] as Double
             val longitude = point["Longitude"] as Double
             val isSilent = point["IsSilent"] as Boolean
-            wayPoints.add(SimpleWaypoint(name, latitude, longitude, isSilent))
+            wayPoints.add(Waypoint(name, latitude, longitude, isSilent))
         }
         NavigationLauncher.addWayPoints(currentActivity, wayPoints);
     }
@@ -251,7 +249,6 @@ public class FlutterMapboxNavigationPlugin : FlutterPlugin, MethodCallHandler,
                 EmbeddedNavigationViewFactory(binaryMessenger!!, currentActivity!!)
             )
         }
-
     }
 
     override fun onDetachedFromActivityForConfigChanges() {
