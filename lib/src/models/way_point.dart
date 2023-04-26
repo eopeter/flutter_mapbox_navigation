@@ -7,10 +7,10 @@ class WayPoint {
   String? name;
   double? latitude;
   double? longitude;
-  bool isSilent = false;
+  bool? isSilent;
 
   WayPoint(
-      {required this.name, required this.latitude, required this.longitude});
+      {required this.name, required this.latitude, required this.longitude, required this.isSilent});
 
   @override
   String toString() {
@@ -21,6 +21,13 @@ class WayPoint {
     name = json["name"];
     latitude = json["latitude"] as double?;
     longitude = json["longitude"] as double?;
-    //isSilent = json["isSilent"] as bool;
+
+    //isSilent = json["isSilent"]==null ? false : json["isSilent"] as bool;
+    if(json["isSilent"]==null) {
+      isSilent = false;
+    }
+    else {
+      isSilent = json["isSilent"] as bool;
+    }
   }
 }

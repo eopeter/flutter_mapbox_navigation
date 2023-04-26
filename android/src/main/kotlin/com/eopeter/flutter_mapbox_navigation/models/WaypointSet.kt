@@ -1,4 +1,4 @@
-package com.eopeter.flutter_mapbox_navigation.utilities
+package com.eopeter.flutter_mapbox_navigation.models
 
 import com.mapbox.api.directions.v5.models.RouteOptions
 import com.mapbox.geojson.Point
@@ -8,22 +8,14 @@ import com.mapbox.geojson.Point
  * 1. It stores waypoints
  * 2. Converts the stored waypoints to the [RouteOptions] params
  */
-class WaypointsSet {
+class WaypointSet {
 
     private val waypoints = mutableListOf<Waypoint>()
 
     val isEmpty get() = waypoints.isEmpty()
 
-    fun addNamed(point: Point, name: String) {
-        waypoints.add(Waypoint(point, WaypointType.Named(name)))
-    }
-
-    fun addRegular(point: Point) {
-        waypoints.add(Waypoint(point, WaypointType.Regular))
-    }
-
-    fun addSilent(point: Point) {
-        waypoints.add(Waypoint(point, WaypointType.Silent))
+    fun add(waypoint: Waypoint) {
+        waypoints.add(waypoint)
     }
 
     fun clear() {
@@ -54,26 +46,16 @@ class WaypointsSet {
             !waypoints.isSilentWaypoint(index)
         }
         .map {
-            when (it.type) {
-                is WaypointType.Named -> it.type.name
-                else -> ""
-            }
+            it.name
         }
 
     fun coordinatesList(): List<Point> {
         return waypoints.map { it.point }
     }
 
-    private sealed class WaypointType {
-        data class Named(val name: String) : WaypointType()
-        object Regular : WaypointType()
-        object Silent : WaypointType()
-    }
-
-    private data class Waypoint(val point: Point, val type: WaypointType)
-
     private fun List<Waypoint>.isSilentWaypoint(index: Int) =
-        this[index].type == WaypointType.Silent && canWaypointBeSilent(index)
+        //this[index].type == WaypointType.Silent && canWaypointBeSilent(index)
+        this[index].isSilent && canWaypointBeSilent(index)
 
     // the first and the last waypoint can't be silent
     private fun List<Waypoint>.canWaypointBeSilent(index: Int): Boolean {
@@ -82,4 +64,3 @@ class WaypointsSet {
         return !isLastWaypoint && !isFirstWaypoint
     }
 }
-
