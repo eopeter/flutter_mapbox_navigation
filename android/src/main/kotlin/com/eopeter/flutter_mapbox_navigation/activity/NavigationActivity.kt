@@ -33,6 +33,7 @@ import com.mapbox.navigation.dropin.map.MapViewObserver
 import com.mapbox.navigation.utils.internal.ifNonNull
 import eopeter.flutter_mapbox_navigation.R
 import eopeter.flutter_mapbox_navigation.databinding.NavigationActivityBinding
+import com.google.gson.Gson
 
 class NavigationActivity : AppCompatActivity() {
 
@@ -158,7 +159,7 @@ class NavigationActivity : AppCompatActivity() {
                     routes: List<NavigationRoute>,
                     routerOrigin: RouterOrigin
                 ) {
-                    sendEvent(MapBoxEvents.ROUTE_BUILT)
+                    sendEvent(MapBoxEvents.ROUTE_BUILT, Gson().toJson(routes))
                     if (routes.isEmpty()) {
                         sendEvent(MapBoxEvents.ROUTE_BUILD_NO_ROUTES_FOUND)
                         return
@@ -212,7 +213,7 @@ class NavigationActivity : AppCompatActivity() {
                     routes: List<NavigationRoute>,
                     routerOrigin: RouterOrigin
                 ) {
-                    sendEvent(MapBoxEvents.ROUTE_BUILT)
+                    sendEvent(MapBoxEvents.ROUTE_BUILT, Gson().toJson(routes))
                     binding.navigationView.api.routeReplayEnabled(true)
                     binding.navigationView.api.startActiveGuidance(routes)
                 }

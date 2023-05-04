@@ -61,6 +61,7 @@ import io.flutter.plugin.common.EventChannel
 import io.flutter.plugin.common.MethodCall
 import io.flutter.plugin.common.MethodChannel
 import java.util.*
+import com.google.gson.Gson
 
 open class TurnByTurn(
     ctx: Context,
@@ -273,7 +274,8 @@ open class TurnByTurn(
     private fun setRoutes(routes: List<DirectionsRoute>) {
         // store the first route as the current route
         currentRoute = routes[0]
-        PluginUtilities.sendEvent(MapBoxEvents.ROUTE_BUILT)
+        var data = Gson().toJson(routes)
+        PluginUtilities.sendEvent(MapBoxEvents.ROUTE_BUILT, data)
         // Draw the route on the map
         mapboxNavigation.setRoutes(routes)
         // move the camera to overview when new route is available

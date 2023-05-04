@@ -60,11 +60,11 @@ public class NavigationFactory : NSObject, FlutterStreamHandler
             }
             nextIndex += 1
         }
-        
+
         startNavigationWithWayPoints(wayPoints: _wayPoints, flutterResult: result, isUpdatingWaypoints: true)
     }
-    
-    
+
+
     func startNavigation(arguments: NSDictionary?, result: @escaping FlutterResult)
     {
         _wayPoints.removeAll()
@@ -216,7 +216,7 @@ public class NavigationFactory : NSObject, FlutterStreamHandler
             case .failure(let error):
                 strongSelf.sendEvent(eventType: MapBoxEventType.route_build_failed, data: error.localizedDescription)
             case .success(let response):
-                strongSelf.sendEvent(eventType: MapBoxEventType.route_built)
+                strongSelf.sendEvent(eventType: MapBoxEventType.route_built, data: strongSelf.encodeRouteResponse(response: response))
                 guard let routes = response.routes else { return }
                 //TODO: if more than one route found, give user option to select one: DOES NOT WORK
                 if(routes.count > 1 && strongSelf.ALLOW_ROUTE_SELECTION)
@@ -258,7 +258,7 @@ public class NavigationFactory : NSObject, FlutterStreamHandler
         }
 
     }
-    
+
     func getLocationsFromWayPointDictionary(waypoints: NSDictionary) -> [Location]? {
         var locations = [Location]()
 
@@ -334,8 +334,18 @@ public class NavigationFactory : NSObject, FlutterStreamHandler
         }
          */
     }
-    
 
+    func encodeRouteResponse(response: RouteResponse) -> String {
+        let routes = response.routes
+
+        if routes != nil && !routes!.isEmpty {
+            let jsonEncoder = JSONEncoder()
+            let jsonData = try! jsonEncoder.encode(response.routes!)
+            return String(data: jsonData, encoding: String.Encoding.utf8) ?? "{}"
+        }
+
+        return "{}"
+    }
 
     //MARK: EventListener Delegates
     public func onListen(withArguments arguments: Any?, eventSink events: @escaping FlutterEventSink) -> FlutterError? {
@@ -395,7 +405,7 @@ extension NavigationFactory : NavigationViewControllerDelegate {
         }
         endNavigation(result: nil)
     }
-    
+
     public func navigationViewController(_ navigationViewController: NavigationViewController, shouldRerouteFrom location: CLLocation) -> Bool {
         return _shouldReRoute
     }
