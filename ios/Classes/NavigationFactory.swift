@@ -60,11 +60,11 @@ public class NavigationFactory : NSObject, FlutterStreamHandler
             }
             nextIndex += 1
         }
-        
+
         startNavigationWithWayPoints(wayPoints: _wayPoints, flutterResult: result, isUpdatingWaypoints: true)
     }
-    
-    
+
+
     func startNavigation(arguments: NSDictionary?, result: @escaping FlutterResult)
     {
         _wayPoints.removeAll()

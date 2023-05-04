@@ -21,10 +21,10 @@ public class FlutterMapboxNavigationView : NavigationFactory, FlutterPlatformVie
     var selectedRouteIndex = 0
     var routeOptions: NavigationRouteOptions?
     var navigationService: NavigationService!
-    
+
     var _mapInitialized = false;
     var locationManager = CLLocationManager()
-    
+
     init(messenger: FlutterBinaryMessenger, frame: CGRect, viewId: Int64, args: Any?)
     {
         self.frame = frame
