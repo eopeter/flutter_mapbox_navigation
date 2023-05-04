@@ -10,7 +10,6 @@ import android.os.Bundle
 import com.eopeter.flutter_mapbox_navigation.models.MapBoxEvents
 import com.eopeter.flutter_mapbox_navigation.models.MapBoxRouteProgressEvent
 import com.eopeter.flutter_mapbox_navigation.utilities.PluginUtilities
-import com.google.gson.Gson
 import com.mapbox.api.directions.v5.DirectionsCriteria
 import com.mapbox.api.directions.v5.models.DirectionsRoute
 import com.mapbox.api.directions.v5.models.RouteOptions
@@ -62,14 +61,15 @@ import io.flutter.plugin.common.EventChannel
 import io.flutter.plugin.common.MethodCall
 import io.flutter.plugin.common.MethodChannel
 import java.util.*
+import com.google.gson.Gson
 
 open class TurnByTurn(
-        ctx: Context,
-        act: Activity,
-        bind: NavigationActivityBinding,
-        accessToken: String
+    ctx: Context,
+    act: Activity,
+    bind: NavigationActivityBinding,
+    accessToken: String
 ) : MethodChannel.MethodCallHandler, EventChannel.StreamHandler,
-        Application.ActivityLifecycleCallbacks {
+    Application.ActivityLifecycleCallbacks {
 
     open fun initFlutterChannelHandlers() {
         methodChannel?.setMethodCallHandler(this)
@@ -95,37 +95,37 @@ open class TurnByTurn(
 
         // initialize maneuver api that feeds the data to the top banner maneuver view
         maneuverApi = MapboxManeuverApi(
-                MapboxDistanceFormatter(distanceFormatterOptions)
+            MapboxDistanceFormatter(distanceFormatterOptions)
         )
 
         // initialize bottom progress view
         tripProgressApi = MapboxTripProgressApi(
-                TripProgressUpdateFormatter.Builder(activity)
-                        .distanceRemainingFormatter(
-                                DistanceRemainingFormatter(distanceFormatterOptions)
-                        )
-                        .timeRemainingFormatter(
-                                TimeRemainingFormatter(activity)
-                        )
-                        .percentRouteTraveledFormatter(
-                                PercentDistanceTraveledFormatter()
-                        )
-                        .estimatedTimeToArrivalFormatter(
-                                EstimatedTimeToArrivalFormatter(activity, TimeFormat.NONE_SPECIFIED)
-                        )
-                        .build()
+            TripProgressUpdateFormatter.Builder(activity)
+                .distanceRemainingFormatter(
+                    DistanceRemainingFormatter(distanceFormatterOptions)
+                )
+                .timeRemainingFormatter(
+                    TimeRemainingFormatter(activity)
+                )
+                .percentRouteTraveledFormatter(
+                    PercentDistanceTraveledFormatter()
+                )
+                .estimatedTimeToArrivalFormatter(
+                    EstimatedTimeToArrivalFormatter(activity, TimeFormat.NONE_SPECIFIED)
+                )
+                .build()
         )
 
         // initialize voice instructions api and the voice instruction player
         speechApi = MapboxSpeechApi(
-                activity,
-                token,
-                Locale.US.language
+            activity,
+            token,
+            Locale.US.language
         )
         voiceInstructionsPlayer = MapboxVoiceInstructionsPlayer(
-                activity,
-                token,
-                Locale.US.language
+            activity,
+            token,
+            Locale.US.language
         )
 
         // initialize route line, the withRouteLineBelowLayerId is specified to place
@@ -133,8 +133,8 @@ open class TurnByTurn(
         // the value of this option will depend on the style that you are using
         // and under which layer the route line should be placed on the map layers stack
         val mapboxRouteLineOptions = MapboxRouteLineOptions.Builder(activity)
-                .withRouteLineBelowLayerId("road-label")
-                .build()
+            .withRouteLineBelowLayerId("road-label")
+            .build()
         routeLineApi = MapboxRouteLineApi(mapboxRouteLineOptions)
         routeLineView = MapboxRouteLineView(mapboxRouteLineOptions)
 
@@ -144,7 +144,7 @@ open class TurnByTurn(
 
         // load map style
         mapboxMap.loadStyleUri(
-                Style.MAPBOX_STREETS
+            Style.MAPBOX_STREETS
         ) {
 //            // add long click listener that search for a route to the clicked destination
 //            binding.navigationView.mapView.gestures.addOnMapLongClickListener { point ->
@@ -225,50 +225,50 @@ open class TurnByTurn(
         PluginUtilities.sendEvent(MapBoxEvents.ROUTE_BUILDING)
 
         mapboxNavigation.requestRoutes(
-                RouteOptions.builder()
-                        .applyDefaultNavigationOptions()
-                        .applyLanguageAndVoiceUnitOptions(context)
-                        .coordinatesList(wayPoints)
-                        .language(navigationLanguage)
-                        .alternatives(alternatives)
-                        .profile(navigationMode)
-                        .continueStraight(!allowsUTurnAtWayPoints)
-                        .voiceUnits(navigationVoiceUnits)
-                        .annotations(DirectionsCriteria.ANNOTATION_DISTANCE)
-                        .baseUrl("https://api.mapbox.com")
-                        .user(UUID.randomUUID().toString())
-                        .layersList(listOf(mapboxNavigation.getZLevel(), null))
-                        .build(), object : RouterCallback {
-            override fun onRoutesReady(
+            RouteOptions.builder()
+                .applyDefaultNavigationOptions()
+                .applyLanguageAndVoiceUnitOptions(context)
+                .coordinatesList(wayPoints)
+                .language(navigationLanguage)
+                .alternatives(alternatives)
+                .profile(navigationMode)
+                .continueStraight(!allowsUTurnAtWayPoints)
+                .voiceUnits(navigationVoiceUnits)
+                .annotations(DirectionsCriteria.ANNOTATION_DISTANCE)
+                .baseUrl("https://api.mapbox.com")
+                .user(UUID.randomUUID().toString())
+                .layersList(listOf(mapboxNavigation.getZLevel(), null))
+                .build(), object : RouterCallback {
+                override fun onRoutesReady(
                     routes: List<DirectionsRoute>,
                     routerOrigin: RouterOrigin
-            ) {
-                if (routes.isEmpty()) {
-                    PluginUtilities.sendEvent(MapBoxEvents.ROUTE_BUILD_NO_ROUTES_FOUND)
-                    return
+                ) {
+                    if (routes.isEmpty()) {
+                        PluginUtilities.sendEvent(MapBoxEvents.ROUTE_BUILD_NO_ROUTES_FOUND)
+                        return
+                    }
+                    setRoutes(routes)
+                    result.success(true)
                 }
-                setRoutes(routes)
-                result.success(true)
-            }
 
-            override fun onFailure(
+                override fun onFailure(
                     reasons: List<RouterFailure>,
                     routeOptions: RouteOptions
-            ) {
-                result.success(false)
-                var message = "an error occurred while building the route. Errors: "
-                for (reason in reasons) {
-                    message += reason.message
+                ) {
+                    result.success(false)
+                    var message = "an error occurred while building the route. Errors: "
+                    for (reason in reasons) {
+                        message += reason.message
+                    }
+                    PluginUtilities.sendEvent(MapBoxEvents.ROUTE_BUILD_FAILED, message)
+                    isBuildingRoute = false
                 }
-                PluginUtilities.sendEvent(MapBoxEvents.ROUTE_BUILD_FAILED, message)
-                isBuildingRoute = false
-            }
 
-            override fun onCanceled(routeOptions: RouteOptions, routerOrigin: RouterOrigin) {
-                result.success(false)
-                PluginUtilities.sendEvent(MapBoxEvents.ROUTE_BUILD_CANCELLED)
-            }
-        })
+                override fun onCanceled(routeOptions: RouteOptions, routerOrigin: RouterOrigin) {
+                    result.success(false)
+                    PluginUtilities.sendEvent(MapBoxEvents.ROUTE_BUILD_CANCELLED)
+                }
+            })
     }
 
     private fun setRoutes(routes: List<DirectionsRoute>) {
@@ -562,34 +562,34 @@ open class TurnByTurn(
     private val pixelDensity = Resources.getSystem().displayMetrics.density
     private val overviewPadding: EdgeInsets by lazy {
         EdgeInsets(
-                140.0 * pixelDensity,
-                40.0 * pixelDensity,
-                120.0 * pixelDensity,
-                40.0 * pixelDensity
+            140.0 * pixelDensity,
+            40.0 * pixelDensity,
+            120.0 * pixelDensity,
+            40.0 * pixelDensity
         )
     }
     private val landscapeOverviewPadding: EdgeInsets by lazy {
         EdgeInsets(
-                30.0 * pixelDensity,
-                380.0 * pixelDensity,
-                110.0 * pixelDensity,
-                20.0 * pixelDensity
+            30.0 * pixelDensity,
+            380.0 * pixelDensity,
+            110.0 * pixelDensity,
+            20.0 * pixelDensity
         )
     }
     private val followingPadding: EdgeInsets by lazy {
         EdgeInsets(
-                180.0 * pixelDensity,
-                40.0 * pixelDensity,
-                150.0 * pixelDensity,
-                40.0 * pixelDensity
+            180.0 * pixelDensity,
+            40.0 * pixelDensity,
+            150.0 * pixelDensity,
+            40.0 * pixelDensity
         )
     }
     private val landscapeFollowingPadding: EdgeInsets by lazy {
         EdgeInsets(
-                30.0 * pixelDensity,
-                380.0 * pixelDensity,
-                110.0 * pixelDensity,
-                40.0 * pixelDensity
+            30.0 * pixelDensity,
+            380.0 * pixelDensity,
+            110.0 * pixelDensity,
+            40.0 * pixelDensity
         )
     }
 
@@ -661,33 +661,33 @@ open class TurnByTurn(
      * or uses the fall back which is played back using the on-device Text-To-Speech engine.
      */
     private val speechCallback =
-            MapboxNavigationConsumer<Expected<SpeechError, SpeechValue>> { expected ->
-                expected.fold(
-                        { error ->
-                            // play the instruction via fallback text-to-speech engine
-                            voiceInstructionsPlayer.play(
-                                    error.fallback,
-                                    voiceInstructionsPlayerCallback
-                            )
-                        },
-                        { value ->
-                            // play the sound file from the external generator
-                            voiceInstructionsPlayer.play(
-                                    value.announcement,
-                                    voiceInstructionsPlayerCallback
-                            )
-                        }
-                )
-            }
+        MapboxNavigationConsumer<Expected<SpeechError, SpeechValue>> { expected ->
+            expected.fold(
+                { error ->
+                    // play the instruction via fallback text-to-speech engine
+                    voiceInstructionsPlayer.play(
+                        error.fallback,
+                        voiceInstructionsPlayerCallback
+                    )
+                },
+                { value ->
+                    // play the sound file from the external generator
+                    voiceInstructionsPlayer.play(
+                        value.announcement,
+                        voiceInstructionsPlayerCallback
+                    )
+                }
+            )
+        }
 
     /**
      * When a synthesized audio file was downloaded, this callback cleans up the disk after it was played.
      */
     private val voiceInstructionsPlayerCallback =
-            MapboxNavigationConsumer<SpeechAnnouncement> { value ->
-                // remove already consumed file to free-up space
-                speechApi.clean(value)
-            }
+        MapboxNavigationConsumer<SpeechAnnouncement> { value ->
+            // remove already consumed file to free-up space
+            speechApi.clean(value)
+        }
 
     /**
      * [NavigationLocationProvider] is a utility class that helps to provide location updates generated by the Navigation SDK
@@ -712,8 +712,8 @@ open class TurnByTurn(
             val enhancedLocation = locationMatcherResult.enhancedLocation
             // update location puck's position on the map
             navigationLocationProvider.changePosition(
-                    location = enhancedLocation,
-                    keyPoints = locationMatcherResult.keyPoints,
+                location = enhancedLocation,
+                keyPoints = locationMatcherResult.keyPoints,
             )
 
             // update camera position to account for new location
@@ -725,9 +725,9 @@ open class TurnByTurn(
             if (!firstLocationUpdateReceived) {
                 firstLocationUpdateReceived = true
                 navigationCamera.requestNavigationCameraToOverview(
-                        stateTransitionOptions = NavigationCameraTransitionOptions.Builder()
-                                .maxDuration(0) // instant transition
-                                .build()
+                    stateTransitionOptions = NavigationCameraTransitionOptions.Builder()
+                        .maxDuration(0) // instant transition
+                        .build()
                 )
             }
         }
@@ -778,7 +778,7 @@ open class TurnByTurn(
             val routeLines = routeUpdateResult.routes.map { RouteLine(it, null) }
 
             routeLineApi.setRoutes(
-                    routeLines
+                routeLines
             ) { value ->
                 mapboxMap.getStyle()?.apply {
                     routeLineView.renderRouteDrawData(this, value)
@@ -798,8 +798,8 @@ open class TurnByTurn(
             if (style != null) {
                 routeLineApi.clearRouteLine { value ->
                     routeLineView.renderClearRouteLineValue(
-                            style,
-                            value
+                        style,
+                        value
                     )
                 }
                 routeArrowView.render(style, routeArrowApi.clearArrows())
