@@ -10,7 +10,7 @@ class WayPoint {
   bool? isSilent;
 
   WayPoint(
-      {required this.name, required this.latitude, required this.longitude, required this.isSilent});
+      {required this.name, required this.latitude, required this.longitude, this.isSilent});
 
   @override
   String toString() {
