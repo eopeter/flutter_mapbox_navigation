@@ -1,3 +1,8 @@
+## 0.1.1
+* Android: move LeakCanary as DebugImplementation [#221](https://github.com/eopeter/flutter_mapbox_navigation/pull/221)
+* Emit Route Data Upon Route Build [#218](https://github.com/eopeter/flutter_mapbox_navigation/pull/218)
+* Implement Silent Waypoints [#214](https://github.com/eopeter/flutter_mapbox_navigation/pull/214)
+
 ## 0.1.0
 * breaking changes
 * Android Gradle Upgrade

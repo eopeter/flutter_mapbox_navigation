@@ -18,7 +18,9 @@ class RouteEvent {
             (e) => e.toString().split(".").last == json['eventType']);
       } on StateError {
         //When the list is empty or eventType not found (Bad State: No Element)
-      } catch (e) {}
+      } catch (e) {
+        // TODO handle the error
+      }
     }
     var dataJson = json['data'];
     if (eventType == MapBoxEvent.progress_change) {
