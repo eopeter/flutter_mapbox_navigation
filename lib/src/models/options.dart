@@ -101,7 +101,7 @@ class MapBoxOptions {
       this.animateBuildRoute});
 
   Map<String, dynamic> toMap() {
-    final Map<String, dynamic> optionsMap = new Map<String, dynamic>();
+    final Map<String, dynamic> optionsMap = <String, dynamic>{};
     void addIfNonNull(String fieldName, dynamic value) {
       if (value != null) {
         optionsMap[fieldName] = value;
