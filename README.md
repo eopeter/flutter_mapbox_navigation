@@ -33,14 +33,11 @@ Add Turn By Turn Navigation to Your Flutter Application Using MapBox. Never leav
 
 ## Android Configuration
 
-1. Mapbox APIs and vector tiles require a Mapbox account and API access token. Add your token in strings.xml file of your android apps res/values/ path. The string key should be "mapbox_access_token". You can obtain an access token from the [Mapbox account page](https://account.mapbox.com/access-tokens/).
+1. Mapbox APIs and vector tiles require a Mapbox account and API access token. Add a new resource file called `mapbox_access_token.xml` with it's full path being `<YOUR_FLUTTER_APP_ROOT>/android/app/src/main/res/values/mapbox_access_token.xml`. Then add a string resource with name "mapbox_access_token" and your token as it's value as shown below. You can obtain an access token from the [Mapbox account page](https://account.mapbox.com/access-tokens/).
 ```xml
 <?xml version="1.0" encoding="utf-8"?>
-<resources>
-    <string name="app_name">Navigation map</string>
-    <string name="mapbox_access_token" translatable="false">ADD_MAPBOX_ACCESS_TOKEN_HERE</string>
-    <string name="user_location_permission_explanation">This app needs location permissions to show its functionality.</string>
-    <string name="user_location_permission_not_granted">You didn\'t grant location permissions.</string>
+<resources xmlns:tools="http://schemas.android.com/tools">
+    <string name="mapbox_access_token" translatable="false" tools:ignore="UnusedResources">ADD_MAPBOX_ACCESS_TOKEN_HERE</string>
 </resources>
 ```
 
