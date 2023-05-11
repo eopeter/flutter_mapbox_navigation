@@ -10,6 +10,8 @@ import com.eopeter.flutter_mapbox_navigation.FlutterMapboxNavigationPlugin
 import com.eopeter.flutter_mapbox_navigation.models.MapBoxEvents
 import com.eopeter.flutter_mapbox_navigation.models.MapBoxRouteProgressEvent
 import com.google.gson.Gson
+import com.mapbox.api.directions.v5.models.DirectionsRoute
+import com.mapbox.navigation.base.route.NavigationRoute
 import io.flutter.plugin.common.MethodCall
 import java.io.ByteArrayInputStream
 import java.io.InputStream
@@ -26,10 +28,10 @@ class PluginUtilities {
             val stringRes = context.resources.getIdentifier(resName, "string", context.packageName)
             if (stringRes == 0) {
                 throw IllegalArgumentException(
-                    String.format(
-                        "The 'R.string.%s' value it's not defined in your project's resources file.",
-                        resName
-                    )
+                        String.format(
+                                "The 'R.string.%s' value it's not defined in your project's resources file.",
+                                resName
+                        )
                 )
             }
             return context.getString(stringRes)
@@ -46,13 +48,13 @@ class PluginUtilities {
 
         fun sendEvent(event: MapBoxEvents, data: String = "") {
             val jsonString =
-                if (MapBoxEvents.MILESTONE_EVENT == event || event == MapBoxEvents.USER_OFF_ROUTE) "{" +
-                        "  \"eventType\": \"${event.value}\"," +
-                        "  \"data\": $data" +
-                        "}" else "{" +
-                        "  \"eventType\": \"${event.value}\"," +
-                        "  \"data\": \"$data\"" +
-                        "}";
+                    if (MapBoxEvents.MILESTONE_EVENT == event || event == MapBoxEvents.USER_OFF_ROUTE || event == MapBoxEvents.ROUTE_BUILT) "{" +
+                            "  \"eventType\": \"${event.value}\"," +
+                            "  \"data\": $data" +
+                            "}" else "{" +
+                            "  \"eventType\": \"${event.value}\"," +
+                            "  \"data\": \"$data\"" +
+                            "}";
             FlutterMapboxNavigationPlugin.eventSink?.success(jsonString)
         }
 
@@ -119,7 +121,7 @@ class PluginUtilities {
 
         fun isNetworkAvailable(context: Context): Boolean {
             val connectivityManager =
-                context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+                    context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
                 val nw = connectivityManager.activeNetwork ?: return false
                 val actNw = connectivityManager.getNetworkCapabilities(nw) ?: return false
@@ -139,9 +141,9 @@ class PluginUtilities {
         }
 
         fun <T : Serializable?> getSerializable(
-            activity: Activity,
-            name: String,
-            clazz: Class<T>
+                activity: Activity,
+                name: String,
+                clazz: Class<T>
         ): T {
             return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU)
                 activity.intent.getSerializableExtra(name, clazz)!!
