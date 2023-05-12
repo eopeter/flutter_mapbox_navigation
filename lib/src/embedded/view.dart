@@ -51,7 +51,7 @@ class MapBoxNavigationView extends StatelessWidget {
           );
         },
         onCreatePlatformView: (params) {
-          return PlatformViewsService.initSurfaceAndroidView(
+          return PlatformViewsService.initExpensiveAndroidView(
             id: params.id,
             viewType: viewType,
             layoutDirection: TextDirection.ltr,
@@ -62,6 +62,7 @@ class MapBoxNavigationView extends StatelessWidget {
             },
           )
             ..addOnPlatformViewCreatedListener(params.onPlatformViewCreated)
+            ..addOnPlatformViewCreatedListener(_onPlatformViewCreated)
             ..create();
         },
       );
