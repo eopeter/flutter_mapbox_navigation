@@ -65,6 +65,17 @@ android.enableJetifier=true
 MAPBOX_DOWNLOADS_TOKEN=sk.epe9nE9peAcmwNzKVNqSbFfp2794YtnNepe9nE9peAcmwNzKVNqSbFfp2794YtnN.-HrbMMQmLdHwYb8r
 ```
 
+4. Update `MainActivity.kt` to extends `FlutterFragmentActivity` vs `FlutterActivity`. Otherwise you'll get `Caused by: java.lang.IllegalStateException: Please ensure that the hosting Context is a valid ViewModelStoreOwner`.
+```kotlin
+//import io.flutter.embedding.android.FlutterActivity
+import io.flutter.embedding.android.FlutterFragmentActivity
+
+class MainActivity: FlutterFragmentActivity() {
+}
+```
+
+5. Add `implementation platform("org.jetbrains.kotlin:kotlin-bom:1.8.0")` to `android/app/build.gradle`
+
 ## Usage
 
 #### Set Default Route Options (Optional)
