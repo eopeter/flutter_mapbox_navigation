@@ -159,7 +159,7 @@ class NavigationActivity : AppCompatActivity() {
                             routes: List<NavigationRoute>,
                             routerOrigin: RouterOrigin
                     ) {
-                        sendEvent(MapBoxEvents.ROUTE_BUILT, Gson().toJson(routes.map { it.directionsRoute }))
+                        sendEvent(MapBoxEvents.ROUTE_BUILT, Gson().toJson(routes.map { it.directionsRoute.toJson() }))
                         if (routes.isEmpty()) {
                             sendEvent(MapBoxEvents.ROUTE_BUILD_NO_ROUTES_FOUND)
                             return
@@ -213,7 +213,7 @@ class NavigationActivity : AppCompatActivity() {
                             routes: List<NavigationRoute>,
                             routerOrigin: RouterOrigin
                     ) {
-                        sendEvent(MapBoxEvents.ROUTE_BUILT, Gson().toJson(routes))
+                        sendEvent(MapBoxEvents.ROUTE_BUILT, Gson().toJson(routes.map{it.directionsRoute.toJson()}))
                         binding.navigationView.api.routeReplayEnabled(true)
                         binding.navigationView.api.startActiveGuidance(routes)
                     }

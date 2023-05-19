@@ -1,6 +1,7 @@
 package com.eopeter.flutter_mapbox_navigation.models
 
 import com.mapbox.navigation.base.trip.model.RouteProgress
+import com.google.gson.*
 
 class MapBoxRouteProgressEvent(progress: RouteProgress) {
 
@@ -33,4 +34,48 @@ class MapBoxRouteProgressEvent(progress: RouteProgress) {
         currentLegDistanceRemaining = progress.currentLegProgress?.distanceRemaining
     }
 
+    fun toJson(): String {
+        return Gson().toJson(toJsonObject())
+    }
+
+    fun toJsonObject(): JsonObject {
+        val json = JsonObject();
+        addProperty(json, "distance", distance);
+        addProperty(json, "duration", duration);
+        addProperty(json, "distanceTraveled", distanceTraveled);
+        addProperty(json, "legIndex", legIndex);
+        addProperty(json, "currentLegDistanceRemaining", currentLegDistanceRemaining);
+        addProperty(json, "currentLegDistanceTraveled", currentLegDistanceTraveled);
+        addProperty(json,"currentStepInstruction", currentStepInstruction);
+
+        if (currentLeg != null) {
+            json.add("currentLeg", currentLeg!!.toJsonObject())
+        }
+
+        return json
+    }
+
+    private fun addProperty(json: JsonObject, prop: String, value: Double?) {
+        if (value != null) {
+            json.addProperty(prop, value);
+        }
+    }
+
+    private fun addProperty(json: JsonObject, prop: String, value: Int?) {
+        if (value != null) {
+            json.addProperty(prop, value);
+        }
+    }
+
+    private fun addProperty(json: JsonObject, prop: String, value: String?) {
+        if (value?.isNotEmpty() == true) {
+            json.addProperty(prop, value);
+        }
+    }
+
+    private fun addProperty(json: JsonObject, prop: String, value: Float?) {
+        if (value != null) {
+            json.addProperty(prop, value);
+        }
+    }
 }
