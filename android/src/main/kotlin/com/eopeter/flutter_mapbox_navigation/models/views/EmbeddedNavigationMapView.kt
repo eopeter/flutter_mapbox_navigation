@@ -10,16 +10,16 @@ import io.flutter.plugin.common.BinaryMessenger
 import io.flutter.plugin.common.EventChannel
 import io.flutter.plugin.common.MethodChannel
 import io.flutter.plugin.platform.PlatformView
-
+import eopeter.flutter_mapbox_navigation.databinding.ComponentsNavigationActivityBinding
 
 class EmbeddedNavigationMapView(
-    context: Context,
-    activity: Activity,
-    binding: NavigationActivityBinding,
-    binaryMessenger: BinaryMessenger,
-    vId: Int,
-    args: Any?,
-    accessToken: String
+        context: Context,
+        activity: Activity,
+        binding: NavigationActivityBinding,
+        binaryMessenger: BinaryMessenger,
+        vId: Int,
+        args: Any?,
+        accessToken: String
 ) : PlatformView, TurnByTurn(context, activity, binding, accessToken) {
     private val viewId: Int = vId
     private val messenger: BinaryMessenger = binaryMessenger
@@ -32,6 +32,9 @@ class EmbeddedNavigationMapView(
 
     override fun onFlutterViewAttached(flutterView: View) {
         super.onFlutterViewAttached(flutterView)
+    }
+
+    open fun initialize() {
         initFlutterChannelHandlers()
         initNavigation()
     }
@@ -43,7 +46,5 @@ class EmbeddedNavigationMapView(
 
     override fun dispose() {
         unregisterObservers();
-        onDestroy();
     }
-
 }
