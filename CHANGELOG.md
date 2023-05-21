@@ -1,3 +1,7 @@
+## 0.1.2
+* Android embedded view now working [#225](https://github.com/eopeter/flutter_mapbox_navigation/pull/225)
+* Fixes Progress Changed and Route Build Event Data serialization on Android [#227](https://github.com/eopeter/flutter_mapbox_navigation/pull/227)
+
 ## 0.1.1
 * Android: move LeakCanary as DebugImplementation [#221](https://github.com/eopeter/flutter_mapbox_navigation/pull/221)
 * Emit Route Data Upon Route Build [#218](https://github.com/eopeter/flutter_mapbox_navigation/pull/218)
