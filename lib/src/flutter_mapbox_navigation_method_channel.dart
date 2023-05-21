@@ -57,7 +57,9 @@ class MethodChannelFlutterMapboxNavigation extends FlutterMapboxNavigationPlatfo
 
     _routeEventSubscription = routeEventsListener!.listen(_onProgressData);
     final result = await methodChannel.invokeMethod('startNavigation', args);
-    return result;
+    if (result is bool) return result;
+    print(result);
+    return false;
   }
 
   @override
