@@ -24,10 +24,11 @@ migrate_working_dir/
 # Flutter/Dart/Pub related
 # Libraries should not include pubspec.lock, per https://dart.dev/guides/libraries/private-files#pubspeclock.
 pubspec.lock
+
 **/doc/api/
 .dart_tool/
 .packages
 build/
 
-/example/android/app/src/main/res/values/mapbox_access_token.xml
+example/android/app/src/main/res/values/mapbox_access_token.xml
 example/android/app/src/main/res/values/strings.xml
