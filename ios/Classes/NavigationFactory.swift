@@ -36,6 +36,8 @@ public class NavigationFactory : NSObject, FlutterStreamHandler
     var _animateBuildRoute = true
     var _longPressDestinationEnabled = true
     var _shouldReRoute = true
+    var _showReportFeedbackButton = true
+    var _showEndOfRouteFeedback = true
     var navigationDirections: Directions?
 
     func addWayPoints(arguments: NSDictionary?, result: @escaping FlutterResult)
@@ -94,7 +96,9 @@ public class NavigationFactory : NSObject, FlutterStreamHandler
         _isOptimized = arguments?["isOptimized"] as? Bool ?? _isOptimized
         _allowsUTurnAtWayPoints = arguments?["allowsUTurnAtWayPoints"] as? Bool
         _navigationMode = arguments?["mode"] as? String ?? "drivingWithTraffic"
-
+        _showReportFeedbackButton = arguments?["showReportFeedbackButton"] as? Bool ?? _showReportFeedbackButton
+        _showEndOfRouteFeedback = arguments?["showEndOfRouteFeedback"] as? Bool ?? _showEndOfRouteFeedback
+        
         if(_wayPoints.count > 3 && arguments?["mode"] == nil)
         {
             _navigationMode = "driving"
@@ -202,6 +206,8 @@ public class NavigationFactory : NSObject, FlutterStreamHandler
             self._navigationViewController!.modalPresentationStyle = .fullScreen
             self._navigationViewController!.delegate = self
             self._navigationViewController!.navigationMapView!.localizeLabels()
+            self._navigationViewController!.showsReportFeedback = _showReportFeedbackButton
+            self._navigationViewController!.showsEndOfRouteFeedback = _showEndOfRouteFeedback
         }
         let flutterViewController = UIApplication.shared.delegate?.window??.rootViewController as! FlutterViewController
         flutterViewController.present(self._navigationViewController!, animated: true, completion: nil)
