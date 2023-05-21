@@ -77,6 +77,12 @@ class MapBoxOptions {
   /// No destination is required when set to true.
   bool? enableFreeDriveMode;
 
+  /// In iOS this will show/hide the feedback button. Default to True.
+  bool? showReportFeedbackButton;
+
+  /// In iOS this will show/hide the end of route page when navigation is done. Default to True.
+  bool? showEndOfRouteFeedback;
+
   MapBoxOptions(
       {this.initialLatitude,
       this.initialLongitude,
@@ -98,7 +104,9 @@ class MapBoxOptions {
       this.mapStyleUrlNight,
       this.enableFreeDriveMode,
       this.padding,
-      this.animateBuildRoute});
+      this.animateBuildRoute,
+      this.showReportFeedbackButton = true,
+      this.showEndOfRouteFeedback = true});
 
   Map<String, dynamic> toMap() {
     final Map<String, dynamic> optionsMap = <String, dynamic>{};
@@ -153,6 +161,9 @@ class MapBoxOptions {
       padding?.bottom,
       padding?.right,
     ]);
+
+    addIfNonNull('showReportFeedbackButton', showReportFeedbackButton);
+    addIfNonNull('showEndOfRouteFeedback', showEndOfRouteFeedback);
 
     return optionsMap;
   }

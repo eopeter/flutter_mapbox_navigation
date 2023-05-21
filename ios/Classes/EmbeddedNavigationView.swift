@@ -204,6 +204,8 @@ public class FlutterMapboxNavigationView : NavigationFactory, FlutterPlatformVie
         _isOptimized = arguments?["isOptimized"] as? Bool ?? _isOptimized
         _allowsUTurnAtWayPoints = arguments?["allowsUTurnAtWayPoints"] as? Bool
         _navigationMode = arguments?["mode"] as? String ?? "drivingWithTraffic"
+        _showReportFeedbackButton = arguments?["showReportFeedbackButton"] as? Bool ?? _showReportFeedbackButton
+        _showEndOfRouteFeedback = arguments?["showEndOfRouteFeedback"] as? Bool ?? _showEndOfRouteFeedback
         if(_wayPoints.count > 3 && arguments?["mode"] == nil)
         {
             _navigationMode = "driving"
@@ -283,6 +285,9 @@ public class FlutterMapboxNavigationView : NavigationFactory, FlutterPlatformVie
 
         _navigationViewController = NavigationViewController(for: response, routeIndex: selectedRouteIndex, routeOptions: routeOptions!, navigationOptions: navigationOptions)
         _navigationViewController!.delegate = self
+        
+        _navigationViewController!.showsReportFeedback = _showReportFeedbackButton
+        _navigationViewController!.showsEndOfRouteFeedback = _showEndOfRouteFeedback
 
         let flutterViewController = UIApplication.shared.delegate?.window?!.rootViewController as! FlutterViewController
         flutterViewController.addChild(_navigationViewController!)
