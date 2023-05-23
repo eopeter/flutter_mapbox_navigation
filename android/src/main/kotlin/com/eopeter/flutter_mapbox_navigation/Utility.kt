@@ -4,8 +4,11 @@ import android.annotation.SuppressLint
 import android.app.Activity
 import android.app.Application
 import android.content.Context
+import android.content.res.Resources
 import android.location.Location
 import android.os.Bundle
+import android.transition.Scene
+import android.util.DisplayMetrics
 import androidx.lifecycle.LifecycleOwner
 import com.eopeter.flutter_mapbox_navigation.models.MapBoxEvents
 import com.eopeter.flutter_mapbox_navigation.models.MapBoxRouteProgressEvent
@@ -34,6 +37,17 @@ import io.flutter.plugin.common.MethodCall
 import io.flutter.plugin.common.MethodChannel
 import java.util.*
 import android.util.Log
+import android.view.Gravity
+import android.view.ViewGroup
+import com.mapbox.navigation.core.MapboxNavigation
+import com.mapbox.navigation.core.lifecycle.MapboxNavigationObserver
+import com.mapbox.navigation.ui.base.lifecycle.UIBinder
+import com.mapbox.navigation.ui.base.lifecycle.UIComponent
+import com.mapbox.navigation.ui.base.view.MapboxExtendableButton
+import com.mapbox.navigation.dropin.R
+import androidx.core.view.setPadding
+import com.eopeter.flutter_mapbox_navigation.utilities.CustomInfoPanelEndNavButtonBinder
+import com.mapbox.navigation.dropin.internal.extensions.updateMargins
 
 open class TurnByTurn(ctx: Context, act: Activity, bind: NavigationActivityBinding, accessToken: String):  MethodChannel.MethodCallHandler, EventChannel.StreamHandler,
         Application.ActivityLifecycleCallbacks {
@@ -126,6 +140,9 @@ open class TurnByTurn(ctx: Context, act: Activity, bind: NavigationActivityBindi
                         PluginUtilities.sendEvent(MapBoxEvents.ROUTE_BUILT, Gson().toJson(routes.map { it.directionsRoute.toJson() }))
                         binding.navigationView.api.routeReplayEnabled(simulateRoute)
                         binding.navigationView.api.startRoutePreview(routes)
+                        binding.navigationView.customizeViewBinders {
+                            infoPanelEndNavigationButtonBinder = CustomInfoPanelEndNavButtonBinder(MapboxNavigationApp.current()!!)
+                        }
                     }
 
                     override fun onFailure(
