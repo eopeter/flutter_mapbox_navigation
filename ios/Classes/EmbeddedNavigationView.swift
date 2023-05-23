@@ -179,8 +179,9 @@ public class FlutterMapboxNavigationView : NavigationFactory, FlutterPlatformVie
             guard let oName = point["Name"] as? String else {return}
             guard let oLatitude = point["Latitude"] as? Double else {return}
             guard let oLongitude = point["Longitude"] as? Double else {return}
+            let oIsSilent = point["IsSilent"] as? Bool ?? false
             let order = point["Order"] as? Int
-            let location = Location(name: oName, latitude: oLatitude, longitude: oLongitude, order: order)
+            let location = Location(name: oName, latitude: oLatitude, longitude: oLongitude, order: order,isSilent: oIsSilent)
             locations.append(location)
         }
 
@@ -195,6 +196,7 @@ public class FlutterMapboxNavigationView : NavigationFactory, FlutterPlatformVie
         {
             let location = Waypoint(coordinate: CLLocationCoordinate2D(latitude: loc.latitude!, longitude: loc.longitude!),
                                     coordinateAccuracy: -1, name: loc.name)
+            location.separatesLegs = !loc.isSilent
             _wayPoints.append(location)
         }
 
@@ -420,7 +422,7 @@ extension FlutterMapboxNavigationView : UIGestureRecognizerDelegate {
         let destinationWaypoint = Waypoint(coordinate: destination)
 
         let routeOptions = NavigationRouteOptions(waypoints: [userWaypoint, destinationWaypoint])
-
+        
         Directions.shared.calculate(routeOptions) { [weak self] (session, result) in
 
             if let strongSelf = self {
