@@ -28,6 +28,9 @@ class MockFlutterMapboxNavigationPlatform
   Future<double?> getDurationRemaining()  => Future.value(50);
 
   @override
+  Future<bool?> startFreeDrive(MapBoxOptions options) => Future.value(true);
+
+  @override
   Future<bool?> startNavigation(List<WayPoint> wayPoints, MapBoxOptions options) => Future.value(null);
 
   @override

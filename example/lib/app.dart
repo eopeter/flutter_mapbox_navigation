@@ -160,7 +160,20 @@ class _SampleNavigationAppState extends State<SampleNavigationApp> {
                             var stop = WayPoint(name: "Gas Station", latitude: 38.911176544398, longitude: -77.04014366543564, isSilent: false);
                             MapBoxNavigation.instance.addWayPoints(wayPoints: [stop]);
                           },
-                        )
+                        ),
+                        const SizedBox(
+                          width: 10,
+                        ),
+                        ElevatedButton(
+                          child: const Text("Free Drive"),
+                          onPressed: () async {
+                            var wayPoints = <WayPoint>[];
+                            wayPoints.add(_home);
+                            wayPoints.add(_store);
+
+                            await MapBoxNavigation.instance.startFreeDrive();
+                          },
+                        ),
                       ],
                     ),
                     Container(

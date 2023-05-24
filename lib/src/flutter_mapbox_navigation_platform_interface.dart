@@ -40,6 +40,14 @@ abstract class FlutterMapboxNavigationPlatform extends PlatformInterface {
     throw UnimplementedError('getDurationRemaining() has not been implemented.');
   }
 
+  /// Free-drive mode is a unique Mapbox Navigation SDK feature that allows drivers to navigate without a set destination. This mode is sometimes referred to as passive navigation.
+  /// [options] options used to generate the route and used while navigating
+  /// Begins to generate Route Progress
+  ///
+  Future<bool?> startFreeDrive(MapBoxOptions options) async {
+    throw UnimplementedError('startFreeDrive() has not been implemented.');
+  }
+
   ///Show the Navigation View and Begins Direction Routing
   ///
   /// [wayPoints] must not be null and have at least 2 items. A collection of [WayPoint](longitude, latitude and name). Must be at least 2 or at most 25. Cannot use drivingWithTraffic mode if more than 3-waypoints.

@@ -62,6 +62,7 @@ public class FlutterMapboxNavigationPlugin : FlutterPlugin, MethodCallHandler,
         var allowsUTurnsAtWayPoints: Boolean = false
         var navigationMode = DirectionsCriteria.PROFILE_DRIVING_TRAFFIC
         var simulateRoute = false
+        var enableFreeDriveMode = false
         var mapStyleUrlDay: String? = null
         var mapStyleUrlNight: String? = null
         var navigationLanguage = "en"
@@ -88,7 +89,12 @@ public class FlutterMapboxNavigationPlugin : FlutterPlugin, MethodCallHandler,
             "getDurationRemaining" -> {
                 result.success(durationRemaining);
             }
+            "startFreeDrive" -> {
+                enableFreeDriveMode = true
+                checkPermissionAndBeginNavigation(call)
+            }
             "startNavigation" -> {
+                enableFreeDriveMode = false
                 checkPermissionAndBeginNavigation(call)
             }
             "addWayPoints" -> {
@@ -158,6 +164,11 @@ public class FlutterMapboxNavigationPlugin : FlutterPlugin, MethodCallHandler,
 
         wayPoints.clear()
 
+        if (enableFreeDriveMode) {
+            checkPermissionAndBeginNavigation(wayPoints)
+            return
+        }
+
         val points = arguments?.get("wayPoints") as HashMap<Int, Any>
         for (item in points) {
             val point = item.value as HashMap<*, *>
@@ -167,7 +178,6 @@ public class FlutterMapboxNavigationPlugin : FlutterPlugin, MethodCallHandler,
             val isSilent = point["IsSilent"] as Boolean
             wayPoints.add(Waypoint(name, longitude, latitude, isSilent))
         }
-
         checkPermissionAndBeginNavigation(wayPoints)
 
     }

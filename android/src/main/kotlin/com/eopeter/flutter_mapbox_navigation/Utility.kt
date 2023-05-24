@@ -84,7 +84,12 @@ open class TurnByTurn(ctx: Context, act: Activity, bind: NavigationActivityBindi
             "clearRoute" -> {
                 clearRoute(methodCall, result)
             }
+            "startFreeDrive" -> {
+                FlutterMapboxNavigationPlugin.enableFreeDriveMode = true
+                startFreeDrive()
+            }
             "startNavigation" -> {
+                FlutterMapboxNavigationPlugin.enableFreeDriveMode = false
                 startNavigation(methodCall, result)
             }
             "finishNavigation" -> {
@@ -163,6 +168,9 @@ open class TurnByTurn(ctx: Context, act: Activity, bind: NavigationActivityBindi
         currentRoutes = null;
     }
 
+    private fun startFreeDrive() {
+        binding.navigationView.api.startFreeDrive()
+    }
     private fun startNavigation(methodCall: MethodCall, result: MethodChannel.Result) {
 
         val arguments = methodCall.arguments as? Map<*, *>
