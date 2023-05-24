@@ -384,7 +384,7 @@ extension NavigationFactory : NavigationViewControllerDelegate {
 
             _eventSink!(progressEventJson)
 
-            if(progress.isFinalLeg && progress.currentLegProgress.userHasArrivedAtWaypoint)
+            if(progress.isFinalLeg && progress.currentLegProgress.userHasArrivedAtWaypoint && !_showEndOfRouteFeedback)
             {
                 _eventSink = nil
             }
@@ -414,5 +414,22 @@ extension NavigationFactory : NavigationViewControllerDelegate {
 
     public func navigationViewController(_ navigationViewController: NavigationViewController, shouldRerouteFrom location: CLLocation) -> Bool {
         return _shouldReRoute
+    }
+    
+    public func navigationViewController(_ navigationViewController: NavigationViewController, didSubmitArrivalFeedback feedback: EndOfRouteFeedback) {
+        
+        if(_eventSink != nil)
+        {
+            let jsonEncoder = JSONEncoder()
+
+            let localFeedback = Feedback(rating: feedback.rating, comment: feedback.comment)
+            let feedbackJsonData = try! jsonEncoder.encode(localFeedback)
+            let feedbackJson = String(data: feedbackJsonData, encoding: String.Encoding.ascii)
+
+            sendEvent(eventType: MapBoxEventType.navigation_finished, data: feedbackJson ?? "")
+            
+            _eventSink = nil
+
+        }
     }
 }

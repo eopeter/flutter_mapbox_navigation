@@ -9,6 +9,7 @@ import com.eopeter.flutter_mapbox_navigation.models.MapBoxEvents
 import com.eopeter.flutter_mapbox_navigation.models.MapBoxRouteProgressEvent
 import com.eopeter.flutter_mapbox_navigation.models.Waypoint
 import com.eopeter.flutter_mapbox_navigation.models.WaypointSet
+import com.eopeter.flutter_mapbox_navigation.utilities.CustomInfoPanelEndNavButtonBinder
 import com.eopeter.flutter_mapbox_navigation.utilities.PluginUtilities
 import com.eopeter.flutter_mapbox_navigation.utilities.PluginUtilities.Companion.sendEvent
 import com.mapbox.api.directions.v5.models.DirectionsRoute
@@ -26,14 +27,12 @@ import com.mapbox.navigation.base.trip.model.RouteLegProgress
 import com.mapbox.navigation.base.trip.model.RouteProgress
 import com.mapbox.navigation.core.arrival.ArrivalObserver
 import com.mapbox.navigation.core.lifecycle.MapboxNavigationApp
-import com.mapbox.navigation.core.trip.session.LocationMatcherResult
-import com.mapbox.navigation.core.trip.session.LocationObserver
-import com.mapbox.navigation.core.trip.session.RouteProgressObserver
 import com.mapbox.navigation.dropin.map.MapViewObserver
 import com.mapbox.navigation.utils.internal.ifNonNull
 import eopeter.flutter_mapbox_navigation.R
 import eopeter.flutter_mapbox_navigation.databinding.NavigationActivityBinding
 import com.google.gson.Gson
+import com.mapbox.navigation.core.trip.session.*
 import com.mapbox.navigation.dropin.navigationview.NavigationViewListener
 
 class NavigationActivity : AppCompatActivity() {
@@ -96,6 +95,9 @@ class NavigationActivity : AppCompatActivity() {
             binding.navigationView.customizeViewOptions {
                 enableMapLongClickIntercept = false
             }
+        }
+        binding.navigationView.customizeViewBinders {
+            infoPanelEndNavigationButtonBinder = CustomInfoPanelEndNavButtonBinder(MapboxNavigationApp.current()!!)
         }
 
         MapboxNavigationApp.current()?.registerLocationObserver(locationObserver)
