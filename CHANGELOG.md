@@ -1,3 +1,6 @@
+## 0.1.3
+* Android Send Cancel Event [236](https://github.com/eopeter/flutter_mapbox_navigation/pull/236)
+
 ## 0.1.2
 * Android embedded view now working [#225](https://github.com/eopeter/flutter_mapbox_navigation/pull/225)
 * Fixes Progress Changed and Route Build Event Data serialization on Android [#227](https://github.com/eopeter/flutter_mapbox_navigation/pull/227)

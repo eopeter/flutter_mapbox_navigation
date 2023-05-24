@@ -44,13 +44,41 @@ class NavigationActivity : AppCompatActivity() {
     private var canResetRoute: Boolean = false
     private var accessToken: String? = null
     private var lastLocation: Location? = null
+    private var isNavigationInProgress = false;
+    private var isFreeDriveMode = false;
+
+    private val navigationStateListener = object : NavigationViewListener() {
+        override fun onFreeDrive() {
+            // TODO: Navigation attempts to enter free drive mode when the cancel button is pressed.
+            // HACK: attempts to use to the emit the cancel event until we find a proper way to listen to the cancel button from DropIn UI
+            if (!isFreeDriveMode) {
+                tryCancelNavigation()
+            }
+        }
+
+        override fun onDestinationPreview() {
+
+        }
+
+        override fun onRoutePreview() {
+
+        }
+
+        override fun onActiveNavigation() {
+            isNavigationInProgress = true
+        }
+
+        override fun onArrival() {
+
+        }
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setTheme(R.style.Theme_AppCompat_NoActionBar)
         binding = NavigationActivityBinding.inflate(layoutInflater)
         setContentView(binding.root)
-
+        binding.navigationView.addListener(navigationStateListener)
         accessToken =
                 PluginUtilities.getResourceFromContext(this.applicationContext, "mapbox_access_token")
 
@@ -123,6 +151,7 @@ class NavigationActivity : AppCompatActivity() {
         if (FlutterMapboxNavigationPlugin.allowsClickToSetDestination) {
             binding.navigationView.unregisterMapObserver(onMapLongClick)
         }
+        binding.navigationView.removeListener(navigationStateListener)
         MapboxNavigationApp.current()?.unregisterLocationObserver(locationObserver)
         MapboxNavigationApp.current()?.unregisterRouteProgressObserver(routeProgressObserver)
         MapboxNavigationApp.current()?.unregisterArrivalObserver(arrivalObserver)
@@ -134,6 +163,13 @@ class NavigationActivity : AppCompatActivity() {
 
     override fun onStop() {
         super.onStop()
+    }
+
+    fun tryCancelNavigation() {
+        if (isNavigationInProgress) {
+            isNavigationInProgress = false
+            sendEvent(MapBoxEvents.NAVIGATION_CANCELLED)
+        }
     }
 
     private fun requestRoutes(waypointSet: WaypointSet) {
@@ -280,6 +316,7 @@ class NavigationActivity : AppCompatActivity() {
 
     private val arrivalObserver: ArrivalObserver = object : ArrivalObserver {
         override fun onFinalDestinationArrival(routeProgress: RouteProgress) {
+            isNavigationInProgress = false
             sendEvent(MapBoxEvents.ON_ARRIVAL)
         }
 
