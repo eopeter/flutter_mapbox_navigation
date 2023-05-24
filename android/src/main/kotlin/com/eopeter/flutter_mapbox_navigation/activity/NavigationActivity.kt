@@ -49,11 +49,7 @@ class NavigationActivity : AppCompatActivity() {
 
     private val navigationStateListener = object : NavigationViewListener() {
         override fun onFreeDrive() {
-            // TODO: Navigation attempts to enter free drive mode when the cancel button is pressed.
-            // HACK: attempts to use to the emit the cancel event until we find a proper way to listen to the cancel button from DropIn UI
-            if (!isFreeDriveMode) {
-                tryCancelNavigation()
-            }
+
         }
 
         override fun onDestinationPreview() {
@@ -96,6 +92,7 @@ class NavigationActivity : AppCompatActivity() {
                 enableMapLongClickIntercept = false
             }
         }
+        // Add custom view binders
         binding.navigationView.customizeViewBinders {
             infoPanelEndNavigationButtonBinder = CustomInfoPanelEndNavButtonBinder(MapboxNavigationApp.current()!!)
         }
