@@ -4,18 +4,12 @@
 ///location along with other optional information, such as a name or
 ///the user’s direction approaching the waypoint.
 class WayPoint {
-  String? name;
-  double? latitude;
-  double? longitude;
-  bool? isSilent;
-
-  WayPoint(
-      {required this.name, required this.latitude, required this.longitude, this.isSilent});
-
-  @override
-  String toString() {
-    return 'WayPoint{latitude: $latitude, longitude: $longitude}';
-  }
+  WayPoint({
+    required this.name,
+    required this.latitude,
+    required this.longitude,
+    this.isSilent,
+  });
 
   WayPoint.fromJson(Map<String, dynamic> json) {
     name = json["name"];
@@ -23,11 +17,20 @@ class WayPoint {
     longitude = json["longitude"] as double?;
 
     //isSilent = json["isSilent"]==null ? false : json["isSilent"] as bool;
-    if(json["isSilent"]==null) {
+    if (json["isSilent"] == null) {
       isSilent = false;
-    }
-    else {
+    } else {
       isSilent = json["isSilent"] as bool;
     }
+  }
+
+  String? name;
+  double? latitude;
+  double? longitude;
+  bool? isSilent;
+
+  @override
+  String toString() {
+    return 'WayPoint{latitude: $latitude, longitude: $longitude}';
   }
 }

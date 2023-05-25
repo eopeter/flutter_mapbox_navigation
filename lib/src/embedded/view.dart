@@ -6,44 +6,49 @@ import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
-
-import 'controller.dart';
-import '../models/models.dart';
+import 'package:flutter_mapbox_navigation/src/embedded/controller.dart';
+import 'package:flutter_mapbox_navigation/src/models/models.dart';
 
 /// Callback method for when the navigation view is ready to be used.
 ///
-/// Pass to [MapBoxNavigationView.onMapCreated] to receive a [MapBoxNavigationViewController] when the
+/// Pass to MapBoxNavigationView.onMapCreated to receive a
+/// [MapBoxNavigationViewController] when the
 /// map is created.
-typedef void OnNavigationViewCreatedCallBack(
-    MapBoxNavigationViewController controller);
+typedef OnNavigationViewCreatedCallBack = void Function(
+  MapBoxNavigationViewController controller,
+);
 
 ///Embeddable Navigation View.
 class MapBoxNavigationView extends StatelessWidget {
+  ///Embeddable Navigation View Constructor
+  const MapBoxNavigationView({
+    super.key,
+    this.options,
+    this.onCreated,
+    this.onRouteEvent,
+  });
+
   static const StandardMessageCodec _decoder = StandardMessageCodec();
+
+  /// MapBox options
   final MapBoxOptions? options;
+
+  /// Callback when view is created
   final OnNavigationViewCreatedCallBack? onCreated;
+
+  /// Value setter for RouteEvents
   final ValueSetter<RouteEvent>? onRouteEvent;
 
+  /// View name
   static const String viewType = 'FlutterMapboxNavigationView';
 
-  const MapBoxNavigationView(
-      {Key? key, this.options, this.onCreated, this.onRouteEvent})
-      : super(key: key);
   @override
   Widget build(BuildContext context) {
     if (Platform.isAndroid) {
-      // using Virtual Displays
-      // return AndroidView(
-      //     viewType: 'FlutterMapboxNavigationView',
-      //     onPlatformViewCreated: _onPlatformViewCreated,
-      //     creationParams: options!.toMap(),
-      //     creationParamsCodec: _decoder);
-
       // using Hybrid Composition
       return PlatformViewLink(
         viewType: viewType,
-        surfaceFactory:
-            (context, controller) {
+        surfaceFactory: (context, controller) {
           return AndroidViewSurface(
             controller: controller as AndroidViewController,
             gestureRecognizers: const <Factory<OneSequenceGestureRecognizer>>{},
@@ -66,13 +71,13 @@ class MapBoxNavigationView extends StatelessWidget {
             ..create();
         },
       );
-
     } else if (Platform.isIOS) {
       return UiKitView(
-          viewType: 'FlutterMapboxNavigationView',
-          onPlatformViewCreated: _onPlatformViewCreated,
-          creationParams: options!.toMap(),
-          creationParamsCodec: _decoder);
+        viewType: 'FlutterMapboxNavigationView',
+        onPlatformViewCreated: _onPlatformViewCreated,
+        creationParams: options!.toMap(),
+        creationParamsCodec: _decoder,
+      );
     } else {
       return Container();
     }

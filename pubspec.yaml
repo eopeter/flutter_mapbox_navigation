@@ -16,6 +16,7 @@ dependencies:
   flutter_web_plugins:
     sdk: flutter
   plugin_platform_interface: ^2.0.2
+  very_good_analysis: ^5.0.0+1
 
 dev_dependencies:
   flutter_test:
