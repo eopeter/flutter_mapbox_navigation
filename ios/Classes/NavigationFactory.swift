@@ -66,6 +66,12 @@ public class NavigationFactory : NSObject, FlutterStreamHandler
         startNavigationWithWayPoints(wayPoints: _wayPoints, flutterResult: result, isUpdatingWaypoints: true)
     }
 
+    func startFreeDrive(arguments: NSDictionary?, result: @escaping FlutterResult)
+    {
+        let freeDriveViewController = FreeDriveViewController()
+        let flutterViewController = UIApplication.shared.delegate?.window??.rootViewController as! FlutterViewController
+        flutterViewController.present(freeDriveViewController, animated: true, completion: nil)
+    }
 
     func startNavigation(arguments: NSDictionary?, result: @escaping FlutterResult)
     {
@@ -90,21 +96,13 @@ public class NavigationFactory : NSObject, FlutterStreamHandler
             _wayPointOrder[loc.order!] = location
         }
 
-        _language = arguments?["language"] as? String ?? _language
-        _voiceUnits = arguments?["units"] as? String ?? _voiceUnits
-        _simulateRoute = arguments?["simulateRoute"] as? Bool ?? _simulateRoute
-        _isOptimized = arguments?["isOptimized"] as? Bool ?? _isOptimized
-        _allowsUTurnAtWayPoints = arguments?["allowsUTurnAtWayPoints"] as? Bool
-        _navigationMode = arguments?["mode"] as? String ?? "drivingWithTraffic"
-        _showReportFeedbackButton = arguments?["showReportFeedbackButton"] as? Bool ?? _showReportFeedbackButton
-        _showEndOfRouteFeedback = arguments?["showEndOfRouteFeedback"] as? Bool ?? _showEndOfRouteFeedback
+        parseFlutterArguments(arguments: arguments)
         
         if(_wayPoints.count > 3 && arguments?["mode"] == nil)
         {
             _navigationMode = "driving"
         }
-        _mapStyleUrlDay = arguments?["mapStyleUrlDay"] as? String
-        _mapStyleUrlNight = arguments?["mapStyleUrlNight"] as? String
+        
         if(_wayPoints.count > 0)
         {
             if(IsMultipleUniqueRoutes)
@@ -118,39 +116,15 @@ public class NavigationFactory : NSObject, FlutterStreamHandler
 
         }
     }
-
+    
+    
     func startNavigationWithWayPoints(wayPoints: [Waypoint], flutterResult: @escaping FlutterResult, isUpdatingWaypoints: Bool)
     {
         let simulationMode: SimulationMode = _simulateRoute ? .always : .never
+        setNavigationOptions()
 
-        var mode: ProfileIdentifier = .automobileAvoidingTraffic
-
-        if (_navigationMode == "cycling")
-        {
-            mode = .cycling
-        }
-        else if(_navigationMode == "driving")
-        {
-            mode = .automobile
-        }
-        else if(_navigationMode == "walking")
-        {
-            mode = .walking
-        }
-
-        let options = NavigationRouteOptions(waypoints: wayPoints, profileIdentifier: mode)
-
-        if (_allowsUTurnAtWayPoints != nil)
-        {
-            options.allowsUTurnAtWaypoint = _allowsUTurnAtWayPoints!
-        }
-
-        options.distanceMeasurementSystem = _voiceUnits == "imperial" ? .imperial : .metric
-        options.locale = Locale(identifier: _language)
-
-        Directions.shared.calculate(options) { [weak self](session, result) in
+        Directions.shared.calculate(_options!) { [weak self](session, result) in
             guard let strongSelf = self else { return }
-            strongSelf._options = options
             switch result {
             case .failure(let error):
                 strongSelf.sendEvent(eventType: MapBoxEventType.route_build_failed)
@@ -162,14 +136,14 @@ public class NavigationFactory : NSObject, FlutterStreamHandler
                 {
                     //show map to select a specific route
                     strongSelf._routes = routes
-                    let routeOptionsView = RouteOptionsViewController(routes: routes, options: options)
+                    let routeOptionsView = RouteOptionsViewController(routes: routes, options: strongSelf._options!)
 
                     let flutterViewController = UIApplication.shared.delegate?.window??.rootViewController as! FlutterViewController
                     flutterViewController.present(routeOptionsView, animated: true, completion: nil)
                 }
                 else
                 {
-                    let navigationService = MapboxNavigationService(routeResponse: response, routeIndex: 0, routeOptions: options, simulating: simulationMode)
+                    let navigationService = MapboxNavigationService(routeResponse: response, routeIndex: 0, routeOptions: strongSelf._options!, simulating: simulationMode)
                     var dayStyle = CustomDayStyle()
                     if(strongSelf._mapStyleUrlDay != nil){
                         dayStyle = CustomDayStyle(url: strongSelf._mapStyleUrlDay)
@@ -189,7 +163,7 @@ public class NavigationFactory : NSObject, FlutterStreamHandler
                         }
                     }
                     else {
-                        strongSelf.startNavigation(routeResponse: response, options: options, navOptions: navigationOptions)
+                        strongSelf.startNavigation(routeResponse: response, options: strongSelf._options!, navOptions: navigationOptions)
                     }
                 }
             }
@@ -212,6 +186,47 @@ public class NavigationFactory : NSObject, FlutterStreamHandler
         let flutterViewController = UIApplication.shared.delegate?.window??.rootViewController as! FlutterViewController
         flutterViewController.present(self._navigationViewController!, animated: true, completion: nil)
     }
+    
+    func setNavigationOptions() {
+        var mode: ProfileIdentifier = .automobileAvoidingTraffic
+
+        if (_navigationMode == "cycling")
+        {
+            mode = .cycling
+        }
+        else if(_navigationMode == "driving")
+        {
+            mode = .automobile
+        }
+        else if(_navigationMode == "walking")
+        {
+            mode = .walking
+        }
+        let options = NavigationRouteOptions(waypoints: [], profileIdentifier: mode)
+
+        if (_allowsUTurnAtWayPoints != nil)
+        {
+            options.allowsUTurnAtWaypoint = _allowsUTurnAtWayPoints!
+        }
+
+        options.distanceMeasurementSystem = _voiceUnits == "imperial" ? .imperial : .metric
+        options.locale = Locale(identifier: _language)
+        _options = options
+    }
+    
+    func parseFlutterArguments(arguments: NSDictionary?) {
+        _language = arguments?["language"] as? String ?? _language
+        _voiceUnits = arguments?["units"] as? String ?? _voiceUnits
+        _simulateRoute = arguments?["simulateRoute"] as? Bool ?? _simulateRoute
+        _isOptimized = arguments?["isOptimized"] as? Bool ?? _isOptimized
+        _allowsUTurnAtWayPoints = arguments?["allowsUTurnAtWayPoints"] as? Bool
+        _navigationMode = arguments?["mode"] as? String ?? "drivingWithTraffic"
+        _showReportFeedbackButton = arguments?["showReportFeedbackButton"] as? Bool ?? _showReportFeedbackButton
+        _showEndOfRouteFeedback = arguments?["showEndOfRouteFeedback"] as? Bool ?? _showEndOfRouteFeedback
+        _mapStyleUrlDay = arguments?["mapStyleUrlDay"] as? String
+        _mapStyleUrlNight = arguments?["mapStyleUrlNight"] as? String
+    }
+
 
     func continueNavigationWithWayPoints(wayPoints: [Waypoint])
     {

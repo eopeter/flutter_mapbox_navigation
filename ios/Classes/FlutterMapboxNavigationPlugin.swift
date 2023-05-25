@@ -35,6 +35,10 @@ public class FlutterMapboxNavigationPlugin: NavigationFactory, FlutterPlugin {
         {
             result(_durationRemaining)
         }
+        else if(call.method == "startFreeDrive")
+        {
+            startFreeDrive(arguments: arguments, result: result)
+        }
         else if(call.method == "startNavigation")
         {
             startNavigation(arguments: arguments, result: result)

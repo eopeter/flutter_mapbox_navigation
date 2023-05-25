@@ -56,6 +56,7 @@ class _SampleNavigationAppState extends State<SampleNavigationApp> {
   MapBoxNavigationViewController? _controller;
   bool _routeBuilt = false;
   bool _isNavigating = false;
+  bool _inFreeDrive = false;
   late MapBoxOptions _navigationOption;
 
   @override
@@ -167,11 +168,7 @@ class _SampleNavigationAppState extends State<SampleNavigationApp> {
                         ElevatedButton(
                           child: const Text("Free Drive"),
                           onPressed: () async {
-                            var wayPoints = <WayPoint>[];
-                            wayPoints.add(_home);
-                            wayPoints.add(_store);
-
-                            await MapBoxNavigation.instance.startFreeDrive();
+                             await MapBoxNavigation.instance.startFreeDrive();
                           },
                         ),
                       ],
@@ -232,7 +229,15 @@ class _SampleNavigationAppState extends State<SampleNavigationApp> {
                           }
                               : null,
                         )
+
                       ],
+                    ),
+                    ElevatedButton(
+                      onPressed: _inFreeDrive
+                          ? null : () async {
+                        _inFreeDrive = await _controller?.startFreeDrive() ?? false;
+                      },
+                      child: const Text("Free Drive "),
                     ),
                     const Center(
                       child: Padding(
@@ -287,8 +292,8 @@ class _SampleNavigationAppState extends State<SampleNavigationApp> {
                 ),
               ),
             ),
-            Expanded(
-              flex: 1,
+            SizedBox(
+              height: 300,
               child: Container(
                 color: Colors.grey,
                 child: MapBoxNavigationView(

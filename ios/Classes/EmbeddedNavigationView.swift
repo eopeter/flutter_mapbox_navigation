@@ -25,6 +25,9 @@ public class FlutterMapboxNavigationView : NavigationFactory, FlutterPlatformVie
     var _mapInitialized = false;
     var locationManager = CLLocationManager()
 
+    private let passiveLocationManager = PassiveLocationManager()
+    private lazy var passiveLocationProvider = PassiveLocationProvider(locationManager: passiveLocationManager)
+
     init(messenger: FlutterBinaryMessenger, frame: CGRect, viewId: Int64, args: Any?)
     {
         self.frame = frame
@@ -68,6 +71,10 @@ public class FlutterMapboxNavigationView : NavigationFactory, FlutterPlatformVie
             else if(call.method == "finishNavigation")
             {
                 strongSelf.endNavigation(result: result)
+            }
+            else if(call.method == "startFreeDrive")
+            {
+                strongSelf.startEmbeddedFreeDrive(arguments: arguments, result: result)
             }
             else if(call.method == "startNavigation")
             {
@@ -254,6 +261,21 @@ public class FlutterMapboxNavigationView : NavigationFactory, FlutterPlatformVie
         }
     }
 
+    func startEmbeddedFreeDrive(arguments: NSDictionary?, result: @escaping FlutterResult) {
+        
+        let locationProvider: LocationProvider = passiveLocationProvider
+        navigationMapView.mapView.location.overrideLocationProvider(with: locationProvider)
+        passiveLocationProvider.startUpdatingLocation()
+        
+        navigationMapView.autoresizingMask = [.flexibleWidth, .flexibleHeight]
+        navigationMapView.userLocationStyle = .puck2D()
+       
+        let navigationViewportDataSource = NavigationViewportDataSource(navigationMapView.mapView)
+        navigationViewportDataSource.options.followingCameraOptions.zoomUpdatesAllowed = false
+        navigationViewportDataSource.followingMobileCamera.zoom = _zoom
+        navigationMapView.navigationCamera.viewportDataSource = navigationViewportDataSource
+        result(true)
+    }
 
     func startEmbeddedNavigation(arguments: NSDictionary?, result: @escaping FlutterResult) {
         guard let response = self.routeResponse else { return }
