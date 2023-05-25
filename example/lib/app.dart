@@ -56,6 +56,7 @@ class _SampleNavigationAppState extends State<SampleNavigationApp> {
   MapBoxNavigationViewController? _controller;
   bool _routeBuilt = false;
   bool _isNavigating = false;
+  bool _inFreeDrive = false;
   late MapBoxOptions _navigationOption;
 
   @override
@@ -160,7 +161,16 @@ class _SampleNavigationAppState extends State<SampleNavigationApp> {
                             var stop = WayPoint(name: "Gas Station", latitude: 38.911176544398, longitude: -77.04014366543564, isSilent: false);
                             MapBoxNavigation.instance.addWayPoints(wayPoints: [stop]);
                           },
-                        )
+                        ),
+                        const SizedBox(
+                          width: 10,
+                        ),
+                        ElevatedButton(
+                          child: const Text("Free Drive"),
+                          onPressed: () async {
+                             await MapBoxNavigation.instance.startFreeDrive();
+                          },
+                        ),
                       ],
                     ),
                     Container(
@@ -219,7 +229,15 @@ class _SampleNavigationAppState extends State<SampleNavigationApp> {
                           }
                               : null,
                         )
+
                       ],
+                    ),
+                    ElevatedButton(
+                      onPressed: _inFreeDrive
+                          ? null : () async {
+                        _inFreeDrive = await _controller?.startFreeDrive() ?? false;
+                      },
+                      child: const Text("Free Drive "),
                     ),
                     const Center(
                       child: Padding(
@@ -274,8 +292,8 @@ class _SampleNavigationAppState extends State<SampleNavigationApp> {
                 ),
               ),
             ),
-            Expanded(
-              flex: 1,
+            SizedBox(
+              height: 300,
               child: Container(
                 color: Colors.grey,
                 child: MapBoxNavigationView(

@@ -45,7 +45,6 @@ class NavigationActivity : AppCompatActivity() {
     private var accessToken: String? = null
     private var lastLocation: Location? = null
     private var isNavigationInProgress = false;
-    private var isFreeDriveMode = false;
 
     private val navigationStateListener = object : NavigationViewListener() {
         override fun onFreeDrive() {
@@ -131,16 +130,23 @@ class NavigationActivity : AppCompatActivity() {
                 IntentFilter(NavigationLauncher.KEY_ADD_WAYPOINTS)
         )
 
-        val p = intent.getSerializableExtra("waypoints") as? MutableList<Waypoint>
-        if (p != null) points = p
-
         // TODO set the style Uri
         var styleUrl = FlutterMapboxNavigationPlugin.mapStyleUrlDay
         if (styleUrl == null) styleUrl = Style.MAPBOX_STREETS
         // set map style
         binding.navigationView.customizeViewStyles {}
+
+        if (FlutterMapboxNavigationPlugin.enableFreeDriveMode) {
+            binding.navigationView.api.routeReplayEnabled(FlutterMapboxNavigationPlugin.simulateRoute)
+            binding.navigationView.api.startFreeDrive()
+            return
+        }
+
+        val p = intent.getSerializableExtra("waypoints") as? MutableList<Waypoint>
+        if (p != null) points = p
         points.map { waypointSet.add(it) }
         requestRoutes(waypointSet)
+
     }
 
     override fun onDestroy() {

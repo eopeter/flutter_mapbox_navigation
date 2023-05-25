@@ -73,10 +73,6 @@ class MapBoxOptions {
   /// When the user long presses on a point on the map, set that as the destination
   bool? longPressDestinationEnabled;
 
-  /// Free-drive mode is a unique Mapbox Navigation SDK feature that allows drivers to navigate without a set destination. This mode is sometimes referred to as passive navigation.
-  /// No destination is required when set to true.
-  bool? enableFreeDriveMode;
-
   /// In iOS this will show/hide the feedback button. Default to True.
   bool? showReportFeedbackButton;
 
@@ -102,7 +98,6 @@ class MapBoxOptions {
       this.isOptimized,
       this.mapStyleUrlDay,
       this.mapStyleUrlNight,
-      this.enableFreeDriveMode,
       this.padding,
       this.animateBuildRoute,
       this.showReportFeedbackButton = true,

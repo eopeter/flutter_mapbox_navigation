@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:convert';
+import 'dart:developer';
 import 'dart:io';
 
 import 'package:flutter/foundation.dart';
@@ -40,6 +41,16 @@ class MethodChannelFlutterMapboxNavigation extends FlutterMapboxNavigationPlatfo
   }
 
   @override
+  Future<bool?> startFreeDrive(MapBoxOptions options) async {
+    _routeEventSubscription = routeEventsListener!.listen(_onProgressData);
+    var args = options.toMap();
+    final result = await methodChannel.invokeMethod('startFreeDrive', args);
+    if (result is bool) return result;
+    log(result);
+    return false;
+  }
+
+  @override
   Future<bool?> startNavigation(List<WayPoint> wayPoints, MapBoxOptions options) async {
     assert(wayPoints.length > 1);
     if (Platform.isIOS && wayPoints.length > 3) {
@@ -58,7 +69,7 @@ class MethodChannelFlutterMapboxNavigation extends FlutterMapboxNavigationPlatfo
     _routeEventSubscription = routeEventsListener!.listen(_onProgressData);
     final result = await methodChannel.invokeMethod('startNavigation', args);
     if (result is bool) return result;
-    print(result);
+    log(result);
     return false;
   }
 
