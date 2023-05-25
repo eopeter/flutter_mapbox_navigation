@@ -91,7 +91,9 @@ class NavigationActivity : AppCompatActivity() {
                 enableMapLongClickIntercept = false
             }
         }
+
         // Add custom view binders
+
         binding.navigationView.customizeViewBinders {
             infoPanelEndNavigationButtonBinder = CustomInfoPanelEndNavButtonBinder(MapboxNavigationApp.current()!!)
         }

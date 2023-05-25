@@ -54,6 +54,7 @@ public class NavigationFactory : NSObject, FlutterStreamHandler
         for loc in locations
         {
             let wayPoint = Waypoint(coordinate: CLLocationCoordinate2D(latitude: loc.latitude!, longitude: loc.longitude!), name: loc.name)
+            wayPoint.separatesLegs = !loc.isSilent
             if (_wayPoints.count >= nextIndex) {
                 _wayPoints.insert(wayPoint, at: nextIndex)
             }
@@ -92,6 +93,9 @@ public class NavigationFactory : NSObject, FlutterStreamHandler
         for loc in locations
         {
             let location = Waypoint(coordinate: CLLocationCoordinate2D(latitude: loc.latitude!, longitude: loc.longitude!), name: loc.name)
+            
+            location.separatesLegs = !loc.isSilent
+            
             _wayPoints.append(location)
             _wayPointOrder[loc.order!] = location
         }
@@ -289,8 +293,9 @@ public class NavigationFactory : NSObject, FlutterStreamHandler
             guard let oName = point["Name"] as? String else {return nil }
             guard let oLatitude = point["Latitude"] as? Double else {return nil}
             guard let oLongitude = point["Longitude"] as? Double else {return nil}
+            let oIsSilent = point["IsSilent"] as? Bool ?? false
             let order = point["Order"] as? Int
-            let location = Location(name: oName, latitude: oLatitude, longitude: oLongitude, order: order)
+            let location = Location(name: oName, latitude: oLatitude, longitude: oLongitude, order: order,isSilent: oIsSilent)
             locations.append(location)
         }
         return locations
