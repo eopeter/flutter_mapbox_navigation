@@ -4,6 +4,7 @@
 ///location along with other optional information, such as a name or
 ///the user’s direction approaching the waypoint.
 class WayPoint {
+  ///Constructor
   WayPoint({
     required this.name,
     required this.latitude,
@@ -11,22 +12,29 @@ class WayPoint {
     this.isSilent,
   });
 
+  /// create [WayPoint] from a json
   WayPoint.fromJson(Map<String, dynamic> json) {
-    name = json["name"];
-    latitude = json["latitude"] as double?;
-    longitude = json["longitude"] as double?;
+    name = json['name'] as String?;
+    latitude = json['latitude'] as double?;
+    longitude = json['longitude'] as double?;
 
-    //isSilent = json["isSilent"]==null ? false : json["isSilent"] as bool;
-    if (json["isSilent"] == null) {
+    if (json['isSilent'] == null) {
       isSilent = false;
     } else {
-      isSilent = json["isSilent"] as bool;
+      isSilent = json['isSilent'] as bool;
     }
   }
 
+  /// Waypoint [name]
   String? name;
+
+  /// Waypoint latitude
   double? latitude;
+
+  /// Waypoint longitude
   double? longitude;
+
+  /// Waypoint property isSilent
   bool? isSilent;
 
   @override
