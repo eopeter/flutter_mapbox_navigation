@@ -125,7 +125,7 @@ public class NavigationFactory : NSObject, FlutterStreamHandler
     func startNavigationWithWayPoints(wayPoints: [Waypoint], flutterResult: @escaping FlutterResult, isUpdatingWaypoints: Bool)
     {
         let simulationMode: SimulationMode = _simulateRoute ? .always : .never
-        setNavigationOptions()
+        setNavigationOptions(wayPoints: wayPoints)
 
         Directions.shared.calculate(_options!) { [weak self](session, result) in
             guard let strongSelf = self else { return }
@@ -191,7 +191,7 @@ public class NavigationFactory : NSObject, FlutterStreamHandler
         flutterViewController.present(self._navigationViewController!, animated: true, completion: nil)
     }
     
-    func setNavigationOptions() {
+    func setNavigationOptions(wayPoints: [Waypoint]) {
         var mode: ProfileIdentifier = .automobileAvoidingTraffic
 
         if (_navigationMode == "cycling")
@@ -206,7 +206,7 @@ public class NavigationFactory : NSObject, FlutterStreamHandler
         {
             mode = .walking
         }
-        let options = NavigationRouteOptions(waypoints: [], profileIdentifier: mode)
+        let options = NavigationRouteOptions(waypoints: wayPoints, profileIdentifier: mode)
 
         if (_allowsUTurnAtWayPoints != nil)
         {
