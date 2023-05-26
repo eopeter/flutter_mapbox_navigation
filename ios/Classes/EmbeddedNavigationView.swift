@@ -104,6 +104,7 @@ public class FlutterMapboxNavigationView : NavigationFactory, FlutterPlatformVie
         return navigationMapView
     }
 
+    
     private func setupMapView()
     {
         navigationMapView = NavigationMapView(frame: frame)
@@ -111,19 +112,9 @@ public class FlutterMapboxNavigationView : NavigationFactory, FlutterPlatformVie
 
         if(self.arguments != nil)
         {
-            _language = arguments?["language"] as? String ?? _language
-            _voiceUnits = arguments?["units"] as? String ?? _voiceUnits
-            _simulateRoute = arguments?["simulateRoute"] as? Bool ?? _simulateRoute
-            _isOptimized = arguments?["isOptimized"] as? Bool ?? _isOptimized
-            _allowsUTurnAtWayPoints = arguments?["allowsUTurnAtWayPoints"] as? Bool
-            _navigationMode = arguments?["mode"] as? String ?? "drivingWithTraffic"
-            _mapStyleUrlDay = arguments?["mapStyleUrlDay"] as? String
-            _zoom = arguments?["zoom"] as? Double ?? _zoom
-            _bearing = arguments?["bearing"] as? Double ?? _bearing
-            _tilt = arguments?["tilt"] as? Double ?? _tilt
-            _animateBuildRoute = arguments?["animateBuildRoute"] as? Bool ?? _animateBuildRoute
-            _longPressDestinationEnabled = arguments?["longPressDestinationEnabled"] as? Bool ?? _longPressDestinationEnabled
-
+           
+            parseFlutterArguments(arguments: arguments)
+            
             if(_mapStyleUrlDay != nil)
             {
                 navigationMapView.mapView.mapboxMap.style.uri = StyleURI.init(url: URL(string: _mapStyleUrlDay!)!)
@@ -207,20 +198,12 @@ public class FlutterMapboxNavigationView : NavigationFactory, FlutterPlatformVie
             _wayPoints.append(location)
         }
 
-        _language = arguments?["language"] as? String ?? _language
-        _voiceUnits = arguments?["units"] as? String ?? _voiceUnits
-        _simulateRoute = arguments?["simulateRoute"] as? Bool ?? _simulateRoute
-        _isOptimized = arguments?["isOptimized"] as? Bool ?? _isOptimized
-        _allowsUTurnAtWayPoints = arguments?["allowsUTurnAtWayPoints"] as? Bool
-        _navigationMode = arguments?["mode"] as? String ?? "drivingWithTraffic"
-        _showReportFeedbackButton = arguments?["showReportFeedbackButton"] as? Bool ?? _showReportFeedbackButton
-        _showEndOfRouteFeedback = arguments?["showEndOfRouteFeedback"] as? Bool ?? _showEndOfRouteFeedback
+        parseFlutterArguments(arguments: arguments)
+        
         if(_wayPoints.count > 3 && arguments?["mode"] == nil)
         {
             _navigationMode = "driving"
         }
-        _mapStyleUrlDay = arguments?["mapStyleUrlDay"] as? String
-        _mapStyleUrlNight = arguments?["mapStyleUrlNight"] as? String
 
         var mode: ProfileIdentifier = .automobileAvoidingTraffic
 
