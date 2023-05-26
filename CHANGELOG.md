@@ -1,3 +1,6 @@
+## 0.1.5
+* Bug Fixes [248](https://github.com/eopeter/flutter_mapbox_navigation/pull/248) and [250](https://github.com/eopeter/flutter_mapbox_navigation/pull/250)
+
 ## 0.1.4
 * Android Send Cancel Event [235](https://github.com/eopeter/flutter_mapbox_navigation/pull/235)
 * iOS Receive Feedback Sent to Mapbox on Dart Side; Ability to Turn On/Off Show Feedback [235](https://github.com/eopeter/flutter_mapbox_navigation/pull/235)
