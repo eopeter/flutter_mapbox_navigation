@@ -25,12 +25,12 @@ class RouteLeg {
   RouteLeg.fromJson(Map<String, dynamic> json) {
     profileIdentifier = json['profileIdentifier'] as String?;
     name = json['name'] as String?;
-    distance = isNullOrZero(json['distance'] as double?)
+    distance = isNullOrZero(json['distance'] as num?)
         ? 0.0
-        : (json['distance'] as double) + .0;
-    expectedTravelTime = isNullOrZero(json['expectedTravelTime'] as double?)
+        : (json['distance'] as num).toDouble();
+    expectedTravelTime = isNullOrZero(json['expectedTravelTime'] as num?)
         ? 0.0
-        : (json['expectedTravelTime'] as double) + .0;
+        : (json['expectedTravelTime'] as num).toDouble();
     source = json['source'] == null
         ? null
         : WayPoint.fromJson(json['source'] as Map<String, dynamic>);

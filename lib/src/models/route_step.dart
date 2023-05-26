@@ -17,12 +17,12 @@ class RouteStep {
   RouteStep.fromJson(Map<String, dynamic> json) {
     name = json['name'] as String?;
     instructions = json['instructions'] as String?;
-    distance = isNullOrZero(json['distance'] as double?)
+    distance = isNullOrZero(json['distance'] as num?)
         ? 0.0
-        : (json['distance'] as double) + .0;
-    expectedTravelTime = isNullOrZero(json['expectedTravelTime'] as double?)
+        : (json['distance'] as num).toDouble();
+    expectedTravelTime = isNullOrZero(json['expectedTravelTime'] as num?)
         ? 0.0
-        : (json['expectedTravelTime'] as double) + .0;
+        : (json['expectedTravelTime'] as num).toDouble();
   }
 
   String? name;

@@ -28,23 +28,23 @@ class RouteProgressEvent {
   RouteProgressEvent.fromJson(Map<String, dynamic> json) {
     isProgressEvent = json['arrived'] != null;
     arrived = json['arrived'] == null ? false : json['arrived'] as bool?;
-    distance = isNullOrZero(json['distance'] as double?)
+    distance = isNullOrZero(json['distance'] as num?)
         ? 0.0
-        : (json['distance'] as double) + .0;
-    duration = isNullOrZero(json['duration'] as double?)
+        : (json['distance'] as num).toDouble();
+    duration = isNullOrZero(json['duration'] as num?)
         ? 0.0
-        : (json['duration'] as double) + .0;
-    distanceTraveled = isNullOrZero(json['distanceTraveled'] as double?)
+        : (json['duration'] as num).toDouble();
+    distanceTraveled = isNullOrZero(json['distanceTraveled'] as num?)
         ? 0.0
-        : (json['distanceTraveled'] as double) + .0;
+        : (json['distanceTraveled'] as num).toDouble();
     currentLegDistanceTraveled =
-        isNullOrZero(json['currentLegDistanceTraveled'] as double?)
+        isNullOrZero(json['currentLegDistanceTraveled'] as num?)
             ? 0.0
-            : (json['currentLegDistanceTraveled'] as double) + .0;
+            : (json['currentLegDistanceTraveled'] as num).toDouble();
     currentLegDistanceRemaining =
-        isNullOrZero(json['currentLegDistanceRemaining'] as double?)
+        isNullOrZero(json['currentLegDistanceRemaining'] as num?)
             ? 0.0
-            : (json['currentLegDistanceRemaining'] as double) + .0;
+            : (json['currentLegDistanceRemaining'] as num).toDouble();
     currentStepInstruction = json['currentStepInstruction'] as String?;
     currentLeg = json['currentLeg'] == null
         ? null
