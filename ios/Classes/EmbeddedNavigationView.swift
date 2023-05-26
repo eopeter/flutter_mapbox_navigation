@@ -264,14 +264,14 @@ public class FlutterMapboxNavigationView : NavigationFactory, FlutterPlatformVie
     }
 
     func startEmbeddedFreeDrive(arguments: NSDictionary?, result: @escaping FlutterResult) {
-        
+
         let locationProvider: LocationProvider = passiveLocationProvider
         navigationMapView.mapView.location.overrideLocationProvider(with: locationProvider)
         passiveLocationProvider.startUpdatingLocation()
-        
+
         navigationMapView.autoresizingMask = [.flexibleWidth, .flexibleHeight]
         navigationMapView.userLocationStyle = .puck2D()
-       
+
         let navigationViewportDataSource = NavigationViewportDataSource(navigationMapView.mapView)
         navigationViewportDataSource.options.followingCameraOptions.zoomUpdatesAllowed = false
         navigationViewportDataSource.followingMobileCamera.zoom = _zoom
@@ -309,7 +309,7 @@ public class FlutterMapboxNavigationView : NavigationFactory, FlutterPlatformVie
 
         _navigationViewController = NavigationViewController(for: response, routeIndex: selectedRouteIndex, routeOptions: routeOptions!, navigationOptions: navigationOptions)
         _navigationViewController!.delegate = self
-        
+
         _navigationViewController!.showsReportFeedback = _showReportFeedbackButton
         _navigationViewController!.showsEndOfRouteFeedback = _showEndOfRouteFeedback
 
@@ -412,7 +412,11 @@ extension FlutterMapboxNavigationView : NavigationMapViewDelegate {
 //    }
 
     public func navigationMapView(_ mapView: NavigationMapView, didSelect route: Route) {
-        self.selectedRouteIndex = self.routeResponse!.routes?.firstIndex(of: route) ?? 0
+        self.selectedRouteIndex = self.routeResponse?.routes?.firstIndex(of: route) ?? 0
+        let sorted = (self.routeResponse?.routes ?? []).sorted(by: { first, second in
+           first == route
+        })
+        mapView.show(sorted)
     }
 
     public func mapViewDidFinishLoadingMap(_ mapView: NavigationMapView) {
@@ -435,6 +439,7 @@ extension FlutterMapboxNavigationView : UIGestureRecognizerDelegate {
     }
 
     func requestRoute(destination: CLLocationCoordinate2D) {
+        isEmbeddedNavigation = true
         sendEvent(eventType: MapBoxEventType.route_building)
 
         guard let userLocation = navigationMapView.mapView.location.latestLocation else { return }
@@ -444,7 +449,7 @@ extension FlutterMapboxNavigationView : UIGestureRecognizerDelegate {
         let destinationWaypoint = Waypoint(coordinate: destination)
 
         let routeOptions = NavigationRouteOptions(waypoints: [userWaypoint, destinationWaypoint])
-        
+
         Directions.shared.calculate(routeOptions) { [weak self] (session, result) in
 
             if let strongSelf = self {
@@ -458,6 +463,7 @@ extension FlutterMapboxNavigationView : UIGestureRecognizerDelegate {
                         strongSelf.sendEvent(eventType: MapBoxEventType.route_build_failed)
                         return
                     }
+                    strongSelf.routeResponse = response
                     strongSelf.sendEvent(eventType: MapBoxEventType.route_built, data: strongSelf.encodeRouteResponse(response: response))
                     strongSelf.routeOptions = routeOptions
                     strongSelf._routes = routes
