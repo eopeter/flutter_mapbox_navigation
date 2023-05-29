@@ -9,10 +9,8 @@ import java.io.Serializable;
 import java.util.List;
 
 public class NavigationLauncher {
-
     public static final String KEY_ADD_WAYPOINTS = "com.my.mapbox.broadcast.ADD_WAYPOINTS";
     public static final String KEY_STOP_NAVIGATION = "com.my.mapbox.broadcast.STOP_NAVIGATION";
-
     public static void startNavigation(Activity activity, List<Waypoint> wayPoints) {
         Intent navigationIntent = new Intent(activity, NavigationActivity.class);
         navigationIntent.putExtra("waypoints", (Serializable) wayPoints);
@@ -32,5 +30,4 @@ public class NavigationLauncher {
         stopIntent.setAction(KEY_STOP_NAVIGATION);
         activity.sendBroadcast(stopIntent);
     }
-
 }

@@ -1,17 +1,18 @@
 package com.eopeter.fluttermapboxnavigation.models
 
+import com.google.gson.JsonArray
+import com.google.gson.JsonObject
 import com.mapbox.api.directions.v5.models.RouteLeg
-import com.google.gson.*
 
 class MapBoxRouteLeg {
 
     val profileIdentifier: String? = null
     val name: String? = null
-    var distance: Double?
-    var expectedTravelTime: Double?
+    private var distance: Double?
+    private var expectedTravelTime: Double?
     val source: MapBoxLocation = MapBoxLocation("", 0.0, 0.0)
     val destination: MapBoxLocation = MapBoxLocation("", 0.0, 0.0)
-    var steps: MutableList<MapBoxRouteStep> = mutableListOf()
+    private var steps: MutableList<MapBoxRouteStep> = mutableListOf()
 
     constructor(leg: RouteLeg) {
         distance = leg.distance()
@@ -30,7 +31,7 @@ class MapBoxRouteLeg {
         }
 
         if (expectedTravelTime != null) {
-            json.addProperty("expectedTravelTime", expectedTravelTime);
+            json.addProperty("expectedTravelTime", expectedTravelTime)
         }
 
         if (steps.isNotEmpty()) {
@@ -45,5 +46,4 @@ class MapBoxRouteLeg {
 
         return json
     }
-
 }

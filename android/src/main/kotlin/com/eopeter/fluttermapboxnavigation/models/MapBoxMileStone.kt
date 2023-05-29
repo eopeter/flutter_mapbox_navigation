@@ -6,7 +6,6 @@ data class MapBoxMileStone(
     var legIndex: Int?,
     var stepIndex: Int?
 ) {
-
     override fun toString(): String {
         return "{" +
                 "  \"identifier\": \"$identifier\"," +

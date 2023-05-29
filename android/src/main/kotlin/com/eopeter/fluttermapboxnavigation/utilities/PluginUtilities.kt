@@ -1,4 +1,4 @@
-package com.eopeter.fluttermapboxnavigation.utilities;
+package com.eopeter.fluttermapboxnavigation.utilities
 
 import android.app.Activity
 import android.content.Context
@@ -24,10 +24,10 @@ class PluginUtilities {
             val stringRes = context.resources.getIdentifier(resName, "string", context.packageName)
             if (stringRes == 0) {
                 throw IllegalArgumentException(
-                        String.format(
-                                "The 'R.string.%s' value it's not defined in your project's resources file.",
-                                resName
-                        )
+                    String.format(
+                        "The 'R.string.%s' value it's not defined in your project's resources file.",
+                        resName
+                    )
                 )
             }
             return context.getString(stringRes)
@@ -44,13 +44,13 @@ class PluginUtilities {
 
         fun sendEvent(event: MapBoxEvents, data: String = "") {
             val jsonString =
-                    if (MapBoxEvents.MILESTONE_EVENT == event || event == MapBoxEvents.USER_OFF_ROUTE || event == MapBoxEvents.ROUTE_BUILT) "{" +
-                            "  \"eventType\": \"${event.value}\"," +
-                            "  \"data\": $data" +
-                            "}" else "{" +
-                            "  \"eventType\": \"${event.value}\"," +
-                            "  \"data\": \"$data\"" +
-                            "}";
+                if (MapBoxEvents.MILESTONE_EVENT == event || event == MapBoxEvents.USER_OFF_ROUTE || event == MapBoxEvents.ROUTE_BUILT) "{" +
+                        "  \"eventType\": \"${event.value}\"," +
+                        "  \"data\": $data" +
+                        "}" else "{" +
+                        "  \"eventType\": \"${event.value}\"," +
+                        "  \"data\": \"$data\"" +
+                        "}"
             FlutterMapboxNavigationPlugin.eventSink?.success(jsonString)
         }
 
@@ -117,16 +117,16 @@ class PluginUtilities {
 
         fun isNetworkAvailable(context: Context): Boolean {
             val connectivityManager =
-                    context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+                context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
                 val nw = connectivityManager.activeNetwork ?: return false
                 val actNw = connectivityManager.getNetworkCapabilities(nw) ?: return false
                 return when {
                     actNw.hasTransport(NetworkCapabilities.TRANSPORT_WIFI) -> true
                     actNw.hasTransport(NetworkCapabilities.TRANSPORT_CELLULAR) -> true
-                    //for other device how are able to connect with Ethernet
+                    // for other device how are able to connect with Ethernet
                     actNw.hasTransport(NetworkCapabilities.TRANSPORT_ETHERNET) -> true
-                    //for check internet over Bluetooth
+                    // for check internet over Bluetooth
                     actNw.hasTransport(NetworkCapabilities.TRANSPORT_BLUETOOTH) -> true
                     else -> false
                 }
@@ -137,9 +137,9 @@ class PluginUtilities {
         }
 
         fun <T : Serializable?> getSerializable(
-                activity: Activity,
-                name: String,
-                clazz: Class<T>
+            activity: Activity,
+            name: String,
+            clazz: Class<T>
         ): T {
             return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU)
                 activity.intent.getSerializableExtra(name, clazz)!!
@@ -147,6 +147,5 @@ class PluginUtilities {
                 activity.intent.getSerializableExtra(name) as T
         }
     }
-
 
 }
