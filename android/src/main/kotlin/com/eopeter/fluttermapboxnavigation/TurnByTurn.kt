@@ -1,4 +1,4 @@
-package com.eopeter.flutter_mapbox_navigation
+package com.eopeter.fluttermapboxnavigation
 
 import android.annotation.SuppressLint
 import android.app.Activity
@@ -8,12 +8,12 @@ import android.location.Location
 import android.os.Bundle
 import android.util.Log
 import androidx.lifecycle.LifecycleOwner
-import com.eopeter.flutter_mapbox_navigation.models.MapBoxEvents
-import com.eopeter.flutter_mapbox_navigation.models.MapBoxRouteProgressEvent
-import com.eopeter.flutter_mapbox_navigation.models.Waypoint
-import com.eopeter.flutter_mapbox_navigation.models.WaypointSet
-import com.eopeter.flutter_mapbox_navigation.utilities.CustomInfoPanelEndNavButtonBinder
-import com.eopeter.flutter_mapbox_navigation.utilities.PluginUtilities
+import com.eopeter.fluttermapboxnavigation.models.MapBoxEvents
+import com.eopeter.fluttermapboxnavigation.models.MapBoxRouteProgressEvent
+import com.eopeter.fluttermapboxnavigation.models.Waypoint
+import com.eopeter.fluttermapboxnavigation.models.WaypointSet
+import com.eopeter.fluttermapboxnavigation.utilities.CustomInfoPanelEndNavButtonBinder
+import com.eopeter.fluttermapboxnavigation.utilities.PluginUtilities
 import com.google.gson.Gson
 import com.mapbox.api.directions.v5.DirectionsCriteria
 import com.mapbox.api.directions.v5.models.RouteOptions
@@ -32,7 +32,7 @@ import com.mapbox.navigation.core.lifecycle.MapboxNavigationApp
 import com.mapbox.navigation.core.trip.session.LocationMatcherResult
 import com.mapbox.navigation.core.trip.session.LocationObserver
 import com.mapbox.navigation.core.trip.session.RouteProgressObserver
-import eopeter.flutter_mapbox_navigation.databinding.NavigationActivityBinding
+import com.eopeter.fluttermapboxnavigation.databinding.NavigationActivityBinding
 import io.flutter.plugin.common.EventChannel
 import io.flutter.plugin.common.MethodCall
 import io.flutter.plugin.common.MethodChannel
