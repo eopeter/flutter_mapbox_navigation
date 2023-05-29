@@ -1,4 +1,4 @@
-package com.eopeter.fluttermapboxnavigation.utilities
+package com.eopeter.fluttermapboxnavigation.utilities;
 
 import android.app.Activity
 import android.content.Context
