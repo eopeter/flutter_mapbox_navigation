@@ -1,17 +1,15 @@
-package com.eopeter.flutter_mapbox_navigation
+package com.eopeter.fluttermapboxnavigation
 
 import android.Manifest
 import android.app.Activity
 import android.content.Context
 import android.content.pm.PackageManager
 import android.os.Build
-import com.eopeter.flutter_mapbox_navigation.activity.NavigationLauncher
-import com.eopeter.flutter_mapbox_navigation.factory.EmbeddedNavigationViewFactory
-import com.eopeter.flutter_mapbox_navigation.models.Waypoint
-
+import com.eopeter.fluttermapboxnavigation.activity.NavigationLauncher
+import com.eopeter.fluttermapboxnavigation.factory.EmbeddedNavigationViewFactory
+import com.eopeter.fluttermapboxnavigation.models.Waypoint
 import com.mapbox.api.directions.v5.DirectionsCriteria
 import com.mapbox.api.directions.v5.models.DirectionsRoute
-
 import io.flutter.embedding.engine.plugins.FlutterPlugin
 import io.flutter.embedding.engine.plugins.activity.ActivityAware
 import io.flutter.embedding.engine.plugins.activity.ActivityPluginBinding
@@ -22,10 +20,9 @@ import io.flutter.plugin.common.MethodChannel
 import io.flutter.plugin.common.MethodChannel.MethodCallHandler
 import io.flutter.plugin.common.MethodChannel.Result
 import io.flutter.plugin.platform.PlatformViewRegistry
-import java.util.*
 
 /** FlutterMapboxNavigationPlugin */
-public class FlutterMapboxNavigationPlugin : FlutterPlugin, MethodCallHandler,
+class FlutterMapboxNavigationPlugin : FlutterPlugin, MethodCallHandler,
     EventChannel.StreamHandler, ActivityAware {
 
     private lateinit var channel: MethodChannel
@@ -42,7 +39,7 @@ public class FlutterMapboxNavigationPlugin : FlutterPlugin, MethodCallHandler,
         progressEventChannel.setStreamHandler(this)
 
         platformViewRegistry = binding.platformViewRegistry
-        binaryMessenger = messenger;
+        binaryMessenger = messenger
 
 
     }
@@ -84,10 +81,10 @@ public class FlutterMapboxNavigationPlugin : FlutterPlugin, MethodCallHandler,
                 result.success("Android ${Build.VERSION.RELEASE}")
             }
             "getDistanceRemaining" -> {
-                result.success(distanceRemaining);
+                result.success(distanceRemaining)
             }
             "getDurationRemaining" -> {
-                result.success(durationRemaining);
+                result.success(durationRemaining)
             }
             "startFreeDrive" -> {
                 enableFreeDriveMode = true
@@ -112,7 +109,7 @@ public class FlutterMapboxNavigationPlugin : FlutterPlugin, MethodCallHandler,
 
     private fun downloadRegionForOfflineRouting(
         call: MethodCall,
-        result: MethodChannel.Result
+        result: Result
     ) {
         result.error("TODO", "Not Implemented in Android", "will implement soon")
     }
@@ -128,7 +125,7 @@ public class FlutterMapboxNavigationPlugin : FlutterPlugin, MethodCallHandler,
                 "walking" -> navigationMode = DirectionsCriteria.PROFILE_WALKING
                 "cycling" -> navigationMode = DirectionsCriteria.PROFILE_CYCLING
                 "driving" -> navigationMode = DirectionsCriteria.PROFILE_DRIVING
-            };
+            }
         }
 
         val alternateRoutes = arguments?.get("alternatives") as? Boolean
@@ -147,16 +144,18 @@ public class FlutterMapboxNavigationPlugin : FlutterPlugin, MethodCallHandler,
         }
 
         val language = arguments?.get("language") as? String
-        if (language != null)
+        if (language != null) {
             navigationLanguage = language
+        }
 
         val units = arguments?.get("units") as? String
 
         if (units != null) {
-            if (units == "imperial")
+            if (units == "imperial") {
                 navigationVoiceUnits = DirectionsCriteria.IMPERIAL
-            else if (units == "metric")
+            } else if (units == "metric") {
                 navigationVoiceUnits = DirectionsCriteria.METRIC
+            }
         }
 
         mapStyleUrlDay = arguments?.get("mapStyleUrlDay") as? String
@@ -179,7 +178,6 @@ public class FlutterMapboxNavigationPlugin : FlutterPlugin, MethodCallHandler,
             wayPoints.add(Waypoint(name, longitude, latitude, isSilent))
         }
         checkPermissionAndBeginNavigation(wayPoints)
-
     }
 
     private fun checkPermissionAndBeginNavigation(wayPoints: List<Waypoint>) {
@@ -200,12 +198,12 @@ public class FlutterMapboxNavigationPlugin : FlutterPlugin, MethodCallHandler,
     }
 
     private fun beginNavigation(wayPoints: List<Waypoint>) {
-        NavigationLauncher.startNavigation(currentActivity, wayPoints);
+        NavigationLauncher.startNavigation(currentActivity, wayPoints)
     }
 
     private fun addWayPointsToNavigation(
         call: MethodCall,
-        result: MethodChannel.Result
+        result: Result
     ) {
         val arguments = call.arguments as? Map<String, Any>
         val points = arguments?.get("wayPoints") as HashMap<Int, Any>
@@ -218,23 +216,21 @@ public class FlutterMapboxNavigationPlugin : FlutterPlugin, MethodCallHandler,
             val isSilent = point["IsSilent"] as Boolean
             wayPoints.add(Waypoint(name, latitude, longitude, isSilent))
         }
-        NavigationLauncher.addWayPoints(currentActivity, wayPoints);
+        NavigationLauncher.addWayPoints(currentActivity, wayPoints)
     }
 
     override fun onListen(args: Any?, events: EventChannel.EventSink?) {
-        eventSink = events;
+        eventSink = events
     }
 
     override fun onCancel(args: Any?) {
-        eventSink = null;
+        eventSink = null
     }
 
     override fun onDetachedFromEngine(binding: FlutterPlugin.FlutterPluginBinding) {
-
         currentActivity = null
         channel.setMethodCallHandler(null)
         progressEventChannel.setStreamHandler(null)
-
     }
 
     override fun onDetachedFromActivity() {
@@ -243,16 +239,12 @@ public class FlutterMapboxNavigationPlugin : FlutterPlugin, MethodCallHandler,
     }
 
     override fun onReattachedToActivityForConfigChanges(binding: ActivityPluginBinding) {
-
         currentActivity = binding.activity
-
     }
 
     override fun onAttachedToActivity(binding: ActivityPluginBinding) {
-
         currentActivity = binding.activity
         currentContext = binding.activity.applicationContext
-
         if (platformViewRegistry != null && binaryMessenger != null && currentActivity != null) {
             platformViewRegistry?.registerViewFactory(
                 viewId,
@@ -262,7 +254,7 @@ public class FlutterMapboxNavigationPlugin : FlutterPlugin, MethodCallHandler,
     }
 
     override fun onDetachedFromActivityForConfigChanges() {
-        //To change body of created functions use File | Settings | File Templates.
+        // To change body of created functions use File | Settings | File Templates.
     }
 
     fun onRequestPermissionsResult(
@@ -272,7 +264,6 @@ public class FlutterMapboxNavigationPlugin : FlutterPlugin, MethodCallHandler,
     ) {
         when (requestCode) {
             367 -> {
-
                 for (permission in permissions) {
                     if (permission == Manifest.permission.ACCESS_FINE_LOCATION) {
                         val haspermission = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
@@ -292,10 +283,8 @@ public class FlutterMapboxNavigationPlugin : FlutterPlugin, MethodCallHandler,
                 // All permissions are granted. Do the work accordingly.
             }
         }
-        //super.onRequestPermissionsResult(requestCode, permissions, grantResults)
-
+        // super.onRequestPermissionsResult(requestCode, permissions, grantResults)
     }
-
 }
 
 private const val MAPBOX_ACCESS_TOKEN_PLACEHOLDER = "YOUR_MAPBOX_ACCESS_TOKEN_GOES_HERE"

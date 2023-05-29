@@ -1,4 +1,4 @@
-package com.eopeter.flutter_mapbox_navigation_example
+package com.eopeter.fluttermapboxnavigationexample
 
 import io.flutter.embedding.android.FlutterFragmentActivity
 

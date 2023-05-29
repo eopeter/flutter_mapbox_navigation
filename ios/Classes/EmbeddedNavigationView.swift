@@ -154,10 +154,10 @@ public class FlutterMapboxNavigationView : NavigationFactory, FlutterPlatformVie
         {
             return
         }
-
-        setupMapView()
-        self.view().setNeedsDisplay()
-
+        if (navigationService != nil) {
+            navigationService.stop()
+        }
+        navigationMapView.removeRoutes()
         routeResponse = nil
         sendEvent(eventType: MapBoxEventType.navigation_cancelled)
     }

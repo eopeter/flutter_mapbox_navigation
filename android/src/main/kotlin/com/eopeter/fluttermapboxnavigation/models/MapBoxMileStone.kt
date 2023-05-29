@@ -1,4 +1,4 @@
-package com.eopeter.flutter_mapbox_navigation.models
+package com.eopeter.fluttermapboxnavigation.models
 
 data class MapBoxMileStone(
     var identifier: Int?,
@@ -6,7 +6,6 @@ data class MapBoxMileStone(
     var legIndex: Int?,
     var stepIndex: Int?
 ) {
-
     override fun toString(): String {
         return "{" +
                 "  \"identifier\": \"$identifier\"," +

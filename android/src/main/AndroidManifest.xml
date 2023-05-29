@@ -1,12 +1,12 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-  package="eopeter.flutter_mapbox_navigation">
+  package="com.eopeter.fluttermapboxnavigation">
 
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
 
     <application>
-        <activity android:name="com.eopeter.flutter_mapbox_navigation.activity.NavigationActivity" />
+        <activity android:name="com.eopeter.fluttermapboxnavigation.activity.NavigationActivity" />
     </application>
 
 </manifest>
