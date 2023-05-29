@@ -1,13 +1,13 @@
-package com.eopeter.flutter_mapbox_navigation
+package com.eopeter.fluttermapboxnavigation
 
 import android.Manifest
 import android.app.Activity
 import android.content.Context
 import android.content.pm.PackageManager
 import android.os.Build
-import com.eopeter.flutter_mapbox_navigation.activity.NavigationLauncher
-import com.eopeter.flutter_mapbox_navigation.factory.EmbeddedNavigationViewFactory
-import com.eopeter.flutter_mapbox_navigation.models.Waypoint
+import com.eopeter.fluttermapboxnavigation.activity.NavigationLauncher
+import com.eopeter.fluttermapboxnavigation.factory.EmbeddedNavigationViewFactory
+import com.eopeter.fluttermapboxnavigation.models.Waypoint
 
 import com.mapbox.api.directions.v5.DirectionsCriteria
 import com.mapbox.api.directions.v5.models.DirectionsRoute

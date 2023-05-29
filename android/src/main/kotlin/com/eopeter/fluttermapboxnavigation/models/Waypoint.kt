@@ -1,4 +1,4 @@
-package com.eopeter.flutter_mapbox_navigation.models
+package com.eopeter.fluttermapboxnavigation.models
 
 import com.google.gson.annotations.SerializedName
 import com.mapbox.geojson.Point

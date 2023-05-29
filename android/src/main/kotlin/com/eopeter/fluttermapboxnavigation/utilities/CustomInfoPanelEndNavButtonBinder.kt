@@ -1,7 +1,7 @@
-package com.eopeter.flutter_mapbox_navigation.utilities
+package com.eopeter.fluttermapboxnavigation.utilities
 
 import android.view.ViewGroup
-import com.eopeter.flutter_mapbox_navigation.models.MapBoxEvents
+import com.eopeter.fluttermapboxnavigation.models.MapBoxEvents
 import com.mapbox.navigation.core.MapboxNavigation
 import com.mapbox.navigation.core.lifecycle.MapboxNavigationObserver
 import com.mapbox.navigation.dropin.R

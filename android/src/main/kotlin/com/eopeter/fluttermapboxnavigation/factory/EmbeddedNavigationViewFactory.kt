@@ -1,15 +1,12 @@
-package com.eopeter.flutter_mapbox_navigation.factory
+package com.eopeter.fluttermapboxnavigation.factory
 
 import android.app.Activity
 import android.content.Context
 import android.view.LayoutInflater
-import com.eopeter.flutter_mapbox_navigation.utilities.PluginUtilities
-import com.eopeter.flutter_mapbox_navigation.models.views.EmbeddedNavigationMapView
-import com.eopeter.flutter_mapbox_navigation.models.views.EmbeddedView
-import com.eopeter.flutter_mapbox_navigation.models.views.NativeView
-import eopeter.flutter_mapbox_navigation.R
-import eopeter.flutter_mapbox_navigation.databinding.NavigationActivityBinding
-import eopeter.flutter_mapbox_navigation.databinding.ComponentsNavigationActivityBinding
+import com.eopeter.fluttermapboxnavigation.utilities.PluginUtilities
+import com.eopeter.fluttermapboxnavigation.models.views.EmbeddedNavigationMapView
+import com.eopeter.fluttermapboxnavigation.R
+import com.eopeter.fluttermapboxnavigation.databinding.NavigationActivityBinding
 
 import io.flutter.plugin.common.BinaryMessenger
 import io.flutter.plugin.common.StandardMessageCodec

@@ -1,4 +1,4 @@
-package com.eopeter.flutter_mapbox_navigation.models
+package com.eopeter.fluttermapboxnavigation.models
 
 import com.mapbox.navigation.base.trip.model.RouteProgress
 import com.google.gson.*

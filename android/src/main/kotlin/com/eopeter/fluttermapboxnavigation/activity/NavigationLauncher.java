@@ -1,9 +1,9 @@
-package com.eopeter.flutter_mapbox_navigation.activity;
+package com.eopeter.fluttermapboxnavigation.activity;
 
 import android.app.Activity;
 import android.content.Intent;
 
-import com.eopeter.flutter_mapbox_navigation.models.Waypoint;
+import com.eopeter.fluttermapboxnavigation.models.Waypoint;
 
 import java.io.Serializable;
 import java.util.List;

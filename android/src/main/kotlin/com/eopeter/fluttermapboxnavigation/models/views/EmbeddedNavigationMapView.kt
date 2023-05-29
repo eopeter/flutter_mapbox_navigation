@@ -1,16 +1,15 @@
-package com.eopeter.flutter_mapbox_navigation.models.views
+package com.eopeter.fluttermapboxnavigation.models.views
 
 import android.app.Activity
 import android.view.View
 import android.content.Context
 
-import com.eopeter.flutter_mapbox_navigation.TurnByTurn
-import eopeter.flutter_mapbox_navigation.databinding.NavigationActivityBinding
+import com.eopeter.fluttermapboxnavigation.TurnByTurn
+import com.eopeter.fluttermapboxnavigation.databinding.NavigationActivityBinding
 import io.flutter.plugin.common.BinaryMessenger
 import io.flutter.plugin.common.EventChannel
 import io.flutter.plugin.common.MethodChannel
 import io.flutter.plugin.platform.PlatformView
-import eopeter.flutter_mapbox_navigation.databinding.ComponentsNavigationActivityBinding
 
 class EmbeddedNavigationMapView(
         context: Context,

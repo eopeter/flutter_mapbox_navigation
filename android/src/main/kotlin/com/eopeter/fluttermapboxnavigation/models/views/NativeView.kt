@@ -1,4 +1,4 @@
-package com.eopeter.flutter_mapbox_navigation.models.views
+package com.eopeter.fluttermapboxnavigation.models.views
 
 import android.content.Context
 import android.graphics.Color

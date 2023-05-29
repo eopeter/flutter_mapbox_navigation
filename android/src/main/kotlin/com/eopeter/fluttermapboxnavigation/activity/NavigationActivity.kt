@@ -1,17 +1,17 @@
-package com.eopeter.flutter_mapbox_navigation.activity
+package com.eopeter.fluttermapboxnavigation.activity
 
 import android.content.*
 import android.location.Location
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
-import com.eopeter.flutter_mapbox_navigation.FlutterMapboxNavigationPlugin
-import com.eopeter.flutter_mapbox_navigation.models.MapBoxEvents
-import com.eopeter.flutter_mapbox_navigation.models.MapBoxRouteProgressEvent
-import com.eopeter.flutter_mapbox_navigation.models.Waypoint
-import com.eopeter.flutter_mapbox_navigation.models.WaypointSet
-import com.eopeter.flutter_mapbox_navigation.utilities.CustomInfoPanelEndNavButtonBinder
-import com.eopeter.flutter_mapbox_navigation.utilities.PluginUtilities
-import com.eopeter.flutter_mapbox_navigation.utilities.PluginUtilities.Companion.sendEvent
+import com.eopeter.fluttermapboxnavigation.FlutterMapboxNavigationPlugin
+import com.eopeter.fluttermapboxnavigation.models.MapBoxEvents
+import com.eopeter.fluttermapboxnavigation.models.MapBoxRouteProgressEvent
+import com.eopeter.fluttermapboxnavigation.models.Waypoint
+import com.eopeter.fluttermapboxnavigation.models.WaypointSet
+import com.eopeter.fluttermapboxnavigation.utilities.CustomInfoPanelEndNavButtonBinder
+import com.eopeter.fluttermapboxnavigation.utilities.PluginUtilities
+import com.eopeter.fluttermapboxnavigation.utilities.PluginUtilities.Companion.sendEvent
 import com.mapbox.api.directions.v5.models.DirectionsRoute
 import com.mapbox.api.directions.v5.models.RouteOptions
 import com.mapbox.geojson.Point
@@ -29,8 +29,8 @@ import com.mapbox.navigation.core.arrival.ArrivalObserver
 import com.mapbox.navigation.core.lifecycle.MapboxNavigationApp
 import com.mapbox.navigation.dropin.map.MapViewObserver
 import com.mapbox.navigation.utils.internal.ifNonNull
-import eopeter.flutter_mapbox_navigation.R
-import eopeter.flutter_mapbox_navigation.databinding.NavigationActivityBinding
+import com.eopeter.fluttermapboxnavigation.R
+import com.eopeter.fluttermapboxnavigation.databinding.NavigationActivityBinding
 import com.google.gson.Gson
 import com.mapbox.navigation.core.trip.session.*
 import com.mapbox.navigation.dropin.navigationview.NavigationViewListener

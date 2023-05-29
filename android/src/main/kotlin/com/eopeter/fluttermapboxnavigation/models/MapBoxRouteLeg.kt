@@ -1,4 +1,4 @@
-package com.eopeter.flutter_mapbox_navigation.models
+package com.eopeter.fluttermapboxnavigation.models
 
 import com.mapbox.api.directions.v5.models.RouteLeg
 import com.google.gson.*

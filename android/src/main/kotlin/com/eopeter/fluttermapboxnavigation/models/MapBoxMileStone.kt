@@ -1,4 +1,4 @@
-package com.eopeter.flutter_mapbox_navigation.models
+package com.eopeter.fluttermapboxnavigation.models
 
 data class MapBoxMileStone(
     var identifier: Int?,

@@ -1,11 +1,8 @@
-package com.eopeter.flutter_mapbox_navigation.models.views
+package com.eopeter.fluttermapboxnavigation.models.views
 
 import android.content.Context
-import android.graphics.Color
 import android.view.View
-import android.widget.TextView
-import com.eopeter.flutter_mapbox_navigation.FlutterMapboxNavigationPlugin
-import com.eopeter.flutter_mapbox_navigation.utilities.PluginUtilities
+import com.eopeter.fluttermapboxnavigation.utilities.PluginUtilities
 import com.mapbox.navigation.dropin.NavigationView
 import io.flutter.plugin.platform.PlatformView
 
