@@ -1,3 +1,6 @@
+## 0.1.6
+* Embedded Clear Route Bug Fix
+
 ## 0.1.5
 * Bug Fixes [248](https://github.com/eopeter/flutter_mapbox_navigation/pull/248) and [250](https://github.com/eopeter/flutter_mapbox_navigation/pull/250)
 

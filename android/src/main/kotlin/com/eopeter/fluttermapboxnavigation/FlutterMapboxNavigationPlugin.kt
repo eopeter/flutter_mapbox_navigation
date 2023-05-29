@@ -272,7 +272,7 @@ class FlutterMapboxNavigationPlugin : FlutterPlugin, MethodCallHandler,
                             TODO("VERSION.SDK_INT < M")
                         }
                         if (haspermission == PackageManager.PERMISSION_GRANTED) {
-                            if (wayPoints.count() > 0)
+                            if (wayPoints.isNotEmpty())
                                 beginNavigation(wayPoints)
                         }
                         // Not all permissions granted. Show some message and return.
