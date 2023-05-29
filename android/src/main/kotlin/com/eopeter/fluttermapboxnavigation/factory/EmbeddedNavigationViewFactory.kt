@@ -3,11 +3,10 @@ package com.eopeter.fluttermapboxnavigation.factory
 import android.app.Activity
 import android.content.Context
 import android.view.LayoutInflater
-import com.eopeter.fluttermapboxnavigation.utilities.PluginUtilities
-import com.eopeter.fluttermapboxnavigation.models.views.EmbeddedNavigationMapView
 import com.eopeter.fluttermapboxnavigation.R
 import com.eopeter.fluttermapboxnavigation.databinding.NavigationActivityBinding
-
+import com.eopeter.fluttermapboxnavigation.models.views.EmbeddedNavigationMapView
+import com.eopeter.fluttermapboxnavigation.utilities.PluginUtilities
 import io.flutter.plugin.common.BinaryMessenger
 import io.flutter.plugin.common.StandardMessageCodec
 import io.flutter.plugin.platform.PlatformView
