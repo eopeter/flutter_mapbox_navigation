@@ -1,4 +1,5 @@
 import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_mapbox_navigation/flutter_mapbox_navigation.dart';
@@ -7,7 +8,7 @@ class SampleNavigationApp extends StatefulWidget {
   const SampleNavigationApp({super.key});
 
   @override
-  _SampleNavigationAppState createState() => _SampleNavigationAppState();
+  State<SampleNavigationApp> createState() => _SampleNavigationAppState();
 }
 
 class _SampleNavigationAppState extends State<SampleNavigationApp> {
@@ -131,7 +132,8 @@ class _SampleNavigationAppState extends State<SampleNavigationApp> {
                             wayPoints.add(_home);
                             wayPoints.add(_store);
 
-                            await MapBoxNavigation.instance.startNavigation(wayPoints: wayPoints);
+                            await MapBoxNavigation.instance
+                                .startNavigation(wayPoints: wayPoints);
                           },
                         ),
                         const SizedBox(
@@ -158,8 +160,13 @@ class _SampleNavigationAppState extends State<SampleNavigationApp> {
                                     units: VoiceUnits.metric));
                             //after 10 seconds add a new stop
                             await Future.delayed(const Duration(seconds: 10));
-                            var stop = WayPoint(name: "Gas Station", latitude: 38.911176544398, longitude: -77.04014366543564, isSilent: false);
-                            MapBoxNavigation.instance.addWayPoints(wayPoints: [stop]);
+                            var stop = WayPoint(
+                                name: "Gas Station",
+                                latitude: 38.911176544398,
+                                longitude: -77.04014366543564,
+                                isSilent: false);
+                            MapBoxNavigation.instance
+                                .addWayPoints(wayPoints: [stop]);
                           },
                         ),
                         const SizedBox(
@@ -168,7 +175,7 @@ class _SampleNavigationAppState extends State<SampleNavigationApp> {
                         ElevatedButton(
                           child: const Text("Free Drive"),
                           onPressed: () async {
-                             await MapBoxNavigation.instance.startFreeDrive();
+                            await MapBoxNavigation.instance.startFreeDrive();
                           },
                         ),
                       ],
@@ -192,17 +199,18 @@ class _SampleNavigationAppState extends State<SampleNavigationApp> {
                           onPressed: _isNavigating
                               ? null
                               : () {
-                            if (_routeBuilt) {
-                              _controller?.clearRoute();
-                            } else {
-                              var wayPoints = <WayPoint>[];
-                              wayPoints.add(_home);
-                              wayPoints.add(_store);
-                              _isMultipleStop = wayPoints.length > 2;
-                              _controller?.buildRoute(
-                                  wayPoints: wayPoints, options: _navigationOption);
-                            }
-                          },
+                                  if (_routeBuilt) {
+                                    _controller?.clearRoute();
+                                  } else {
+                                    var wayPoints = <WayPoint>[];
+                                    wayPoints.add(_home);
+                                    wayPoints.add(_store);
+                                    _isMultipleStop = wayPoints.length > 2;
+                                    _controller?.buildRoute(
+                                        wayPoints: wayPoints,
+                                        options: _navigationOption);
+                                  }
+                                },
                           child: Text(_routeBuilt && !_isNavigating
                               ? "Clear Route"
                               : "Build Route"),
@@ -211,32 +219,33 @@ class _SampleNavigationAppState extends State<SampleNavigationApp> {
                           width: 10,
                         ),
                         ElevatedButton(
-                          child: const Text("Start "),
                           onPressed: _routeBuilt && !_isNavigating
                               ? () {
-                            _controller?.startNavigation();
-                          }
+                                  _controller?.startNavigation();
+                                }
                               : null,
+                          child: const Text('Start '),
                         ),
                         const SizedBox(
                           width: 10,
                         ),
                         ElevatedButton(
-                          child: const Text("Cancel "),
                           onPressed: _isNavigating
                               ? () {
-                            _controller?.finishNavigation();
-                          }
+                                  _controller?.finishNavigation();
+                                }
                               : null,
+                          child: const Text('Cancel '),
                         )
-
                       ],
                     ),
                     ElevatedButton(
                       onPressed: _inFreeDrive
-                          ? null : () async {
-                        _inFreeDrive = await _controller?.startFreeDrive() ?? false;
-                      },
+                          ? null
+                          : () async {
+                              _inFreeDrive =
+                                  await _controller?.startFreeDrive() ?? false;
+                            },
                       child: const Text("Free Drive "),
                     ),
                     const Center(

@@ -1,12 +1,18 @@
-/// This class contains rating and comment from the user when navigation ends on iOS
+/// This class contains rating and comment from the user when
+/// navigation ends on iOS
 class MapBoxFeedback {
-  int? rating;
-  String? comment;
-
+  /// Constructor
   MapBoxFeedback({this.rating, this.comment});
 
+  /// return [MapBoxFeedback] from a json
   MapBoxFeedback.fromJson(Map<String, dynamic> json) {
-    rating = json['rating'];
-    comment = json['comment'];
+    rating = json['rating'] != null ? json['rating'] as int : null;
+    comment = json['comment'] != null ? json['comment'] as String : null;
   }
+
+  /// Rating 0-100 corresponding to the stars selection in iOS feedback
+  int? rating;
+
+  /// String comment
+  String? comment;
 }
