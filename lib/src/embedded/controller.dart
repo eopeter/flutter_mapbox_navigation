@@ -4,17 +4,16 @@ import 'dart:io';
 
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
-import '../models/models.dart';
+import 'package:flutter_mapbox_navigation/src/models/models.dart';
 
-/// Controller for a single MapBox Navigation instance running on the host platform.
+/// Controller for a single MapBox Navigation instance
+/// running on the host platform.
 class MapBoxNavigationViewController {
-  late MethodChannel _methodChannel;
-  late EventChannel _eventChannel;
-
-  ValueSetter<RouteEvent>? _routeEventNotifier;
-
+  /// Constructor
   MapBoxNavigationViewController(
-      int id, ValueSetter<RouteEvent>? eventNotifier) {
+    int id,
+    ValueSetter<RouteEvent>? eventNotifier,
+  ) {
     _methodChannel = MethodChannel('flutter_mapbox_navigation/$id');
     _methodChannel.setMethodCallHandler(_handleMethod);
 
@@ -22,64 +21,77 @@ class MapBoxNavigationViewController {
     _routeEventNotifier = eventNotifier;
   }
 
-  Stream<RouteEvent>? _onRouteEvent;
+  late MethodChannel _methodChannel;
+  late EventChannel _eventChannel;
+
+  ValueSetter<RouteEvent>? _routeEventNotifier;
+
   late StreamSubscription<RouteEvent> _routeEventSubscription;
 
   ///Current Device OS Version
   Future<String> get platformVersion => _methodChannel
       .invokeMethod('getPlatformVersion')
-      .then<String>((dynamic result) => result);
+      .then((dynamic result) => result as String);
 
   ///Total distance remaining in meters along route.
   Future<double> get distanceRemaining => _methodChannel
       .invokeMethod<double>('getDistanceRemaining')
-      .then<double>((dynamic result) => result);
+      .then((dynamic result) => result as double);
 
   ///Total seconds remaining on all legs.
   Future<double> get durationRemaining => _methodChannel
       .invokeMethod<double>('getDurationRemaining')
-      .then<double>((dynamic result) => result);
+      .then((dynamic result) => result as double);
 
   ///Build the Route Used for the Navigation
   ///
-  /// [wayPoints] must not be null. A collection of [WayPoint](longitude, latitude and name). Must be at least 2 or at most 25. Cannot use drivingWithTraffic mode if more than 3-waypoints.
+  /// [wayPoints] must not be null. A collection of [WayPoint](longitude,
+  /// latitude and name). Must be at least 2 or at most 25. Cannot use
+  /// drivingWithTraffic mode if more than 3-waypoints.
   /// [options] options used to generate the route and used while navigating
   ///
-  Future<bool> buildRoute(
-      {required List<WayPoint> wayPoints, MapBoxOptions? options}) async {
-    assert(wayPoints.length > 1);
+  Future<bool> buildRoute({
+    required List<WayPoint> wayPoints,
+    MapBoxOptions? options,
+  }) async {
+    assert(wayPoints.length > 1, 'Error: WayPoints must be at least 2');
     if (Platform.isIOS && wayPoints.length > 3 && options?.mode != null) {
-      assert(options!.mode != MapBoxNavigationMode.drivingWithTraffic,
-          "Error: Cannot use drivingWithTraffic Mode when you have more than 3 Stops");
+      assert(
+        options!.mode != MapBoxNavigationMode.drivingWithTraffic,
+        '''
+          Error: Cannot use drivingWithTraffic Mode 
+          when you have more than 3 Stops
+        ''',
+      );
     }
-    List<Map<String, Object?>> pointList = [];
+    final pointList = <Map<String, Object?>>[];
 
-    for (int i = 0; i < wayPoints.length; i++) {
-      var wayPoint = wayPoints[i];
-      assert(wayPoint.name != null);
-      assert(wayPoint.latitude != null);
-      assert(wayPoint.longitude != null);
+    for (var i = 0; i < wayPoints.length; i++) {
+      final wayPoint = wayPoints[i];
+      assert(wayPoint.name != null, 'Error: waypoints need name');
+      assert(wayPoint.latitude != null, 'Error: waypoints need latitude');
+      assert(wayPoint.longitude != null, 'Error: waypoints need longitude');
 
       final pointMap = <String, dynamic>{
-        "Order": i,
-        "Name": wayPoint.name,
-        "Latitude": wayPoint.latitude,
-        "Longitude": wayPoint.longitude,
+        'Order': i,
+        'Name': wayPoint.name,
+        'Latitude': wayPoint.latitude,
+        'Longitude': wayPoint.longitude,
       };
       pointList.add(pointMap);
     }
-    var i = 0;
-    var wayPointMap =
-        { for (var e in pointList) i++ : e };
 
-    Map<String, dynamic> args = <String, dynamic>{};
+    var i = 0;
+    final wayPointMap = {for (var e in pointList) i++: e};
+
+    var args = <String, dynamic>{};
     if (options != null) args = options.toMap();
-    args["wayPoints"] = wayPointMap;
+    args['wayPoints'] = wayPointMap;
 
     _routeEventSubscription = _streamRouteEvent!.listen(_onProgressData);
-    return await _methodChannel
+    return _methodChannel
         .invokeMethod('buildRoute', args)
-        .then<bool>((dynamic result) => result);
+        .then((dynamic result) => result as bool);
   }
 
   /// starts listening for events
@@ -109,21 +121,21 @@ class MapBoxNavigationViewController {
 
   ///Ends Navigation and Closes the Navigation View
   Future<bool?> finishNavigation() async {
-    var success = await _methodChannel.invokeMethod('finishNavigation', null);
-    return success;
+    final success = await _methodChannel.invokeMethod('finishNavigation', null);
+    return success as bool?;
   }
 
   /// Generic Handler for Messages sent from the Platform
   Future<dynamic> _handleMethod(MethodCall call) async {
     switch (call.method) {
       case 'sendFromNative':
-        String? text = call.arguments as String?;
-        return Future.value("Text from native: $text");
+        final text = call.arguments as String?;
+        return Future.value('Text from native: $text');
     }
   }
 
   void _onProgressData(RouteEvent event) {
-    if (_routeEventNotifier != null) _routeEventNotifier!(event);
+    if (_routeEventNotifier != null) _routeEventNotifier?.call(event);
 
     if (event.eventType == MapBoxEvent.on_arrival) {
       _routeEventSubscription.cancel();
@@ -131,19 +143,20 @@ class MapBoxNavigationViewController {
   }
 
   Stream<RouteEvent>? get _streamRouteEvent {
-    _onRouteEvent ??= _eventChannel
-          .receiveBroadcastStream()
-          .map((dynamic event) => _parseRouteEvent(event));
-    return _onRouteEvent;
+    return _eventChannel
+        .receiveBroadcastStream()
+        .map((dynamic event) => _parseRouteEvent(event as String));
   }
 
   RouteEvent _parseRouteEvent(String jsonString) {
     RouteEvent event;
-    var map = json.decode(jsonString);
-    var progressEvent = RouteProgressEvent.fromJson(map);
+    final map = json.decode(jsonString) as Map<String, dynamic>;
+    final progressEvent = RouteProgressEvent.fromJson(map);
     if (progressEvent.isProgressEvent!) {
       event = RouteEvent(
-          eventType: MapBoxEvent.progress_change, data: progressEvent);
+        eventType: MapBoxEvent.progress_change,
+        data: progressEvent,
+      );
     } else {
       event = RouteEvent.fromJson(map);
     }

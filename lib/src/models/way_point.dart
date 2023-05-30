@@ -4,30 +4,41 @@
 ///location along with other optional information, such as a name or
 ///the user’s direction approaching the waypoint.
 class WayPoint {
-  String? name;
-  double? latitude;
-  double? longitude;
-  bool? isSilent;
+  ///Constructor
+  WayPoint({
+    required this.name,
+    required this.latitude,
+    required this.longitude,
+    this.isSilent,
+  });
 
-  WayPoint(
-      {required this.name, required this.latitude, required this.longitude, this.isSilent});
+  /// create [WayPoint] from a json
+  WayPoint.fromJson(Map<String, dynamic> json) {
+    name = json['name'] as String?;
+    latitude = json['latitude'] as double?;
+    longitude = json['longitude'] as double?;
+
+    if (json['isSilent'] == null) {
+      isSilent = false;
+    } else {
+      isSilent = json['isSilent'] as bool;
+    }
+  }
+
+  /// Waypoint [name]
+  String? name;
+
+  /// Waypoint latitude
+  double? latitude;
+
+  /// Waypoint longitude
+  double? longitude;
+
+  /// Waypoint property isSilent
+  bool? isSilent;
 
   @override
   String toString() {
     return 'WayPoint{latitude: $latitude, longitude: $longitude}';
-  }
-
-  WayPoint.fromJson(Map<String, dynamic> json) {
-    name = json["name"];
-    latitude = json["latitude"] as double?;
-    longitude = json["longitude"] as double?;
-
-    //isSilent = json["isSilent"]==null ? false : json["isSilent"] as bool;
-    if(json["isSilent"]==null) {
-      isSilent = false;
-    }
-    else {
-      isSilent = json["isSilent"] as bool;
-    }
   }
 }
