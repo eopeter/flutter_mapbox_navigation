@@ -1,4 +1,4 @@
-package com.eopeter.flutter_mapbox_navigation.models
+package com.eopeter.fluttermapboxnavigation.models
 
 enum class MapBoxEvents(val value: String) {
     MAP_READY("map_ready"),
