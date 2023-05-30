@@ -31,3 +31,12 @@ flutter:
         pluginClass: FlutterMapboxNavigationPlugin
       ios:
         pluginClass: FlutterMapboxNavigationPlugin
+ #      linux:
+ #        pluginClass: FlutterMapboxNavigationPlugin
+ #      macos:
+ #        pluginClass: FlutterMapboxNavigationPlugin
+ #      windows:
+ #        pluginClass: FlutterMapboxNavigationPluginCApi
+ #      web:
+ #        pluginClass: FlutterMapboxNavigationWeb
+ #        fileName: flutter_mapbox_navigation_web.dart
