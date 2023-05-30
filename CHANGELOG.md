@@ -1,3 +1,6 @@
+## 0.1.7
+* Fix Android mainClass entry Error
+
 ## 0.1.6
 * Embedded Clear Route Bug Fix
 
