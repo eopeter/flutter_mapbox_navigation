@@ -1,3 +1,6 @@
+## 0.1.8
+* Fix Android NavigationMode [261](https://github.com/eopeter/flutter_mapbox_navigation/pull/261)
+
 ## 0.1.7
 * Fix Android mainClass entry Error
 
