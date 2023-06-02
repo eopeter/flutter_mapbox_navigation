@@ -121,7 +121,7 @@ open class TurnByTurn(
         MapboxNavigationApp.current()!!.requestRoutes(
             routeOptions = RouteOptions
                 .builder()
-                .applyDefaultNavigationOptions()
+                .applyDefaultNavigationOptions(navigationMode)
                 .applyLanguageAndVoiceUnitOptions(context)
                 .coordinatesList(this.addedWaypoints.coordinatesList())
                 .waypointIndicesList(this.addedWaypoints.waypointsIndices())
