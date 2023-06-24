@@ -16,6 +16,7 @@ import com.eopeter.fluttermapboxnavigation.models.WaypointSet
 import com.eopeter.fluttermapboxnavigation.utilities.CustomInfoPanelEndNavButtonBinder
 import com.eopeter.fluttermapboxnavigation.utilities.PluginUtilities
 import com.google.gson.Gson
+import com.mapbox.maps.Style
 import com.mapbox.api.directions.v5.DirectionsCriteria
 import com.mapbox.api.directions.v5.models.RouteOptions
 import com.mapbox.geojson.Point
@@ -249,6 +250,15 @@ open class TurnByTurn(
 
         this.mapStyleUrlDay = arguments["mapStyleUrlDay"] as? String
         this.mapStyleUrlNight = arguments["mapStyleUrlNight"] as? String
+
+        //Set the style Uri
+        if (this.mapStyleUrlDay == null) this.mapStyleUrlDay = Style.MAPBOX_STREETS
+        if (this.mapStyleUrlNight == null) this.mapStyleUrlNight = Style.DARK
+
+        this@TurnByTurn.binding.navigationView.customizeViewOptions {
+            mapStyleUriDay = this@TurnByTurn.mapStyleUrlDay
+            mapStyleUriNight = this@TurnByTurn.mapStyleUrlNight
+        }           
 
         this.initialLatitude = arguments["initialLatitude"] as? Double
         this.initialLongitude = arguments["initialLongitude"] as? Double
