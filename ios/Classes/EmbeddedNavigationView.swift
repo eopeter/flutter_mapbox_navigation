@@ -164,6 +164,7 @@ public class FlutterMapboxNavigationView : NavigationFactory, FlutterPlatformVie
 
     func buildRoute(arguments: NSDictionary?, flutterResult: @escaping FlutterResult)
     {
+        _wayPoints.removeAll()
         isEmbeddedNavigation = true
         sendEvent(eventType: MapBoxEventType.route_building)
 
