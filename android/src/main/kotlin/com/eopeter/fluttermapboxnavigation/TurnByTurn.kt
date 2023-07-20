@@ -112,7 +112,8 @@ open class TurnByTurn(
             val point = item.value as HashMap<*, *>
             val latitude = point["Latitude"] as Double
             val longitude = point["Longitude"] as Double
-            this.addedWaypoints.add(Waypoint(Point.fromLngLat(longitude, latitude)))
+            val isSilent = point["IsSilent"] as Boolean
+            this.addedWaypoints.add(Waypoint(Point.fromLngLat(longitude, latitude),isSilent))
         }
         this.getRoute(this.context)
         result.success(true)
