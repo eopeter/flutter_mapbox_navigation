@@ -9,7 +9,7 @@ class WayPoint {
     required this.name,
     required this.latitude,
     required this.longitude,
-    this.isSilent,
+    this.isSilent = false,
   });
 
   /// create [WayPoint] from a json

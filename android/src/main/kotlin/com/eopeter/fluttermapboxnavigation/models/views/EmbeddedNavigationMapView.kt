@@ -21,6 +21,7 @@ class EmbeddedNavigationMapView(
 ) : PlatformView, TurnByTurn(context, activity, binding, accessToken) {
     private val viewId: Int = vId
     private val messenger: BinaryMessenger = binaryMessenger
+    private val arguments = args as Map<*, *>
 
     override fun initFlutterChannelHandlers() {
         methodChannel = MethodChannel(messenger, "flutter_mapbox_navigation/${viewId}")
@@ -31,6 +32,12 @@ class EmbeddedNavigationMapView(
     open fun initialize() {
         initFlutterChannelHandlers()
         initNavigation()
+
+        if(!(this.arguments?.get("longPressDestinationEnabled") as Boolean)) {
+            this.binding.navigationView.customizeViewOptions {
+                enableMapLongClickIntercept = false;
+            }
+        }
     }
 
     override fun getView(): View {
