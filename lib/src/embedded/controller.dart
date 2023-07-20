@@ -134,12 +134,14 @@ class MapBoxNavigationViewController {
     }
   }
 
+  /// Call this to cancel the subscription to route events
+  /// Add here future disposing methods
+  void dispose() {
+    _routeEventSubscription.cancel();
+  }
+
   void _onProgressData(RouteEvent event) {
     if (_routeEventNotifier != null) _routeEventNotifier?.call(event);
-
-    if (event.eventType == MapBoxEvent.on_arrival) {
-      _routeEventSubscription.cancel();
-    }
   }
 
   Stream<RouteEvent>? get _streamRouteEvent {
