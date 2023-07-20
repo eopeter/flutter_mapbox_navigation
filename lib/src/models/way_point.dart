@@ -15,8 +15,12 @@ class WayPoint {
   /// create [WayPoint] from a json
   WayPoint.fromJson(Map<String, dynamic> json) {
     name = json['name'] as String?;
-    latitude = json['latitude'] as double?;
-    longitude = json['longitude'] as double?;
+    latitude = (json['latitude'] is String)
+        ? double.tryParse(json['latitude'] as String)
+        : json['latitude'] as double?;
+    longitude = (json['longitude'] is String)
+        ? double.tryParse(json['longitude'] as String)
+        : json['longitude'] as double?;
 
     if (json['isSilent'] == null) {
       isSilent = false;
