@@ -1,3 +1,9 @@
+## 0.1.9
+* Android Day/Night Style Default Values [PR 272](https://github.com/eopeter/flutter_mapbox_navigation/pull/272)
+* Fix iOS Embedded Clear Route Issue [PR 284](https://github.com/eopeter/flutter_mapbox_navigation/pull/284)
+* Fix Route Events Not Sent [PR 288](https://github.com/eopeter/flutter_mapbox_navigation/pull/288)
+* Set WayPoint IsSilent to default false
+
 ## 0.1.8
 * Fix Android NavigationMode [261](https://github.com/eopeter/flutter_mapbox_navigation/pull/261)
 

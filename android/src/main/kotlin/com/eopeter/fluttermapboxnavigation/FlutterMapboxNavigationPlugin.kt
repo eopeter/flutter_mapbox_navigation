@@ -55,7 +55,7 @@ class FlutterMapboxNavigationPlugin : FlutterPlugin, MethodCallHandler,
         val wayPoints: MutableList<Waypoint> = mutableListOf()
 
         var showAlternateRoutes: Boolean = true
-        val allowsClickToSetDestination: Boolean = false
+        var longPressDestinationEnabled: Boolean = true
         var allowsUTurnsAtWayPoints: Boolean = false
         var navigationMode = DirectionsCriteria.PROFILE_DRIVING_TRAFFIC
         var simulateRoute = false
@@ -160,6 +160,11 @@ class FlutterMapboxNavigationPlugin : FlutterPlugin, MethodCallHandler,
 
         mapStyleUrlDay = arguments?.get("mapStyleUrlDay") as? String
         mapStyleUrlNight = arguments?.get("mapStyleUrlNight") as? String
+
+        val longPress = arguments?.get("longPressDestinationEnabled") as? Boolean
+        if (longPress != null) {
+            longPressDestinationEnabled = longPress
+        }
 
         wayPoints.clear()
 

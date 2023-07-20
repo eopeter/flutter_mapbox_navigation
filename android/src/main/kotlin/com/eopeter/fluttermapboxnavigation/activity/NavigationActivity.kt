@@ -92,7 +92,7 @@ class NavigationActivity : AppCompatActivity() {
             .setup(navigationOptions)
             .attach(this)
 
-        if (FlutterMapboxNavigationPlugin.allowsClickToSetDestination) {
+        if (FlutterMapboxNavigationPlugin.longPressDestinationEnabled) {
             binding.navigationView.registerMapObserver(onMapLongClick)
             binding.navigationView.customizeViewOptions {
                 enableMapLongClickIntercept = false
@@ -169,7 +169,7 @@ class NavigationActivity : AppCompatActivity() {
 
     override fun onDestroy() {
         super.onDestroy()
-        if (FlutterMapboxNavigationPlugin.allowsClickToSetDestination) {
+        if (FlutterMapboxNavigationPlugin.longPressDestinationEnabled) {
             binding.navigationView.unregisterMapObserver(onMapLongClick)
         }
         binding.navigationView.removeListener(navigationStateListener)
