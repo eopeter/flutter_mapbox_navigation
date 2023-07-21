@@ -146,11 +146,12 @@ public class FlutterMapboxNavigationView : NavigationFactory, FlutterPlatformVie
             navigationMapView?.addGestureRecognizer(gesture)
         }
         
-        let onTapGesture = UITapGestureRecognizer(target: self, action: #selector(handleTap(_:)))
-        onTapGesture.numberOfTapsRequired = 1
-        onTapGesture.delegate = self
-        navigationMapView?.addGestureRecognizer(onTapGesture)
-
+        if _enableOnMapTapCallback {
+            let onTapGesture = UITapGestureRecognizer(target: self, action: #selector(handleTap(_:)))
+            onTapGesture.numberOfTapsRequired = 1
+            onTapGesture.delegate = self
+            navigationMapView?.addGestureRecognizer(onTapGesture)
+        }
     }
 
     func clearRoute(arguments: NSDictionary?, result: @escaping FlutterResult)

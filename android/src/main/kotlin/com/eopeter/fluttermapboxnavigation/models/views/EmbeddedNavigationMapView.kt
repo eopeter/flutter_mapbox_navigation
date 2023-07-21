@@ -46,7 +46,10 @@ class EmbeddedNavigationMapView(
                 enableMapLongClickIntercept = false;
             }
         }
-        this.binding.navigationView.registerMapObserver(onMapClick)
+
+        if((this.arguments?.get("enableOnMapTapCallback") as Boolean)) {
+            this.binding.navigationView.registerMapObserver(onMapClick)
+        }
     }
 
     override fun getView(): View {
@@ -54,7 +57,9 @@ class EmbeddedNavigationMapView(
     }
 
     override fun dispose() {
-        this.binding.navigationView.unregisterMapObserver(onMapClick)
+        if((this.arguments?.get("enableOnMapTapCallback") as Boolean)) {
+            this.binding.navigationView.unregisterMapObserver(onMapClick)
+        }
         unregisterObservers()
     }
 

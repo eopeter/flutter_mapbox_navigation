@@ -308,6 +308,11 @@ open class TurnByTurn(
         if (longPress != null) {
             this.longPressDestinationEnabled = longPress
         }
+
+        val onMapTap = arguments["enableOnMapTapCallback"] as? Boolean
+        if (onMapTap != null) {
+            this.enableOnMapTapCallback = onMapTap
+        }
     }
 
     open fun registerObservers() {
@@ -369,6 +374,7 @@ open class TurnByTurn(
     private var voiceInstructionsEnabled = true
     private var bannerInstructionsEnabled = true
     private var longPressDestinationEnabled = true
+    private var enableOnMapTapCallback = false
     private var animateBuildRoute = true
     private var isOptimized = false
 

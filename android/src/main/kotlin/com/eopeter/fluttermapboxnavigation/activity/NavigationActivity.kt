@@ -103,6 +103,10 @@ class NavigationActivity : AppCompatActivity() {
             }
         }
 
+        if (FlutterMapboxNavigationPlugin.enableOnMapTapCallback) {
+            binding.navigationView.registerMapObserver(onMapClick)
+        }
+
         // Add custom view binders
         binding.navigationView.customizeViewBinders {
             infoPanelEndNavigationButtonBinder =
@@ -176,8 +180,10 @@ class NavigationActivity : AppCompatActivity() {
         if (FlutterMapboxNavigationPlugin.longPressDestinationEnabled) {
             binding.navigationView.unregisterMapObserver(onMapLongClick)
         }
+        if (FlutterMapboxNavigationPlugin.enableOnMapTapCallback) {
+            binding.navigationView.unregisterMapObserver(onMapClick)
+        }
         binding.navigationView.removeListener(navigationStateListener)
-        binding.navigationView.unregisterMapObserver(onMapClick)
         MapboxNavigationApp.current()?.unregisterLocationObserver(locationObserver)
         MapboxNavigationApp.current()?.unregisterRouteProgressObserver(routeProgressObserver)
         MapboxNavigationApp.current()?.unregisterArrivalObserver(arrivalObserver)
