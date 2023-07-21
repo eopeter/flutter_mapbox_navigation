@@ -35,6 +35,7 @@ public class NavigationFactory : NSObject, FlutterStreamHandler
     var _bearing: Double = 0.0
     var _animateBuildRoute = true
     var _longPressDestinationEnabled = true
+    var _alternatives = true
     var _shouldReRoute = true
     var _showReportFeedbackButton = true
     var _showEndOfRouteFeedback = true
@@ -88,6 +89,8 @@ public class NavigationFactory : NSObject, FlutterStreamHandler
         }
         
         parseFlutterArguments(arguments: arguments)
+        
+        _options?.includesAlternativeRoutes = _alternatives
         
         if(_wayPoints.count > 3 && arguments?["mode"] == nil)
         {
@@ -222,6 +225,7 @@ public class NavigationFactory : NSObject, FlutterStreamHandler
         _tilt = arguments?["tilt"] as? Double ?? _tilt
         _animateBuildRoute = arguments?["animateBuildRoute"] as? Bool ?? _animateBuildRoute
         _longPressDestinationEnabled = arguments?["longPressDestinationEnabled"] as? Bool ?? _longPressDestinationEnabled
+        _alternatives = arguments?["alternatives"] as? Bool ?? _alternatives
     }
     
     
