@@ -40,6 +40,7 @@ public class NavigationFactory : NSObject, FlutterStreamHandler
     var _showReportFeedbackButton = true
     var _showEndOfRouteFeedback = true
     var _enableOnMapTapCallback = false
+    var _customPinPath: String?
     var navigationDirections: Directions?
     
     func addWayPoints(arguments: NSDictionary?, result: @escaping FlutterResult)
@@ -176,9 +177,36 @@ public class NavigationFactory : NSObject, FlutterStreamHandler
             self._navigationViewController!.navigationMapView!.localizeLabels()
             self._navigationViewController!.showsReportFeedback = _showReportFeedbackButton
             self._navigationViewController!.showsEndOfRouteFeedback = _showEndOfRouteFeedback
+            
+            
+            if (_customPinPath != nil) {
+                for wp in _wayPoints.dropFirst().dropLast() {
+                    let options = ViewAnnotationOptions(geometry: Point(wp.coordinate), allowOverlap: true, anchor: .bottom)
+                    let annotationView = createCustomPinView()
+                    
+                    if (annotationView != nil) {
+                        try? self._navigationViewController!.navigationMapView!.mapView.viewAnnotations.add(annotationView!, options: options)
+                    }
+                }
+            }
         }
         let flutterViewController = UIApplication.shared.delegate?.window??.rootViewController as! FlutterViewController
         flutterViewController.present(self._navigationViewController!, animated: true, completion: nil)
+    }
+    
+    func createCustomPinView() -> UIView? {
+        let flutterViewController = UIApplication.shared.delegate?.window??.rootViewController as! FlutterViewController
+        
+        let key = flutterViewController.lookupKey(forAsset: _customPinPath!)
+        let mainBundle = Bundle.main
+        let path = mainBundle.path(forResource: key, ofType: nil)
+        
+        if (path == nil) {
+            return nil
+        }
+        let image = UIImageView(image:  UIImage.init(contentsOfFile: path!))
+        image.frame.size = CGSize(width: 25, height: 30)
+        return image
     }
     
     func setNavigationOptions(wayPoints: [Waypoint]) {
@@ -226,6 +254,7 @@ public class NavigationFactory : NSObject, FlutterStreamHandler
         _animateBuildRoute = arguments?["animateBuildRoute"] as? Bool ?? _animateBuildRoute
         _longPressDestinationEnabled = arguments?["longPressDestinationEnabled"] as? Bool ?? _longPressDestinationEnabled
         _alternatives = arguments?["alternatives"] as? Bool ?? _alternatives
+        _customPinPath = arguments?["customPinPath"] as? String ?? _customPinPath
     }
     
     
@@ -386,6 +415,20 @@ public class NavigationFactory : NSObject, FlutterStreamHandler
         _eventSink = nil
         return nil
     }
+    
+    // MARK: - Styling methods
+    func customCircleLayer(with identifier: String, sourceIdentifier: String) -> CircleLayer {
+        return CircleLayer(id: identifier)
+    }
+    
+    func customSymbolLayer(with identifier: String, sourceIdentifier: String) -> SymbolLayer {
+        return SymbolLayer(id: identifier)
+    }
+    
+    func customWaypointShape(shapeFor waypoints: [Waypoint], legIndex: Int) -> FeatureCollection {
+        let features = [Turf.Feature]()
+        return FeatureCollection(features: features)
+    }
 }
 
 
@@ -455,4 +498,26 @@ extension NavigationFactory : NavigationViewControllerDelegate {
             
         }
     }
+    
+    public func navigationViewController(_ navigationViewController: NavigationViewController, waypointCircleLayerWithIdentifier identifier: String, sourceIdentifier: String) -> CircleLayer? {
+        if (_customPinPath == nil) {
+            return nil
+        }
+        return customCircleLayer(with: identifier, sourceIdentifier: sourceIdentifier)
+    }
+    
+    public func navigationViewController(_ navigationViewController: NavigationViewController, waypointSymbolLayerWithIdentifier identifier: String, sourceIdentifier: String) -> SymbolLayer? {
+        if (_customPinPath == nil) {
+            return nil
+        }
+        return customSymbolLayer(with: identifier, sourceIdentifier: sourceIdentifier)
+    }
+    
+    public func navigationViewController(_ navigationViewController: NavigationViewController, shapeFor waypoints: [Waypoint], legIndex: Int) -> FeatureCollection? {
+        if (_customPinPath == nil) {
+            return nil
+        }
+        return customWaypointShape(shapeFor: waypoints, legIndex: legIndex)
+    }
+    
 }

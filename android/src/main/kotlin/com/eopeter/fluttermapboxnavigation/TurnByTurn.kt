@@ -4,7 +4,10 @@ import android.annotation.SuppressLint
 import android.app.Activity
 import android.app.Application
 import android.content.Context
+import android.graphics.Bitmap
+import android.graphics.BitmapFactory
 import android.location.Location
+import android.net.Uri
 import android.os.Bundle
 import android.util.Log
 import androidx.lifecycle.LifecycleOwner
@@ -20,6 +23,17 @@ import com.mapbox.maps.Style
 import com.mapbox.api.directions.v5.DirectionsCriteria
 import com.mapbox.api.directions.v5.models.RouteOptions
 import com.mapbox.geojson.Point
+import com.mapbox.maps.MapView
+import com.mapbox.maps.ViewAnnotationAnchor
+import com.mapbox.maps.extension.style.layers.getLayer
+import com.mapbox.maps.extension.style.layers.properties.generated.IconAnchor
+import com.mapbox.maps.extension.style.layers.properties.generated.Visibility
+import com.mapbox.maps.plugin.annotation.annotations
+import com.mapbox.maps.plugin.annotation.generated.CircleAnnotationOptions
+import com.mapbox.maps.plugin.annotation.generated.PointAnnotationOptions
+import com.mapbox.maps.plugin.annotation.generated.createCircleAnnotationManager
+import com.mapbox.maps.plugin.annotation.generated.createPointAnnotationManager
+import com.mapbox.maps.viewannotation.viewAnnotationOptions
 import com.mapbox.navigation.base.extensions.applyDefaultNavigationOptions
 import com.mapbox.navigation.base.extensions.applyLanguageAndVoiceUnitOptions
 import com.mapbox.navigation.base.options.NavigationOptions
@@ -29,14 +43,18 @@ import com.mapbox.navigation.base.route.RouterFailure
 import com.mapbox.navigation.base.route.RouterOrigin
 import com.mapbox.navigation.base.trip.model.RouteLegProgress
 import com.mapbox.navigation.base.trip.model.RouteProgress
+import com.mapbox.navigation.core.MapboxNavigation
 import com.mapbox.navigation.core.arrival.ArrivalObserver
 import com.mapbox.navigation.core.lifecycle.MapboxNavigationApp
 import com.mapbox.navigation.core.trip.session.LocationMatcherResult
 import com.mapbox.navigation.core.trip.session.LocationObserver
 import com.mapbox.navigation.core.trip.session.RouteProgressObserver
+import com.mapbox.navigation.dropin.map.MapViewObserver
+import io.flutter.embedding.engine.plugins.FlutterPlugin
 import io.flutter.plugin.common.EventChannel
 import io.flutter.plugin.common.MethodCall
 import io.flutter.plugin.common.MethodChannel
+import java.io.File
 import java.util.*
 
 open class TurnByTurn(
@@ -148,6 +166,7 @@ open class TurnByTurn(
                         this.infoPanelEndNavigationButtonBinder =
                             CustomInfoPanelEndNavButtonBinder(MapboxNavigationApp.current()!!)
                     }
+                    createCustomPinView()
                 }
 
                 override fun onFailure(
@@ -165,6 +184,26 @@ open class TurnByTurn(
                 }
             }
         )
+    }
+
+    private fun createCustomPinView() {
+        for (wp in addedWaypoints.coordinatesList().drop(1).dropLast(1)) {
+            val stream = context.assets.open(getPinImageFromAsset())
+            var bitmap: Bitmap = BitmapFactory.decodeStream(stream)
+            bitmap = Bitmap.createScaledBitmap(bitmap, 50, 60, true)
+
+
+            // Create an instance of the Annotation API and get the PointAnnotationManager.
+            val annotationApi = myMapView?.annotations
+            val pointAnnotationManager = annotationApi?.createPointAnnotationManager(myMapView!!)
+            val pointAnnotationOptions: PointAnnotationOptions = PointAnnotationOptions()
+                .withPoint(wp)
+                .withIconImage(bitmap)
+                .withIconAnchor(IconAnchor.BOTTOM)
+            // Add the resulting pointAnnotation to the map.
+            pointAnnotationManager?.create(pointAnnotationOptions)
+
+        }
     }
 
     private fun clearRoute(methodCall: MethodCall, result: MethodChannel.Result) {
@@ -259,7 +298,7 @@ open class TurnByTurn(
         this@TurnByTurn.binding.navigationView.customizeViewOptions {
             mapStyleUriDay = this@TurnByTurn.mapStyleUrlDay
             mapStyleUriNight = this@TurnByTurn.mapStyleUrlNight
-        }           
+        }
 
         this.initialLatitude = arguments["initialLatitude"] as? Double
         this.initialLongitude = arguments["initialLongitude"] as? Double
@@ -312,6 +351,11 @@ open class TurnByTurn(
         val onMapTap = arguments["enableOnMapTapCallback"] as? Boolean
         if (onMapTap != null) {
             this.enableOnMapTapCallback = onMapTap
+        }
+
+        val customPinPath = arguments["customPinPath"] as? String
+        if (customPinPath != null) {
+            this.customPinPath = customPinPath
         }
     }
 
@@ -377,9 +421,12 @@ open class TurnByTurn(
     private var enableOnMapTapCallback = false
     private var animateBuildRoute = true
     private var isOptimized = false
+    var customPinPath: String? = null
 
     private var currentRoutes: List<NavigationRoute>? = null
     private var isNavigationCanceled = false
+
+    var myMapView: MapView? = null
 
     /**
      * Bindings to the example layout.
@@ -399,6 +446,22 @@ open class TurnByTurn(
 
         override fun onNewRawLocation(rawLocation: Location) {
             // no impl
+        }
+    }
+
+    fun getPinImageFromAsset(): String {
+     return FlutterMapboxNavigationPlugin.flutterAssets.getAssetFilePathBySubpath("assets/icons/helmet_pin.png");
+    }
+
+    val mapViewObserver: MapViewObserver = object : MapViewObserver() {
+        override fun onAttached(mapView: MapView) {
+            super.onAttached(mapView)
+            myMapView = mapView
+        }
+
+        override fun onDetached(mapView: MapView) {
+            super.onDetached(mapView)
+            myMapView = null
         }
     }
 

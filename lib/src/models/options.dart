@@ -34,6 +34,7 @@ class MapBoxOptions {
     this.showReportFeedbackButton = true,
     this.showEndOfRouteFeedback = true,
     this.enableOnMapTapCallback = false,
+    this.customPinPath,
   });
 
   /// The initial Latitude of the Map View
@@ -140,6 +141,15 @@ class MapBoxOptions {
   /// to where you tap on the map.
   bool? enableOnMapTapCallback;
 
+  /// This lets you customize the waypoint appearance by using an image from
+  /// your Flutter project directly.
+  /// Pass it the path from flutter project. E.g. `assets/icon/custom_icon.png`.
+  /// Remember to add it to your assets in pubspec.yaml file as any other asset
+  /// and pass here the whole path.
+  ///
+  /// If null, default circle pin will be shown instead.
+  String? customPinPath;
+
   Map<String, dynamic> toMap() {
     final optionsMap = <String, dynamic>{};
     void addIfNonNull(String fieldName, dynamic value) {
@@ -197,6 +207,7 @@ class MapBoxOptions {
     addIfNonNull('showReportFeedbackButton', showReportFeedbackButton);
     addIfNonNull('showEndOfRouteFeedback', showEndOfRouteFeedback);
     addIfNonNull('enableOnMapTapCallback', enableOnMapTapCallback);
+    addIfNonNull('customPinPath', customPinPath);
 
     return optionsMap;
   }

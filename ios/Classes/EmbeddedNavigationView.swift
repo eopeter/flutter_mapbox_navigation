@@ -238,7 +238,18 @@ public class FlutterMapboxNavigationView : NavigationFactory, FlutterPlatformVie
         routeOptions.locale = Locale(identifier: _language)
         routeOptions.includesAlternativeRoutes = _alternatives
         self.routeOptions = routeOptions
-
+        
+        if (_customPinPath != nil) {
+            for wp in _wayPoints.dropFirst().dropLast() {
+                let options = ViewAnnotationOptions(geometry: Point(wp.coordinate), allowOverlap: true, anchor: .bottom)
+                let annotationView = createCustomPinView()
+                
+                if (annotationView != nil) {
+                    try? navigationMapView?.mapView.viewAnnotations.add(annotationView!, options: options)
+                }
+            }
+        }
+        
         // Generate the route object and draw it on the map
         _ = Directions.shared.calculate(routeOptions) { [weak self] (session, result) in
 
@@ -303,6 +314,17 @@ public class FlutterMapboxNavigationView : NavigationFactory, FlutterPlatformVie
 
         _navigationViewController!.showsReportFeedback = _showReportFeedbackButton
         _navigationViewController!.showsEndOfRouteFeedback = _showEndOfRouteFeedback
+        
+        if (_customPinPath != nil) {
+            for wp in _wayPoints.dropFirst().dropLast() {
+                let options = ViewAnnotationOptions(geometry: Point(wp.coordinate), allowOverlap: true, anchor: .bottom)
+                let annotationView = createCustomPinView()
+                
+                if (annotationView != nil) {
+                    try? _navigationViewController!.navigationMapView!.mapView.viewAnnotations.add(annotationView!, options: options)
+                }
+            }
+        }
 
         let flutterViewController = UIApplication.shared.delegate?.window?!.rootViewController as! FlutterViewController
         flutterViewController.addChild(_navigationViewController!)
@@ -413,6 +435,27 @@ extension FlutterMapboxNavigationView : NavigationMapViewDelegate {
     public func mapViewDidFinishLoadingMap(_ mapView: NavigationMapView) {
         // Wait for the map to load before initiating the first camera movement.
         moveCameraToCenter()
+    }
+
+    public func navigationMapView(_ navigationMapView: NavigationMapView, waypointCircleLayerWithIdentifier identifier: String, sourceIdentifier: String) -> CircleLayer? {
+        if (_customPinPath == nil) {
+            return nil
+        }
+        return customCircleLayer(with: identifier, sourceIdentifier: sourceIdentifier)
+    }
+    
+    public func navigationMapView(_ navigationMapView: NavigationMapView, waypointSymbolLayerWithIdentifier identifier: String, sourceIdentifier: String) -> SymbolLayer? {
+        if (_customPinPath == nil) {
+            return nil
+        }
+        return customSymbolLayer(with: identifier, sourceIdentifier: sourceIdentifier)
+    }
+    
+    public func navigationMapView(_ navigationMapView: NavigationMapView, shapeFor waypoints: [Waypoint], legIndex: Int) -> FeatureCollection? {
+        if (_customPinPath == nil) {
+            return nil
+        }
+        return customWaypointShape(shapeFor: waypoints, legIndex: legIndex)
     }
 
 }

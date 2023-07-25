@@ -4,12 +4,16 @@ import android.Manifest
 import android.app.Activity
 import android.content.Context
 import android.content.pm.PackageManager
+import android.graphics.drawable.Drawable
+import android.net.Uri
 import android.os.Build
+import android.view.View
 import com.eopeter.fluttermapboxnavigation.activity.NavigationLauncher
 import com.eopeter.fluttermapboxnavigation.factory.EmbeddedNavigationViewFactory
 import com.eopeter.fluttermapboxnavigation.models.Waypoint
 import com.mapbox.api.directions.v5.DirectionsCriteria
 import com.mapbox.api.directions.v5.models.DirectionsRoute
+import com.mapbox.maps.MapView
 import io.flutter.embedding.engine.plugins.FlutterPlugin
 import io.flutter.embedding.engine.plugins.activity.ActivityAware
 import io.flutter.embedding.engine.plugins.activity.ActivityPluginBinding
@@ -21,6 +25,7 @@ import io.flutter.plugin.common.MethodChannel.MethodCallHandler
 import io.flutter.plugin.common.MethodChannel.Result
 import io.flutter.plugin.platform.PlatformViewRegistry
 
+
 /** FlutterMapboxNavigationPlugin */
 class FlutterMapboxNavigationPlugin : FlutterPlugin, MethodCallHandler,
     EventChannel.StreamHandler, ActivityAware {
@@ -29,6 +34,7 @@ class FlutterMapboxNavigationPlugin : FlutterPlugin, MethodCallHandler,
     private lateinit var progressEventChannel: EventChannel
     private var currentActivity: Activity? = null
     private lateinit var currentContext: Context
+
 
     override fun onAttachedToEngine(binding: FlutterPlugin.FlutterPluginBinding) {
         val messenger = binding.binaryMessenger
@@ -41,7 +47,7 @@ class FlutterMapboxNavigationPlugin : FlutterPlugin, MethodCallHandler,
         platformViewRegistry = binding.platformViewRegistry
         binaryMessenger = messenger
 
-
+        flutterAssets = binding.flutterAssets
     }
 
     companion object {
@@ -72,8 +78,11 @@ class FlutterMapboxNavigationPlugin : FlutterPlugin, MethodCallHandler,
         var durationRemaining: Double? = null
         var platformViewRegistry: PlatformViewRegistry? = null
         var binaryMessenger: BinaryMessenger? = null
+        var customPinPathcustomPinPath: String? = null
 
         var viewId = "FlutterMapboxNavigationView"
+
+        lateinit var flutterAssets: FlutterPlugin.FlutterAssets;
     }
 
     override fun onMethodCall(call: MethodCall, result: Result) {
@@ -147,6 +156,11 @@ class FlutterMapboxNavigationPlugin : FlutterPlugin, MethodCallHandler,
         val onMapTap = arguments?.get("enableOnMapTapCallback") as? Boolean
         if (onMapTap != null) {
             enableOnMapTapCallback = onMapTap
+        }
+
+        var customPinPath = arguments?.get("customPinPath") as? Boolean
+        if (customPinPath != null) {
+            customPinPath = customPinPath
         }
 
         val language = arguments?.get("language") as? String
