@@ -35,9 +35,11 @@ public class NavigationFactory : NSObject, FlutterStreamHandler
     var _bearing: Double = 0.0
     var _animateBuildRoute = true
     var _longPressDestinationEnabled = true
+    var _alternatives = true
     var _shouldReRoute = true
     var _showReportFeedbackButton = true
     var _showEndOfRouteFeedback = true
+    var _enableOnMapTapCallback = false
     var navigationDirections: Directions?
     
     func addWayPoints(arguments: NSDictionary?, result: @escaping FlutterResult)
@@ -87,6 +89,8 @@ public class NavigationFactory : NSObject, FlutterStreamHandler
         }
         
         parseFlutterArguments(arguments: arguments)
+        
+        _options?.includesAlternativeRoutes = _alternatives
         
         if(_wayPoints.count > 3 && arguments?["mode"] == nil)
         {
@@ -213,6 +217,7 @@ public class NavigationFactory : NSObject, FlutterStreamHandler
         _navigationMode = arguments?["mode"] as? String ?? "drivingWithTraffic"
         _showReportFeedbackButton = arguments?["showReportFeedbackButton"] as? Bool ?? _showReportFeedbackButton
         _showEndOfRouteFeedback = arguments?["showEndOfRouteFeedback"] as? Bool ?? _showEndOfRouteFeedback
+        _enableOnMapTapCallback = arguments?["enableOnMapTapCallback"] as? Bool ?? _enableOnMapTapCallback
         _mapStyleUrlDay = arguments?["mapStyleUrlDay"] as? String
         _mapStyleUrlNight = arguments?["mapStyleUrlNight"] as? String
         _zoom = arguments?["zoom"] as? Double ?? _zoom
@@ -220,6 +225,7 @@ public class NavigationFactory : NSObject, FlutterStreamHandler
         _tilt = arguments?["tilt"] as? Double ?? _tilt
         _animateBuildRoute = arguments?["animateBuildRoute"] as? Bool ?? _animateBuildRoute
         _longPressDestinationEnabled = arguments?["longPressDestinationEnabled"] as? Bool ?? _longPressDestinationEnabled
+        _alternatives = arguments?["alternatives"] as? Bool ?? _alternatives
     }
     
     

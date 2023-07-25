@@ -33,6 +33,7 @@ class MapBoxOptions {
     this.animateBuildRoute,
     this.showReportFeedbackButton = true,
     this.showEndOfRouteFeedback = true,
+    this.enableOnMapTapCallback = false,
   });
 
   /// The initial Latitude of the Map View
@@ -135,6 +136,10 @@ class MapBoxOptions {
   /// In iOS this will show/hide the end of route page when navigation is done. Default to True.
   bool? showEndOfRouteFeedback;
 
+  /// Gives you the ability to receive back a waypoint corresponding
+  /// to where you tap on the map.
+  bool? enableOnMapTapCallback;
+
   Map<String, dynamic> toMap() {
     final optionsMap = <String, dynamic>{};
     void addIfNonNull(String fieldName, dynamic value) {
@@ -191,6 +196,7 @@ class MapBoxOptions {
 
     addIfNonNull('showReportFeedbackButton', showReportFeedbackButton);
     addIfNonNull('showEndOfRouteFeedback', showEndOfRouteFeedback);
+    addIfNonNull('enableOnMapTapCallback', enableOnMapTapCallback);
 
     return optionsMap;
   }

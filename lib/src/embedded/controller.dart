@@ -77,6 +77,7 @@ class MapBoxNavigationViewController {
         'Name': wayPoint.name,
         'Latitude': wayPoint.latitude,
         'Longitude': wayPoint.longitude,
+        'IsSilent': wayPoint.isSilent,
       };
       pointList.add(pointMap);
     }
