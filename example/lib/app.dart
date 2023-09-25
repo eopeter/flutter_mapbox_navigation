@@ -137,9 +137,10 @@ class _SampleNavigationAppState extends State<SampleNavigationApp> {
                             var wayPoints = <WayPoint>[];
                             wayPoints.add(_home);
                             wayPoints.add(_store);
-
+                            var opt = MapBoxOptions.from(_navigationOption);
+                            opt.simulateRoute = true;
                             await MapBoxNavigation.instance
-                                .startNavigation(wayPoints: wayPoints);
+                                .startNavigation(wayPoints: wayPoints, options: opt);
                           },
                         ),
                         const SizedBox(
