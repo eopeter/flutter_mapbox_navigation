@@ -10,6 +10,10 @@ import 'package:flutter_mapbox_navigation/src/models/voice_units.dart';
 /// 'do not change this configuration option'.
 ///
 class MapBoxOptions {
+  MapBoxOptions.from(MapBoxOptions option) {
+    simulateRoute = option.simulateRoute;
+  }
+
   MapBoxOptions({
     this.initialLatitude,
     this.initialLongitude,
@@ -98,7 +102,7 @@ class MapBoxOptions {
   /// same as 'not continueStraight' on Android
   bool? allowsUTurnAtWayPoints;
 
-  final bool? enableRefresh;
+  bool? enableRefresh;
   // if true voice instruction is enabled
   bool? voiceInstructionsEnabled;
   //if true, banner instruction is shown and returned
