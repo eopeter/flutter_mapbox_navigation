@@ -198,6 +198,7 @@ class NavigationActivity : AppCompatActivity() {
                 .waypointNamesList(waypointSet.waypointsNames())
                 .language(FlutterMapboxNavigationPlugin.navigationLanguage)
                 .alternatives(FlutterMapboxNavigationPlugin.showAlternateRoutes)
+                .steps(true)
                 .build(),
             callback = object : NavigationRouterCallback {
                 override fun onCanceled(routeOptions: RouteOptions, routerOrigin: RouterOrigin) {
