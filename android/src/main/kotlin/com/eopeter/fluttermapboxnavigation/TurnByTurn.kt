@@ -30,10 +30,9 @@ import com.mapbox.navigation.base.route.RouterOrigin
 import com.mapbox.navigation.base.trip.model.RouteLegProgress
 import com.mapbox.navigation.base.trip.model.RouteProgress
 import com.mapbox.navigation.core.arrival.ArrivalObserver
+import com.mapbox.navigation.core.directions.session.RoutesObserver
 import com.mapbox.navigation.core.lifecycle.MapboxNavigationApp
-import com.mapbox.navigation.core.trip.session.LocationMatcherResult
-import com.mapbox.navigation.core.trip.session.LocationObserver
-import com.mapbox.navigation.core.trip.session.RouteProgressObserver
+import com.mapbox.navigation.core.trip.session.*
 import io.flutter.plugin.common.EventChannel
 import io.flutter.plugin.common.MethodCall
 import io.flutter.plugin.common.MethodChannel
@@ -128,8 +127,11 @@ open class TurnByTurn(
                 .waypointIndicesList(this.addedWaypoints.waypointsIndices())
                 .waypointNamesList(this.addedWaypoints.waypointsNames())
                 .language(navigationLanguage)
-                .alternatives(true)
+                .alternatives(alternatives)
                 .steps(true)
+                .voiceUnits(navigationVoiceUnits)
+                .bannerInstructions(bannerInstructionsEnabled)
+                .voiceInstructions(voiceInstructionsEnabled)
                 .build(),
             callback = object : NavigationRouterCallback {
                 override fun onRoutesReady(
@@ -313,6 +315,10 @@ open class TurnByTurn(
 
     open fun registerObservers() {
         // register event listeners
+        MapboxNavigationApp.current()?.registerBannerInstructionsObserver(this.bannerInstructionObserver)
+        MapboxNavigationApp.current()?.registerVoiceInstructionsObserver(this.voiceInstructionObserver)
+        MapboxNavigationApp.current()?.registerOffRouteObserver(this.offRouteObserver)
+        MapboxNavigationApp.current()?.registerRoutesObserver(this.routesObserver)
         MapboxNavigationApp.current()?.registerLocationObserver(this.locationObserver)
         MapboxNavigationApp.current()?.registerRouteProgressObserver(this.routeProgressObserver)
         MapboxNavigationApp.current()?.registerArrivalObserver(this.arrivalObserver)
@@ -320,6 +326,10 @@ open class TurnByTurn(
 
     open fun unregisterObservers() {
         // unregister event listeners to prevent leaks or unnecessary resource consumption
+        MapboxNavigationApp.current()?.unregisterBannerInstructionsObserver(this.bannerInstructionObserver)
+        MapboxNavigationApp.current()?.unregisterVoiceInstructionsObserver(this.voiceInstructionObserver)
+        MapboxNavigationApp.current()?.unregisterOffRouteObserver(this.offRouteObserver)
+        MapboxNavigationApp.current()?.unregisterRoutesObserver(this.routesObserver)
         MapboxNavigationApp.current()?.unregisterLocationObserver(this.locationObserver)
         MapboxNavigationApp.current()?.unregisterRouteProgressObserver(this.routeProgressObserver)
         MapboxNavigationApp.current()?.unregisterArrivalObserver(this.arrivalObserver)
@@ -394,6 +404,26 @@ open class TurnByTurn(
 
         override fun onNewRawLocation(rawLocation: Location) {
             // no impl
+        }
+    }
+
+    private val bannerInstructionObserver = BannerInstructionsObserver { bannerInstructions ->
+        PluginUtilities.sendEvent(MapBoxEvents.BANNER_INSTRUCTION, bannerInstructions.primary().text())
+    }
+
+    private val voiceInstructionObserver = VoiceInstructionsObserver { voiceInstructions ->
+        PluginUtilities.sendEvent(MapBoxEvents.SPEECH_ANNOUNCEMENT, voiceInstructions.announcement().toString())
+    }
+
+    private val offRouteObserver = OffRouteObserver { offRoute ->
+        if (offRoute) {
+            PluginUtilities.sendEvent(MapBoxEvents.USER_OFF_ROUTE)
+        }
+    }
+
+    private val routesObserver = RoutesObserver { routeUpdateResult ->
+        if (routeUpdateResult.navigationRoutes.isNotEmpty()) {
+            PluginUtilities.sendEvent(MapBoxEvents.REROUTE_ALONG);
         }
     }
 
