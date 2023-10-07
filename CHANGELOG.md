@@ -1,3 +1,7 @@
+## 0.2.2
+* Fix issue with voice units in Android
+* Fix BannerText, VoiceInstruction and Off Route Events
+
 ## 0.2.1
 * Fix issue with setting the language in Android
 
