@@ -127,7 +127,9 @@ open class TurnByTurn(
                 .coordinatesList(this.addedWaypoints.coordinatesList())
                 .waypointIndicesList(this.addedWaypoints.waypointsIndices())
                 .waypointNamesList(this.addedWaypoints.waypointsNames())
+                .language(navigationLanguage)
                 .alternatives(true)
+                .steps(true)
                 .build(),
             callback = object : NavigationRouterCallback {
                 override fun onRoutesReady(

@@ -1,3 +1,6 @@
+## 0.2.1
+* Fix issue with setting the language in Android
+
 ## 0.2.0
 * Update MapBox Android Version
 * Resolve issue where Navigation Does Not Dismiss Activity on Cancel
