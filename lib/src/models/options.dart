@@ -10,6 +10,7 @@ import 'package:flutter_mapbox_navigation/src/models/voice_units.dart';
 /// 'do not change this configuration option'.
 ///
 class MapBoxOptions {
+
   MapBoxOptions({
     this.initialLatitude,
     this.initialLongitude,
@@ -36,13 +37,40 @@ class MapBoxOptions {
     this.enableOnMapTapCallback = false,
   });
 
+  MapBoxOptions.from(MapBoxOptions option) {
+    initialLatitude = option.initialLatitude;
+    initialLongitude = option.initialLongitude;
+    language = option.language;
+    zoom = option.zoom;
+    bearing = option.bearing;
+    tilt = option.tilt;
+    alternatives = option.alternatives;
+    mode = option.mode;
+    units = option.units;
+    allowsUTurnAtWayPoints = option.allowsUTurnAtWayPoints;
+    enableRefresh = option.enableRefresh;
+    voiceInstructionsEnabled = option.voiceInstructionsEnabled;
+    bannerInstructionsEnabled = option.bannerInstructionsEnabled;
+    longPressDestinationEnabled = option.longPressDestinationEnabled;
+    simulateRoute = option.simulateRoute;
+    isOptimized = option.isOptimized;
+    mapStyleUrlDay = option.mapStyleUrlDay;
+    mapStyleUrlNight = option.mapStyleUrlNight;
+    padding = option.padding;
+    animateBuildRoute = option.animateBuildRoute;
+    showReportFeedbackButton = option.showReportFeedbackButton;
+    showEndOfRouteFeedback = option.showEndOfRouteFeedback;
+  }
+
   /// The initial Latitude of the Map View
   double? initialLatitude;
 
   /// The initial Longitude of the Map View
   double? initialLongitude;
 
-  /// 2-letter ISO 639-1 code for language. This property affects the sentence
+  /// 2-letter ISO 639-1 code for language and optionally append the ISO-3166
+  /// country code for specific dialect like pt-BR for Brazilian Portuguese
+  /// This property affects the sentence
   /// contained within the RouteStep.instructions property, but it does not
   /// affect any road names contained in that property or other properties
   /// such as RouteStep.name. Defaults to 'en' if an unsupported language
@@ -99,7 +127,7 @@ class MapBoxOptions {
   /// same as 'not continueStraight' on Android
   bool? allowsUTurnAtWayPoints;
 
-  final bool? enableRefresh;
+  bool? enableRefresh;
   // if true voice instruction is enabled
   bool? voiceInstructionsEnabled;
   //if true, banner instruction is shown and returned

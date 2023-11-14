@@ -38,10 +38,14 @@ import com.mapbox.navigation.base.route.RouterOrigin
 import com.mapbox.navigation.base.trip.model.RouteLegProgress
 import com.mapbox.navigation.base.trip.model.RouteProgress
 import com.mapbox.navigation.core.arrival.ArrivalObserver
+import com.mapbox.navigation.core.directions.session.RoutesObserver
 import com.mapbox.navigation.core.lifecycle.MapboxNavigationApp
+import com.mapbox.navigation.core.trip.session.BannerInstructionsObserver
 import com.mapbox.navigation.core.trip.session.LocationMatcherResult
 import com.mapbox.navigation.core.trip.session.LocationObserver
+import com.mapbox.navigation.core.trip.session.OffRouteObserver
 import com.mapbox.navigation.core.trip.session.RouteProgressObserver
+import com.mapbox.navigation.core.trip.session.VoiceInstructionsObserver
 import com.mapbox.navigation.dropin.map.MapViewObserver
 import com.mapbox.navigation.dropin.navigationview.NavigationViewListener
 import com.mapbox.navigation.utils.internal.ifNonNull
@@ -106,16 +110,21 @@ class NavigationActivity : AppCompatActivity() {
         if (FlutterMapboxNavigationPlugin.enableOnMapTapCallback) {
             binding.navigationView.registerMapObserver(onMapClick)
         }
-
+        val act = this
         // Add custom view binders
         binding.navigationView.customizeViewBinders {
             infoPanelEndNavigationButtonBinder =
-                CustomInfoPanelEndNavButtonBinder(MapboxNavigationApp.current()!!)
+                CustomInfoPanelEndNavButtonBinder(act)
         }
 
+        MapboxNavigationApp.current()?.registerBannerInstructionsObserver(this.bannerInstructionObserver)
+        MapboxNavigationApp.current()?.registerVoiceInstructionsObserver(this.voiceInstructionObserver)
+        MapboxNavigationApp.current()?.registerOffRouteObserver(this.offRouteObserver)
+        MapboxNavigationApp.current()?.registerRoutesObserver(this.routesObserver)
         MapboxNavigationApp.current()?.registerLocationObserver(locationObserver)
         MapboxNavigationApp.current()?.registerRouteProgressObserver(routeProgressObserver)
         MapboxNavigationApp.current()?.registerArrivalObserver(arrivalObserver)
+
         finishBroadcastReceiver = object : BroadcastReceiver() {
             override fun onReceive(context: Context, intent: Intent) {
                 finish()
@@ -184,6 +193,11 @@ class NavigationActivity : AppCompatActivity() {
             binding.navigationView.unregisterMapObserver(onMapClick)
         }
         binding.navigationView.removeListener(navigationStateListener)
+
+        MapboxNavigationApp.current()?.unregisterBannerInstructionsObserver(this.bannerInstructionObserver)
+        MapboxNavigationApp.current()?.unregisterVoiceInstructionsObserver(this.voiceInstructionObserver)
+        MapboxNavigationApp.current()?.unregisterOffRouteObserver(this.offRouteObserver)
+        MapboxNavigationApp.current()?.unregisterRoutesObserver(this.routesObserver)
         MapboxNavigationApp.current()?.unregisterLocationObserver(locationObserver)
         MapboxNavigationApp.current()?.unregisterRouteProgressObserver(routeProgressObserver)
         MapboxNavigationApp.current()?.unregisterArrivalObserver(arrivalObserver)
@@ -208,6 +222,10 @@ class NavigationActivity : AppCompatActivity() {
                 .waypointNamesList(waypointSet.waypointsNames())
                 .language(FlutterMapboxNavigationPlugin.navigationLanguage)
                 .alternatives(FlutterMapboxNavigationPlugin.showAlternateRoutes)
+                .voiceUnits(FlutterMapboxNavigationPlugin.navigationVoiceUnits)
+                .bannerInstructions(FlutterMapboxNavigationPlugin.bannerInstructionsEnabled)
+                .voiceInstructions(FlutterMapboxNavigationPlugin.voiceInstructionsEnabled)
+                .steps(true)
                 .build(),
             callback = object : NavigationRouterCallback {
                 override fun onCanceled(routeOptions: RouteOptions, routerOrigin: RouterOrigin) {
@@ -372,6 +390,26 @@ class NavigationActivity : AppCompatActivity() {
 
         override fun onNewRawLocation(rawLocation: Location) {
             // no impl
+        }
+    }
+
+    private val bannerInstructionObserver = BannerInstructionsObserver { bannerInstructions ->
+        sendEvent(MapBoxEvents.BANNER_INSTRUCTION, bannerInstructions.primary().text())
+    }
+
+    private val voiceInstructionObserver = VoiceInstructionsObserver { voiceInstructions ->
+        sendEvent(MapBoxEvents.SPEECH_ANNOUNCEMENT, voiceInstructions.announcement().toString())
+    }
+
+    private val offRouteObserver = OffRouteObserver { offRoute ->
+        if (offRoute) {
+            sendEvent(MapBoxEvents.USER_OFF_ROUTE)
+        }
+    }
+
+    private val routesObserver = RoutesObserver { routeUpdateResult ->
+        if (routeUpdateResult.navigationRoutes.isNotEmpty()) {
+            sendEvent(MapBoxEvents.REROUTE_ALONG);
         }
     }
 

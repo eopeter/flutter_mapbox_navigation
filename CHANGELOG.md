@@ -1,3 +1,14 @@
+## 0.2.2
+* Fix issue with voice units in Android
+* Fix BannerText, VoiceInstruction and Off Route Events
+
+## 0.2.1
+* Fix issue with setting the language in Android
+
+## 0.2.0
+* Update MapBox Android Version
+* Resolve issue where Navigation Does Not Dismiss Activity on Cancel
+
 ## 0.1.9
 * Android Day/Night Style Default Values [PR 272](https://github.com/eopeter/flutter_mapbox_navigation/pull/272)
 * Fix iOS Embedded Clear Route Issue [PR 284](https://github.com/eopeter/flutter_mapbox_navigation/pull/284)
