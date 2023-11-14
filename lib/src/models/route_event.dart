@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:io';
 
 import 'package:flutter_mapbox_navigation/flutter_mapbox_navigation.dart';
 
@@ -26,6 +27,10 @@ class RouteEvent {
         (dataJson as String).isNotEmpty) {
       data =
           MapBoxFeedback.fromJson(jsonDecode(dataJson) as Map<String, dynamic>);
+    } else if (eventType == MapBoxEvent.on_map_tap) {
+      final json =
+          Platform.isAndroid ? dataJson : jsonDecode(dataJson as String);
+      data = WayPoint.fromJson(json as Map<String, dynamic>);
     } else {
       data = jsonEncode(dataJson);
     }

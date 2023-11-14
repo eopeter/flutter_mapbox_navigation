@@ -6,6 +6,8 @@ import android.content.Intent
 import android.content.IntentFilter
 import android.location.Location
 import android.os.Bundle
+
+import org.json.JSONObject
 import androidx.appcompat.app.AppCompatActivity
 import com.eopeter.fluttermapboxnavigation.FlutterMapboxNavigationPlugin
 import com.eopeter.fluttermapboxnavigation.R
@@ -24,6 +26,7 @@ import com.mapbox.geojson.Point
 import com.mapbox.maps.MapView
 import com.mapbox.maps.Style
 import com.mapbox.maps.plugin.gestures.OnMapLongClickListener
+import com.mapbox.maps.plugin.gestures.OnMapClickListener
 import com.mapbox.maps.plugin.gestures.gestures
 import com.mapbox.navigation.base.extensions.applyDefaultNavigationOptions
 import com.mapbox.navigation.base.extensions.applyLanguageAndVoiceUnitOptions
@@ -85,6 +88,7 @@ class NavigationActivity : AppCompatActivity() {
         binding = NavigationActivityBinding.inflate(layoutInflater)
         setContentView(binding.root)
         binding.navigationView.addListener(navigationStateListener)
+        binding.navigationView.registerMapObserver(onMapClick)
         accessToken =
             PluginUtilities.getResourceFromContext(this.applicationContext, "mapbox_access_token")
 
@@ -103,6 +107,9 @@ class NavigationActivity : AppCompatActivity() {
             }
         }
 
+        if (FlutterMapboxNavigationPlugin.enableOnMapTapCallback) {
+            binding.navigationView.registerMapObserver(onMapClick)
+        }
         val act = this
         // Add custom view binders
         binding.navigationView.customizeViewBinders {
@@ -181,6 +188,9 @@ class NavigationActivity : AppCompatActivity() {
         super.onDestroy()
         if (FlutterMapboxNavigationPlugin.longPressDestinationEnabled) {
             binding.navigationView.unregisterMapObserver(onMapLongClick)
+        }
+        if (FlutterMapboxNavigationPlugin.enableOnMapTapCallback) {
+            binding.navigationView.unregisterMapObserver(onMapClick)
         }
         binding.navigationView.removeListener(navigationStateListener)
 
@@ -423,6 +433,29 @@ class NavigationActivity : AppCompatActivity() {
                 waypointSet.add(Waypoint(point))
                 requestRoutes(waypointSet)
             }
+            return false
+        }
+    }
+
+    /**
+     * Notifies with attach and detach events on [MapView]
+     */
+    private val onMapClick = object : MapViewObserver(), OnMapClickListener {
+
+        override fun onAttached(mapView: MapView) {
+            mapView.gestures.addOnMapClickListener(this)
+        }
+
+        override fun onDetached(mapView: MapView) {
+            mapView.gestures.removeOnMapClickListener(this)
+        }
+
+        override fun onMapClick(point: Point): Boolean {
+            var waypoint = mapOf<String, String>(
+                Pair("latitude", point.latitude().toString()),
+                Pair("longitude", point.longitude().toString())
+            )
+            sendEvent(MapBoxEvents.ON_MAP_TAP, JSONObject(waypoint).toString())
             return false
         }
     }

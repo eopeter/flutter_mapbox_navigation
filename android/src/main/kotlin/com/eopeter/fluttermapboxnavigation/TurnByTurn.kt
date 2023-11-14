@@ -111,7 +111,8 @@ open class TurnByTurn(
             val point = item.value as HashMap<*, *>
             val latitude = point["Latitude"] as Double
             val longitude = point["Longitude"] as Double
-            this.addedWaypoints.add(Waypoint(Point.fromLngLat(longitude, latitude)))
+            val isSilent = point["IsSilent"] as Boolean
+            this.addedWaypoints.add(Waypoint(Point.fromLngLat(longitude, latitude),isSilent))
         }
         this.getRoute(this.context)
         result.success(true)
@@ -311,6 +312,11 @@ open class TurnByTurn(
         if (longPress != null) {
             this.longPressDestinationEnabled = longPress
         }
+
+        val onMapTap = arguments["enableOnMapTapCallback"] as? Boolean
+        if (onMapTap != null) {
+            this.enableOnMapTapCallback = onMapTap
+        }
     }
 
     open fun registerObservers() {
@@ -380,6 +386,7 @@ open class TurnByTurn(
     private var voiceInstructionsEnabled = true
     private var bannerInstructionsEnabled = true
     private var longPressDestinationEnabled = true
+    private var enableOnMapTapCallback = false
     private var animateBuildRoute = true
     private var isOptimized = false
 
