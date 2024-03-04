@@ -2,7 +2,7 @@ group 'com.eopeter.fluttermapboxnavigation'
 version '1.0-SNAPSHOT'
 
 buildscript {
-    ext.kotlin_version = '1.7.10'
+    ext.kotlin_version = '1.9.22'
     ext.android_gradle_version = '7.4.2'
     repositories {
         google()
@@ -54,14 +54,14 @@ apply plugin: 'com.android.library'
 apply plugin: 'kotlin-android'
 
 android {
-    compileSdkVersion 33
+    compileSdk 34
 
     sourceSets {
         main.java.srcDirs += 'src/main/kotlin'
     }
     defaultConfig {
-        minSdkVersion 21
-        targetSdkVersion 33
+        minSdkVersion 26
+        targetSdkVersion 34
         multiDexEnabled true
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
@@ -87,9 +87,9 @@ android {
 
 dependencies {
     // Mapbox Navigation SDK
-    implementation "com.mapbox.navigation:copilot:2.16.0"
-    implementation "com.mapbox.navigation:ui-app:2.16.0"
-    implementation "com.mapbox.navigation:ui-dropin:2.16.0"
+    implementation "com.mapbox.navigation:copilot:2.18.1"
+    implementation "com.mapbox.navigation:ui-app:2.18.1"
+    implementation "com.mapbox.navigation:ui-dropin:2.18.1"
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
     implementation 'com.jakewharton.timber:timber:4.7.1'
     implementation 'com.google.code.gson:gson:2.8.9'
