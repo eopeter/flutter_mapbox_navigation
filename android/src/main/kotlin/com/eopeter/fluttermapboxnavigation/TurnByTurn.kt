@@ -77,7 +77,7 @@ open class TurnByTurn(
                 this.buildRoute(methodCall, result)
             }
             "clearRoute" -> {
-                this.clearRoute(methodCall, result)
+                this.clearRoute()
             }
             "startFreeDrive" -> {
                 FlutterMapboxNavigationPlugin.enableFreeDriveMode = true
@@ -171,7 +171,7 @@ open class TurnByTurn(
         )
     }
 
-    private fun clearRoute(methodCall: MethodCall, result: MethodChannel.Result) {
+    private fun clearRoute() {
         this.currentRoutes = null
         val navigation = MapboxNavigationApp.current()
         navigation?.stopTripSession()
@@ -198,6 +198,7 @@ open class TurnByTurn(
     }
 
     private fun finishNavigation(methodCall: MethodCall, result: MethodChannel.Result) {
+        this.clearRoute()
         this.finishNavigation()
 
         if (this.currentRoutes != null) {
@@ -347,7 +348,7 @@ open class TurnByTurn(
     }
 
     override fun onCancel(arguments: Any?) {
-        FlutterMapboxNavigationPlugin.eventSink = null
+//        FlutterMapboxNavigationPlugin.eventSink = null
     }
 
     private val context: Context = ctx

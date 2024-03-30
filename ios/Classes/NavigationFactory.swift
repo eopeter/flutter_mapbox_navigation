@@ -260,6 +260,7 @@ public class NavigationFactory : NSObject, FlutterStreamHandler
         sendEvent(eventType: MapBoxEventType.navigation_finished)
         if(self._navigationViewController != nil)
         {
+            self._navigationViewController?.navigationService.router.finishRouting()
             self._navigationViewController?.navigationService.endNavigation(feedback: nil)
             if(isEmbeddedNavigation)
             {
