@@ -2,8 +2,8 @@ PODS:
   - Flutter (1.0.0)
   - flutter_mapbox_navigation (0.2.2):
     - Flutter
-    - MapboxCoreNavigation (~> 2.17)
-    - MapboxNavigation (~> 2.17)
+    - MapboxCoreNavigation (~> 2.11)
+    - MapboxNavigation (~> 2.11)
   - MapboxCommon (23.8.6)
   - MapboxCoreMaps (10.16.4):
     - MapboxCommon (~> 23.8)
@@ -60,7 +60,7 @@ EXTERNAL SOURCES:
 
 SPEC CHECKSUMS:
   Flutter: e0871f40cf51350855a761d2e70bf5af5b9b5de7
-  flutter_mapbox_navigation: 42fce01bc819d825e5343b72dd97ffa2ddb8a450
+  flutter_mapbox_navigation: 7a7b3dfb825cfebf97cce89db6d2f3ae7e12b0c6
   MapboxCommon: 90f76693dc02438acbb5ea9a5b266a4c0eb1c875
   MapboxCoreMaps: 7b07d1ca8c454a4381daf09df901b9d6bf90bce0
   MapboxCoreNavigation: fb7967e584e1fb81060fe0b1380fb36781e71f5e
@@ -74,6 +74,6 @@ SPEC CHECKSUMS:
   Solar-dev: 4612dc9878b9fed2667d23b327f1d4e54e16e8d0
   Turf: 469ce2c3d22e5e8e4818d5a3b254699a5c89efa4
 
-PODFILE CHECKSUM: 775997f741c536251164e3eacf6e34abf2eb7a17
+PODFILE CHECKSUM: 57c8aed26fba39d3ec9424816221f294a07c58eb
 
 COCOAPODS: 1.15.0
