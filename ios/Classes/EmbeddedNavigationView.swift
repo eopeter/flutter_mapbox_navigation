@@ -272,16 +272,8 @@ public class FlutterMapboxNavigationView : NavigationFactory, FlutterPlatformVie
 
     func startEmbeddedNavigation(arguments: NSDictionary?, result: @escaping FlutterResult) {
         guard let response = self.routeResponse else { return }
-        let navLocationManager = self._simulateRoute ? SimulatedLocationManager(route: response.routes!.first!) : NavigationLocationManager()
-        navigationService = MapboxNavigationService(routeResponse: response,
-                                                            routeIndex: selectedRouteIndex,
-                                                            routeOptions: routeOptions!,
-                                                            routingProvider: MapboxRoutingProvider(.hybrid),
-                                                            credentials: NavigationSettings.shared.directions.credentials,
-                                                            locationSource: navLocationManager,
-                                                    simulating: self._simulateRoute ? .always : .onPoorGPS)
-        navigationService.delegate = self
-
+        
+//        let navigationService = MapboxNavigationService(routeResponse: response, routeIndex: 0, routeOptions: routeOptions!, simulating: .never)
         var dayStyle = CustomDayStyle()
         if(_mapStyleUrlDay != nil){
             dayStyle = CustomDayStyle(url: _mapStyleUrlDay)
@@ -290,8 +282,33 @@ public class FlutterMapboxNavigationView : NavigationFactory, FlutterPlatformVie
         if(_mapStyleUrlNight != nil){
             nightStyle.mapStyleURL = URL(string: _mapStyleUrlNight!)!
         }
-        let navigationOptions = NavigationOptions(styles: [dayStyle, nightStyle], navigationService: navigationService)
+        
+        
+        let navLocationManager = NavigationLocationManager()
+        navLocationManager.simulatesLocation = false
+        //self._simulateRoute ? SimulatedLocationManager(route: response.routes!.first!) : NavigationLocationManager()
+        
+        navigationService = MapboxNavigationService(routeResponse: response,
+                                                            routeIndex: selectedRouteIndex,
+                                                            routeOptions: routeOptions!,
+                                                            routingProvider: MapboxRoutingProvider(.hybrid),
+                                                            credentials: NavigationSettings.shared.directions.credentials,
+                                                            locationSource: navLocationManager,
+                                                            simulating: .never)
+        let navigationOptions = NavigationOptions(navigationService: navigationService)
 
+        navigationService.delegate = self
+//
+//        var dayStyle = CustomDayStyle()
+//        if(_mapStyleUrlDay != nil){
+//            dayStyle = CustomDayStyle(url: _mapStyleUrlDay)
+//        }
+//        let nightStyle = CustomNightStyle()
+//        if(_mapStyleUrlNight != nil){
+//            nightStyle.mapStyleURL = URL(string: _mapStyleUrlNight!)!
+//        }
+//        let navigationOptions = NavigationOptions(styles: [dayStyle, nightStyle], navigationService: navigationService)
+//            
         // Remove previous navigation view and controller if any
         if(_navigationViewController?.view != nil){
             _navigationViewController!.view.removeFromSuperview()

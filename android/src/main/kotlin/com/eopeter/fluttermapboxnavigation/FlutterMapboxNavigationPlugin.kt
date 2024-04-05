@@ -50,8 +50,6 @@ class FlutterMapboxNavigationPlugin : FlutterPlugin, MethodCallHandler,
 
         var PERMISSION_REQUEST_CODE: Int = 367
 
-        lateinit var routes: List<DirectionsRoute>
-        private var currentRoute: DirectionsRoute? = null
         val wayPoints: MutableList<Waypoint> = mutableListOf()
 
         var showAlternateRoutes: Boolean = true
@@ -67,9 +65,6 @@ class FlutterMapboxNavigationPlugin : FlutterPlugin, MethodCallHandler,
         var navigationVoiceUnits = DirectionsCriteria.IMPERIAL
         var voiceInstructionsEnabled = true
         var bannerInstructionsEnabled = true
-        var zoom = 15.0
-        var bearing = 0.0
-        var tilt = 0.0
         var distanceRemaining: Float? = null
         var durationRemaining: Double? = null
         var platformViewRegistry: PlatformViewRegistry? = null

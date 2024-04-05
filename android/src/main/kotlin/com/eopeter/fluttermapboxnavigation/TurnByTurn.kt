@@ -88,7 +88,7 @@ open class TurnByTurn(
                 this.startNavigation(methodCall, result)
             }
             "finishNavigation" -> {
-                this.finishNavigation(methodCall, result)
+                this.finishNavigation(result)
             }
             "getDistanceRemaining" -> {
                 result.success(this.distanceRemaining)
@@ -149,8 +149,7 @@ open class TurnByTurn(
                     )
                     this@TurnByTurn.binding.navigationView.api.startRoutePreview(routes)
                     this@TurnByTurn.binding.navigationView.customizeViewBinders {
-                        this.infoPanelEndNavigationButtonBinder =
-                            CustomInfoPanelEndNavButtonBinder(activity)
+                        this.infoPanelEndNavigationButtonBinder = CustomInfoPanelEndNavButtonBinder(activity)
                     }
                 }
 
@@ -197,10 +196,9 @@ open class TurnByTurn(
         }
     }
 
-    private fun finishNavigation(methodCall: MethodCall, result: MethodChannel.Result) {
+    private fun finishNavigation(result: MethodChannel.Result) {
         this.clearRoute()
         this.finishNavigation()
-
         if (this.currentRoutes != null) {
             result.success(true)
         } else {
@@ -218,7 +216,7 @@ open class TurnByTurn(
         PluginUtilities.sendEvent(MapBoxEvents.NAVIGATION_RUNNING)
     }
 
-    private fun finishNavigation(isOffRouted: Boolean = false) {
+    private fun finishNavigation() {
         MapboxNavigationApp.current()!!.stopTripSession()
         this.isNavigationCanceled = true
         PluginUtilities.sendEvent(MapBoxEvents.NAVIGATION_CANCELLED)

@@ -148,12 +148,14 @@ class NavigationActivity : AppCompatActivity() {
 
         registerReceiver(
             finishBroadcastReceiver,
-            IntentFilter(NavigationLauncher.KEY_STOP_NAVIGATION)
+            IntentFilter(NavigationLauncher.KEY_STOP_NAVIGATION),
+            RECEIVER_EXPORTED
         )
 
         registerReceiver(
             addWayPointsBroadcastReceiver,
-            IntentFilter(NavigationLauncher.KEY_ADD_WAYPOINTS)
+            IntentFilter(NavigationLauncher.KEY_ADD_WAYPOINTS),
+            RECEIVER_EXPORTED
         )
 
         // TODO set the style Uri
@@ -186,6 +188,16 @@ class NavigationActivity : AppCompatActivity() {
 
     override fun onDestroy() {
         super.onDestroy()
+        closeNavigation()
+    }
+
+    override fun onBackPressed() {
+        closeNavigation()
+        super.onBackPressed()
+        finish()
+    }
+
+    fun closeNavigation() {
         if (FlutterMapboxNavigationPlugin.longPressDestinationEnabled) {
             binding.navigationView.unregisterMapObserver(onMapLongClick)
         }

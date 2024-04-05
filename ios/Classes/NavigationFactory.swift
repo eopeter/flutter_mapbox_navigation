@@ -114,7 +114,7 @@ public class NavigationFactory : NSObject, FlutterStreamHandler
     
     func startNavigationWithWayPoints(wayPoints: [Waypoint], flutterResult: @escaping FlutterResult, isUpdatingWaypoints: Bool)
     {
-        let simulationMode: SimulationMode = _simulateRoute ? .always : .never
+        let simulationMode: SimulationMode = .never
         setNavigationOptions(wayPoints: wayPoints)
         
         Directions.shared.calculate(_options!) { [weak self](session, result) in
@@ -146,7 +146,7 @@ public class NavigationFactory : NSObject, FlutterStreamHandler
                     if(strongSelf._mapStyleUrlNight != nil){
                         nightStyle.mapStyleURL = URL(string: strongSelf._mapStyleUrlNight!)!
                     }
-                    let navigationOptions = NavigationOptions(styles: [dayStyle, nightStyle], navigationService: navigationService)
+                    let navigationOptions = NavigationOptions(navigationService: navigationService)
                     if (isUpdatingWaypoints) {
                         strongSelf._navigationViewController?.navigationService.router.updateRoute(with: IndexedRouteResponse(routeResponse: response, routeIndex: 0), routeOptions: strongSelf._options) { success in
                             if (success) {

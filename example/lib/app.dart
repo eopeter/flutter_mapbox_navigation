@@ -80,7 +80,7 @@ class _SampleNavigationAppState extends State<SampleNavigationApp> {
     if (!mounted) return;
 
     _navigationOption = MapBoxNavigation.instance.getDefaultOptions();
-    _navigationOption.simulateRoute = true;
+    _navigationOption.simulateRoute = false;
     _navigationOption.language = "en";
     //_navigationOption.initialLatitude = 36.1175275;
     //_navigationOption.initialLongitude = -115.1839524;
