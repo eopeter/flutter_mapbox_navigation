@@ -43,7 +43,7 @@ class _CustomerNavigationPageState
         );
       case Data():
         return NavigationPage(
-            key: UniqueKey(),
+            key: GlobalKey(),
             params: NavigationParamParams(lat: state.lat, lon: state.lon));
     }
   }

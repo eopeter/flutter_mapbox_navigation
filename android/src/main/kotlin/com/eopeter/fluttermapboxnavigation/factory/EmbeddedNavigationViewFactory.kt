@@ -15,22 +15,26 @@ import io.flutter.plugin.platform.PlatformViewFactory
 class EmbeddedNavigationViewFactory(
     private val messenger: BinaryMessenger,
 ) : PlatformViewFactory(StandardMessageCodec.INSTANCE) {
-    override fun create(context: Context, viewId: Int, args: Any?): PlatformView {
-        val inflater = LayoutInflater.from(context)
-        val navigationView: NavigationView =
-            inflater.inflate(R.layout.navigation_activity, null, false)
-                .findViewById(R.id.navigationView)
 
-        val accessToken = PluginUtilities.getResourceFromContext(context, "mapbox_access_token")
-        val view = EmbeddedNavigationMapView(
-            context,
-            navigationView,
-            messenger,
-            viewId,
-            args,
-            accessToken
-        )
-        view.start()
-        return view
+    private var view: EmbeddedNavigationMapView? = null
+
+    override fun create(context: Context, viewId: Int, args: Any?): PlatformView {
+        if (view == null) {
+            val inflater = LayoutInflater.from(context)
+            val navigationView: NavigationView =
+                inflater.inflate(R.layout.navigation_activity, null, false)
+                    .findViewById(R.id.navigationView)
+
+            val accessToken = PluginUtilities.getResourceFromContext(context, "mapbox_access_token")
+            view = EmbeddedNavigationMapView(
+                context,
+                navigationView,
+                messenger,
+                viewId,
+                accessToken
+            )
+        }
+        view!!.start(viewId)
+        return view!!
     }
 }

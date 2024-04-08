@@ -54,25 +54,25 @@ class EmbeddedNavigationMapView(
     private val navigationView: NavigationView,
     binaryMessenger: BinaryMessenger,
     vId: Int,
-    args: Any?,
+//    args: Any?,
     accessToken: String
 ) : PlatformView,
     MethodChannel.MethodCallHandler,
     EventChannel.StreamHandler {
-    private val viewId: Int = vId
+    var viewId: Int = vId
     private val messenger: BinaryMessenger = binaryMessenger
-    private val arguments = args as Map<*, *>
+//    private val arguments = args as Map<*, *>
     private var lastLocation: Location? = null
 
-    fun start() {
-        initFlutterChannelHandlers()
+    fun start(viewId: Int) {
+        initFlutterChannelHandlers(viewId)
         initNavigation()
 
-        if (!(this.arguments["longPressDestinationEnabled"] as Boolean)) {
-            this.navigationView.customizeViewOptions {
-                enableMapLongClickIntercept = false;
-            }
-        }
+//        if (!(this.arguments["longPressDestinationEnabled"] as Boolean)) {
+//            this.navigationView.customizeViewOptions {
+//                enableMapLongClickIntercept = false;
+//            }
+//        }
         registerObservers()
     }
 
@@ -81,10 +81,10 @@ class EmbeddedNavigationMapView(
     }
 
     override fun dispose() {
-        if ((this.arguments["enableOnMapTapCallback"] as Boolean)) {
-            this.navigationView.unregisterMapObserver(onMapClick)
-        }
-        unregisterObservers()
+//        if ((this.arguments["enableOnMapTapCallback"] as Boolean)) {
+//            this.navigationView.unregisterMapObserver(onMapClick)
+//        }
+//        unregisterObservers()
     }
 
     /**
@@ -110,7 +110,7 @@ class EmbeddedNavigationMapView(
         }
     }
 
-    private fun initFlutterChannelHandlers() {
+    private fun initFlutterChannelHandlers(viewId: Int) {
         methodChannel = MethodChannel(messenger, "flutter_mapbox_navigation/${viewId}")
         eventChannel = EventChannel(messenger, "flutter_mapbox_navigation/${viewId}/events")
         this.methodChannel?.setMethodCallHandler(this)
@@ -125,8 +125,6 @@ class EmbeddedNavigationMapView(
         MapboxNavigationApp
             .setup(navigationOptions)
             .attach(navigationView as LifecycleOwner)
-
-        // initialize navigation trip observers
     }
 
     override fun onMethodCall(methodCall: MethodCall, result: MethodChannel.Result) {
@@ -384,9 +382,9 @@ class EmbeddedNavigationMapView(
     private fun registerObservers() {
         // register event listeners
 
-        if ((this.arguments["enableOnMapTapCallback"] as Boolean)) {
-            this.navigationView.registerMapObserver(onMapClick)
-        }
+//        if ((this.arguments["enableOnMapTapCallback"] as Boolean)) {
+//            this.navigationView.registerMapObserver(onMapClick)
+//        }
         MapboxNavigationApp.current()
             ?.registerBannerInstructionsObserver(this.bannerInstructionObserver)
         MapboxNavigationApp.current()
@@ -412,8 +410,8 @@ class EmbeddedNavigationMapView(
         MapboxNavigationApp.current()?.unregisterLocationObserver(this.locationObserver)
         MapboxNavigationApp.current()?.unregisterRouteProgressObserver(this.routeProgressObserver)
         MapboxNavigationApp.current()?.unregisterArrivalObserver(this.arrivalObserver)
-        FlutterMapboxNavigationPlugin.eventSink = null
-        MapboxNavigationApp.detach(navigationView as LifecycleOwner)
+//        FlutterMapboxNavigationPlugin.eventSink = null
+//        MapboxNavigationApp.detach(navigationView as LifecycleOwner)
     }
 
     // Flutter stream listener delegate methods
@@ -422,7 +420,7 @@ class EmbeddedNavigationMapView(
     }
 
     override fun onCancel(arguments: Any?) {
-        FlutterMapboxNavigationPlugin.eventSink = null
+//        FlutterMapboxNavigationPlugin.eventSink = null
     }
 
     private val token: String = accessToken

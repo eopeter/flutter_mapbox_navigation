@@ -37,7 +37,7 @@ class _NavigationPageState extends ConsumerState<NavigationPage> {
         options: viewModel.getNavigationOptions(),
         onRouteEvent: (e) => {
           if (e.eventType == MapBoxEvent.navigation_cancelled) {
-            Navigator.pop(context, true)
+            // Navigator.pop(context, true)
           }
           else viewModel.onEmbeddedRouteEvent(e)
         },

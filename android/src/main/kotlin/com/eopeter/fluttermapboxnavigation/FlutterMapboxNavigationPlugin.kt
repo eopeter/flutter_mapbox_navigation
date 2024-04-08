@@ -40,17 +40,17 @@ class FlutterMapboxNavigationPlugin : FlutterPlugin,
     }
 
     override fun onCancel(args: Any?) {
-        eventSink = null
+//        eventSink = null
     }
 
     override fun onDetachedFromEngine(binding: FlutterPlugin.FlutterPluginBinding) {
-        currentActivity = null
-        progressEventChannel.setStreamHandler(null)
+//        currentActivity = null
+//        progressEventChannel.setStreamHandler(null)
     }
 
     override fun onDetachedFromActivity() {
-        currentActivity!!.finish()
-        currentActivity = null
+//        currentActivity!!.finish()
+//        currentActivity = null
     }
 
     override fun onReattachedToActivityForConfigChanges(binding: ActivityPluginBinding) {
