@@ -6,6 +6,7 @@ import com.eopeter.fluttermapboxnavigation.R
 import com.eopeter.fluttermapboxnavigation.models.views.EmbeddedNavigationMapView
 import com.eopeter.fluttermapboxnavigation.utilities.PluginUtilities
 import com.mapbox.navigation.dropin.NavigationView
+import com.mapbox.navigation.dropin.databinding.MapboxNavigationViewLayoutBinding
 import io.flutter.plugin.common.BinaryMessenger
 import io.flutter.plugin.common.StandardMessageCodec
 import io.flutter.plugin.platform.PlatformView
@@ -29,9 +30,7 @@ class EmbeddedNavigationViewFactory(
             args,
             accessToken
         )
-
-        view.initialize()
-
+        view.start()
         return view
     }
 }

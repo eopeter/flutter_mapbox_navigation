@@ -50,6 +50,7 @@ class _NavigationPageState extends ConsumerState<NavigationPage> {
   @override
   void dispose() {
     if (!mounted) return;
+    viewModel.dispose();
     super.dispose();
   }
 }

@@ -32,51 +32,6 @@ class _CustomerNavigationPageState
       backgroundColor: Colors.white,
       key: scaffoldKey,
       body: _renderBody(state),
-      // body: Stack(children: [
-      //   _renderBody(state),
-      //   Container(
-      //     padding: const EdgeInsets.only(bottom: 24.0, top: 16.0),
-      //     decoration: const BoxDecoration(color: Colors.black),
-      //     child: Column(
-      //       children: [
-      //         Row(
-      //           children: [
-      //             Expanded(
-      //               child: Container(
-      //                 margin: const EdgeInsets.all(8.0),
-      //                 child: MaterialButton(
-      //                   onPressed: () {
-      //                     if (navigationViewModel.mounted) {
-      //                       navigationViewModel.dispose();
-      //                     }
-      //                     Navigator.pop(context, false);
-      //                   },
-      //                   child: const Text('Back'),
-      //                 ),
-      //               ),
-      //             ),
-      //             // Assuming Spacer1 is a custom widget for spacing. Adjust as necessary.
-      //             Expanded(
-      //               child: Container(
-      //                 margin: const EdgeInsets.all(8.0),
-      //                 // Adjust the margin as needed
-      //                 child: MaterialButton(
-      //                   onPressed: () {
-      //                     if (navigationViewModel.mounted) {
-      //                       navigationViewModel.dispose();
-      //                     }
-      //                     Navigator.pop(context, true);
-      //                   },
-      //                   child: const Text('Complete'),
-      //                 ),
-      //               ),
-      //             ),
-      //           ],
-      //         ),
-      //       ],
-      //     ),
-      //   ),
-      // ]),
     );
   }
 
