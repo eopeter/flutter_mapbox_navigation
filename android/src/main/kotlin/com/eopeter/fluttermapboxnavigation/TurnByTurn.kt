@@ -1,14 +1,9 @@
 package com.eopeter.fluttermapboxnavigation
 
 import android.annotation.SuppressLint
-import android.app.Activity
-import android.app.Application
 import android.content.Context
 import android.location.Location
-import android.os.Bundle
-import android.util.Log
 import androidx.lifecycle.LifecycleOwner
-import com.eopeter.fluttermapboxnavigation.databinding.NavigationActivityBinding
 import com.eopeter.fluttermapboxnavigation.models.MapBoxEvents
 import com.eopeter.fluttermapboxnavigation.models.MapBoxRouteProgressEvent
 import com.eopeter.fluttermapboxnavigation.models.Waypoint
@@ -16,10 +11,10 @@ import com.eopeter.fluttermapboxnavigation.models.WaypointSet
 import com.eopeter.fluttermapboxnavigation.utilities.CustomInfoPanelEndNavButtonBinder
 import com.eopeter.fluttermapboxnavigation.utilities.PluginUtilities
 import com.google.gson.Gson
-import com.mapbox.maps.Style
 import com.mapbox.api.directions.v5.DirectionsCriteria
 import com.mapbox.api.directions.v5.models.RouteOptions
 import com.mapbox.geojson.Point
+import com.mapbox.maps.Style
 import com.mapbox.navigation.base.extensions.applyDefaultNavigationOptions
 import com.mapbox.navigation.base.extensions.applyLanguageAndVoiceUnitOptions
 import com.mapbox.navigation.base.options.NavigationOptions
@@ -37,16 +32,17 @@ import com.mapbox.navigation.dropin.NavigationView
 import io.flutter.plugin.common.EventChannel
 import io.flutter.plugin.common.MethodCall
 import io.flutter.plugin.common.MethodChannel
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 import java.util.*
 
 open class TurnByTurn(
     ctx: Context,
-    act: Activity,
-    navigationView: NavigationView,
+    val navigationView: NavigationView,
     accessToken: String,
 ) : MethodChannel.MethodCallHandler,
-    EventChannel.StreamHandler,
-    Application.ActivityLifecycleCallbacks {
+    EventChannel.StreamHandler {
+    private val scope = CoroutineScope(Dispatchers.Main)
 
     open fun initFlutterChannelHandlers() {
         this.methodChannel?.setMethodCallHandler(this)
@@ -60,10 +56,9 @@ open class TurnByTurn(
 
         MapboxNavigationApp
             .setup(navigationOptions)
-            .attach(this.activity as LifecycleOwner)
+            .attach(navigationView as LifecycleOwner)
 
         // initialize navigation trip observers
-        this.registerObservers()
     }
 
     override fun onMethodCall(methodCall: MethodCall, result: MethodChannel.Result) {
@@ -71,32 +66,34 @@ open class TurnByTurn(
             "getPlatformVersion" -> {
                 result.success("Android ${android.os.Build.VERSION.RELEASE}")
             }
+
             "enableOfflineRouting" -> {
-                // downloadRegionForOfflineRouting(call, result)
             }
+
             "buildRoute" -> {
                 this.buildRoute(methodCall, result)
             }
+
             "clearRoute" -> {
                 this.clearRoute()
             }
-            "startFreeDrive" -> {
-                FlutterMapboxNavigationPlugin.enableFreeDriveMode = true
-                this.startFreeDrive()
-            }
+
             "startNavigation" -> {
-                FlutterMapboxNavigationPlugin.enableFreeDriveMode = false
                 this.startNavigation(methodCall, result)
             }
+
             "finishNavigation" -> {
                 this.finishNavigation(result)
             }
+
             "getDistanceRemaining" -> {
                 result.success(this.distanceRemaining)
             }
+
             "getDurationRemaining" -> {
                 result.success(this.durationRemaining)
             }
+
             else -> result.notImplemented()
         }
     }
@@ -113,7 +110,7 @@ open class TurnByTurn(
             val latitude = point["Latitude"] as Double
             val longitude = point["Longitude"] as Double
             val isSilent = point["IsSilent"] as Boolean
-            this.addedWaypoints.add(Waypoint(Point.fromLngLat(longitude, latitude),isSilent))
+            this.addedWaypoints.add(Waypoint(Point.fromLngLat(longitude, latitude), isSilent))
         }
         this.getRoute(this.context)
         result.success(true)
@@ -150,7 +147,8 @@ open class TurnByTurn(
                     )
                     this@TurnByTurn.navigationView.api.startRoutePreview(routes)
                     this@TurnByTurn.navigationView.customizeViewBinders {
-                        this.infoPanelEndNavigationButtonBinder = CustomInfoPanelEndNavButtonBinder(activity)
+                        this.infoPanelEndNavigationButtonBinder =
+                            CustomInfoPanelEndNavButtonBinder()
                     }
                 }
 
@@ -176,10 +174,6 @@ open class TurnByTurn(
         val navigation = MapboxNavigationApp.current()
         navigation?.stopTripSession()
         PluginUtilities.sendEvent(MapBoxEvents.NAVIGATION_CANCELLED)
-    }
-
-    private fun startFreeDrive() {
-        this.navigationView.api.startFreeDrive()
     }
 
     private fun startNavigation(methodCall: MethodCall, result: MethodChannel.Result) {
@@ -263,7 +257,7 @@ open class TurnByTurn(
         this@TurnByTurn.navigationView.customizeViewOptions {
             mapStyleUriDay = this@TurnByTurn.mapStyleUrlDay
             mapStyleUriNight = this@TurnByTurn.mapStyleUrlNight
-        }           
+        }
 
         this.initialLatitude = arguments["initialLatitude"] as? Double
         this.initialLongitude = arguments["initialLongitude"] as? Double
@@ -321,24 +315,33 @@ open class TurnByTurn(
 
     open fun registerObservers() {
         // register event listeners
-        MapboxNavigationApp.current()?.registerBannerInstructionsObserver(this.bannerInstructionObserver)
-        MapboxNavigationApp.current()?.registerVoiceInstructionsObserver(this.voiceInstructionObserver)
+        MapboxNavigationApp.current()
+            ?.registerBannerInstructionsObserver(this.bannerInstructionObserver)
+        MapboxNavigationApp.current()
+            ?.registerVoiceInstructionsObserver(this.voiceInstructionObserver)
         MapboxNavigationApp.current()?.registerOffRouteObserver(this.offRouteObserver)
         MapboxNavigationApp.current()?.registerRoutesObserver(this.routesObserver)
         MapboxNavigationApp.current()?.registerLocationObserver(this.locationObserver)
         MapboxNavigationApp.current()?.registerRouteProgressObserver(this.routeProgressObserver)
         MapboxNavigationApp.current()?.registerArrivalObserver(this.arrivalObserver)
+
     }
 
     open fun unregisterObservers() {
+
+        finishNavigation()
         // unregister event listeners to prevent leaks or unnecessary resource consumption
-        MapboxNavigationApp.current()?.unregisterBannerInstructionsObserver(this.bannerInstructionObserver)
-        MapboxNavigationApp.current()?.unregisterVoiceInstructionsObserver(this.voiceInstructionObserver)
+        MapboxNavigationApp.current()
+            ?.unregisterBannerInstructionsObserver(this.bannerInstructionObserver)
+        MapboxNavigationApp.current()
+            ?.unregisterVoiceInstructionsObserver(this.voiceInstructionObserver)
         MapboxNavigationApp.current()?.unregisterOffRouteObserver(this.offRouteObserver)
         MapboxNavigationApp.current()?.unregisterRoutesObserver(this.routesObserver)
         MapboxNavigationApp.current()?.unregisterLocationObserver(this.locationObserver)
         MapboxNavigationApp.current()?.unregisterRouteProgressObserver(this.routeProgressObserver)
         MapboxNavigationApp.current()?.unregisterArrivalObserver(this.arrivalObserver)
+        FlutterMapboxNavigationPlugin.eventSink = null
+        MapboxNavigationApp.detach(navigationView as LifecycleOwner)
     }
 
     // Flutter stream listener delegate methods
@@ -347,11 +350,10 @@ open class TurnByTurn(
     }
 
     override fun onCancel(arguments: Any?) {
-//        FlutterMapboxNavigationPlugin.eventSink = null
+        FlutterMapboxNavigationPlugin.eventSink = null
     }
 
     private val context: Context = ctx
-    val activity: Activity = act
     private val token: String = accessToken
     open var methodChannel: MethodChannel? = null
     open var eventChannel: EventChannel? = null
@@ -391,10 +393,6 @@ open class TurnByTurn(
     private var currentRoutes: List<NavigationRoute>? = null
     private var isNavigationCanceled = false
 
-    /**
-     * Bindings to the example layout.
-     */
-    open val navigationView: NavigationView = navigationView
 
     /**
      * Gets notified with location updates.
@@ -413,11 +411,17 @@ open class TurnByTurn(
     }
 
     private val bannerInstructionObserver = BannerInstructionsObserver { bannerInstructions ->
-        PluginUtilities.sendEvent(MapBoxEvents.BANNER_INSTRUCTION, bannerInstructions.primary().text())
+        PluginUtilities.sendEvent(
+            MapBoxEvents.BANNER_INSTRUCTION,
+            bannerInstructions.primary().text()
+        )
     }
 
     private val voiceInstructionObserver = VoiceInstructionsObserver { voiceInstructions ->
-        PluginUtilities.sendEvent(MapBoxEvents.SPEECH_ANNOUNCEMENT, voiceInstructions.announcement().toString())
+        PluginUtilities.sendEvent(
+            MapBoxEvents.SPEECH_ANNOUNCEMENT,
+            voiceInstructions.announcement().toString()
+        )
     }
 
     private val offRouteObserver = OffRouteObserver { offRoute ->
@@ -465,31 +469,4 @@ open class TurnByTurn(
         }
     }
 
-    override fun onActivityCreated(activity: Activity, savedInstanceState: Bundle?) {
-        Log.d("Embedded", "onActivityCreated not implemented")
-    }
-
-    override fun onActivityStarted(activity: Activity) {
-        Log.d("Embedded", "onActivityStarted not implemented")
-    }
-
-    override fun onActivityResumed(activity: Activity) {
-        Log.d("Embedded", "onActivityResumed not implemented")
-    }
-
-    override fun onActivityPaused(activity: Activity) {
-        Log.d("Embedded", "onActivityPaused not implemented")
-    }
-
-    override fun onActivityStopped(activity: Activity) {
-        Log.d("Embedded", "onActivityStopped not implemented")
-    }
-
-    override fun onActivitySaveInstanceState(activity: Activity, outState: Bundle) {
-        Log.d("Embedded", "onActivitySaveInstanceState not implemented")
-    }
-
-    override fun onActivityDestroyed(activity: Activity) {
-        Log.d("Embedded", "onActivityDestroyed not implemented")
-    }
 }

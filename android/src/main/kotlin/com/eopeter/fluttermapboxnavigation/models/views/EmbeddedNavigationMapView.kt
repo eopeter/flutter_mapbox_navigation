@@ -1,10 +1,8 @@
 package com.eopeter.fluttermapboxnavigation.models.views
 
-import android.app.Activity
 import android.content.Context
 import android.view.View
 import com.eopeter.fluttermapboxnavigation.TurnByTurn
-import com.eopeter.fluttermapboxnavigation.databinding.NavigationActivityBinding
 import com.eopeter.fluttermapboxnavigation.models.MapBoxEvents
 import com.eopeter.fluttermapboxnavigation.utilities.PluginUtilities
 import com.mapbox.geojson.Point
@@ -21,13 +19,12 @@ import org.json.JSONObject
 
 class EmbeddedNavigationMapView(
     context: Context,
-    activity: Activity,
     navigationView: NavigationView,
     binaryMessenger: BinaryMessenger,
     vId: Int,
     args: Any?,
     accessToken: String
-) : PlatformView, TurnByTurn(context, activity, navigationView, accessToken) {
+) : PlatformView, TurnByTurn(context, navigationView, accessToken) {
     private val viewId: Int = vId
     private val messenger: BinaryMessenger = binaryMessenger
     private val arguments = args as Map<*, *>
@@ -38,19 +35,20 @@ class EmbeddedNavigationMapView(
         super.initFlutterChannelHandlers()
     }
 
-    open fun initialize() {
+    fun initialize() {
         initFlutterChannelHandlers()
         initNavigation()
 
-        if(!(this.arguments?.get("longPressDestinationEnabled") as Boolean)) {
+        if(!(this.arguments["longPressDestinationEnabled"] as Boolean)) {
             this.navigationView.customizeViewOptions {
                 enableMapLongClickIntercept = false;
             }
         }
 
-        if((this.arguments?.get("enableOnMapTapCallback") as Boolean)) {
+        if((this.arguments["enableOnMapTapCallback"] as Boolean)) {
             this.navigationView.registerMapObserver(onMapClick)
         }
+        registerObservers()
     }
 
     override fun getView(): View {
@@ -58,7 +56,7 @@ class EmbeddedNavigationMapView(
     }
 
     override fun dispose() {
-        if((this.arguments?.get("enableOnMapTapCallback") as Boolean)) {
+        if((this.arguments["enableOnMapTapCallback"] as Boolean)) {
             this.navigationView.unregisterMapObserver(onMapClick)
         }
         unregisterObservers()
@@ -78,7 +76,7 @@ class EmbeddedNavigationMapView(
         }
 
         override fun onMapClick(point: Point): Boolean {
-            var waypoint = mapOf<String, String>(
+            val waypoint = mapOf(
                 Pair("latitude", point.latitude().toString()),
                 Pair("longitude", point.longitude().toString())
             )

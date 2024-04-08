@@ -8,6 +8,7 @@ void main() => runApp(ProviderScope(
     ));
 
 class MainPage extends StatelessWidget {
+
   @override
   Widget build(BuildContext context) {
     MapBoxNavigation.instance.setDefaultOptions(MapBoxOptions(

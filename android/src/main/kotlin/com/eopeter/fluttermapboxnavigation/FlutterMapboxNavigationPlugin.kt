@@ -1,236 +1,39 @@
 package com.eopeter.fluttermapboxnavigation
 
-import android.Manifest
 import android.app.Activity
 import android.content.Context
-import android.content.pm.PackageManager
-import android.os.Build
-import com.eopeter.fluttermapboxnavigation.activity.NavigationLauncher
 import com.eopeter.fluttermapboxnavigation.factory.EmbeddedNavigationViewFactory
-import com.eopeter.fluttermapboxnavigation.models.Waypoint
-import com.mapbox.api.directions.v5.DirectionsCriteria
 import io.flutter.embedding.engine.plugins.FlutterPlugin
 import io.flutter.embedding.engine.plugins.activity.ActivityAware
 import io.flutter.embedding.engine.plugins.activity.ActivityPluginBinding
 import io.flutter.plugin.common.BinaryMessenger
 import io.flutter.plugin.common.EventChannel
-import io.flutter.plugin.common.MethodCall
-import io.flutter.plugin.common.MethodChannel
-import io.flutter.plugin.common.MethodChannel.MethodCallHandler
-import io.flutter.plugin.common.MethodChannel.Result
 import io.flutter.plugin.platform.PlatformViewRegistry
 
 /** FlutterMapboxNavigationPlugin */
-class FlutterMapboxNavigationPlugin : FlutterPlugin, MethodCallHandler,
+class FlutterMapboxNavigationPlugin : FlutterPlugin,
     EventChannel.StreamHandler, ActivityAware {
 
-    private lateinit var channel: MethodChannel
     private lateinit var progressEventChannel: EventChannel
     private var currentActivity: Activity? = null
     private lateinit var currentContext: Context
 
     override fun onAttachedToEngine(binding: FlutterPlugin.FlutterPluginBinding) {
         val messenger = binding.binaryMessenger
-        channel = MethodChannel(messenger, "flutter_mapbox_navigation")
-        channel.setMethodCallHandler(this)
-
         progressEventChannel = EventChannel(messenger, "flutter_mapbox_navigation/events")
         progressEventChannel.setStreamHandler(this)
 
         platformViewRegistry = binding.platformViewRegistry
         binaryMessenger = messenger
-
-
     }
 
     companion object {
-
         var eventSink: EventChannel.EventSink? = null
-
-        var PERMISSION_REQUEST_CODE: Int = 367
-
-        val wayPoints: MutableList<Waypoint> = mutableListOf()
-
-        var showAlternateRoutes: Boolean = true
-        var longPressDestinationEnabled: Boolean = true
-        var allowsUTurnsAtWayPoints: Boolean = false
-        var enableOnMapTapCallback: Boolean = false
-        var navigationMode = DirectionsCriteria.PROFILE_DRIVING_TRAFFIC
-        var simulateRoute = false
-        var enableFreeDriveMode = false
-        var mapStyleUrlDay: String? = null
-        var mapStyleUrlNight: String? = null
-        var navigationLanguage = "en"
-        var navigationVoiceUnits = DirectionsCriteria.IMPERIAL
-        var voiceInstructionsEnabled = true
-        var bannerInstructionsEnabled = true
-        var distanceRemaining: Float? = null
-        var durationRemaining: Double? = null
         var platformViewRegistry: PlatformViewRegistry? = null
         var binaryMessenger: BinaryMessenger? = null
-
         var viewId = "FlutterMapboxNavigationView"
     }
 
-    override fun onMethodCall(call: MethodCall, result: Result) {
-        when (call.method) {
-            "getPlatformVersion" -> {
-                result.success("Android ${Build.VERSION.RELEASE}")
-            }
-            "getDistanceRemaining" -> {
-                result.success(distanceRemaining)
-            }
-            "getDurationRemaining" -> {
-                result.success(durationRemaining)
-            }
-            "startFreeDrive" -> {
-                enableFreeDriveMode = true
-                checkPermissionAndBeginNavigation(call)
-            }
-            "startNavigation" -> {
-                enableFreeDriveMode = false
-                checkPermissionAndBeginNavigation(call)
-            }
-            "addWayPoints" -> {
-                addWayPointsToNavigation(call, result)
-            }
-            "finishNavigation" -> {
-                NavigationLauncher.stopNavigation(currentActivity)
-            }
-            "enableOfflineRouting" -> {
-                downloadRegionForOfflineRouting(result)
-            }
-            else -> result.notImplemented()
-        }
-    }
-
-    private fun downloadRegionForOfflineRouting(
-        result: Result
-    ) {
-        result.error("TODO", "Not Implemented in Android", "will implement soon")
-    }
-
-    private fun checkPermissionAndBeginNavigation(
-        call: MethodCall
-    ) {
-        val arguments = call.arguments as? Map<*, *>
-
-        val navMode = arguments?.get("mode") as? String
-        if (navMode != null) {
-            when (navMode) {
-                "walking" -> navigationMode = DirectionsCriteria.PROFILE_WALKING
-                "cycling" -> navigationMode = DirectionsCriteria.PROFILE_CYCLING
-                "driving" -> navigationMode = DirectionsCriteria.PROFILE_DRIVING
-            }
-        }
-
-        val alternateRoutes = arguments?.get("alternatives") as? Boolean
-        if (alternateRoutes != null) {
-            showAlternateRoutes = alternateRoutes
-        }
-
-        val simulated = arguments?.get("simulateRoute") as? Boolean
-        if (simulated != null) {
-            simulateRoute = simulated
-        }
-
-        val allowsUTurns = arguments?.get("allowsUTurnsAtWayPoints") as? Boolean
-        if (allowsUTurns != null) {
-            allowsUTurnsAtWayPoints = allowsUTurns
-        }
-
-        val onMapTap = arguments?.get("enableOnMapTapCallback") as? Boolean
-        if (onMapTap != null) {
-            enableOnMapTapCallback = onMapTap
-        }
-
-        val language = arguments?.get("language") as? String
-        if (language != null) {
-            navigationLanguage = language
-        }
-
-        val voiceEnabled = arguments?.get("voiceInstructionsEnabled") as? Boolean
-        if (voiceEnabled != null) {
-            voiceInstructionsEnabled = voiceEnabled
-        }
-
-        val bannerEnabled = arguments?.get("bannerInstructionsEnabled") as? Boolean
-        if (bannerEnabled != null) {
-            bannerInstructionsEnabled = bannerEnabled
-        }
-
-        val units = arguments?.get("units") as? String
-
-        if (units != null) {
-            if (units == "imperial") {
-                navigationVoiceUnits = DirectionsCriteria.IMPERIAL
-            } else if (units == "metric") {
-                navigationVoiceUnits = DirectionsCriteria.METRIC
-            }
-        }
-
-        mapStyleUrlDay = arguments?.get("mapStyleUrlDay") as? String
-        mapStyleUrlNight = arguments?.get("mapStyleUrlNight") as? String
-
-        val longPress = arguments?.get("longPressDestinationEnabled") as? Boolean
-        if (longPress != null) {
-            longPressDestinationEnabled = longPress
-        }
-
-        wayPoints.clear()
-
-        if (enableFreeDriveMode) {
-            checkPermissionAndBeginNavigation(wayPoints)
-            return
-        }
-
-        val points = arguments?.get("wayPoints") as HashMap<Int, Any>
-        for (item in points) {
-            val point = item.value as HashMap<*, *>
-            val name = point["Name"] as String
-            val latitude = point["Latitude"] as Double
-            val longitude = point["Longitude"] as Double
-            val isSilent = point["IsSilent"] as Boolean
-            wayPoints.add(Waypoint(name, longitude, latitude, isSilent))
-        }
-        checkPermissionAndBeginNavigation(wayPoints)
-    }
-
-    private fun checkPermissionAndBeginNavigation(wayPoints: List<Waypoint>) {
-        val haspermission =
-            currentActivity?.checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION)
-        if (haspermission != PackageManager.PERMISSION_GRANTED) {
-            //_activity.onRequestPermissionsResult((a,b,c) => onRequestPermissionsResult)
-            currentActivity?.requestPermissions(
-                arrayOf(Manifest.permission.ACCESS_FINE_LOCATION),
-                PERMISSION_REQUEST_CODE
-            )
-            beginNavigation(wayPoints)
-        } else
-            beginNavigation(wayPoints)
-    }
-
-    private fun beginNavigation(wayPoints: List<Waypoint>) {
-        NavigationLauncher.startNavigation(currentActivity, wayPoints)
-    }
-
-    private fun addWayPointsToNavigation(
-        call: MethodCall,
-        result: Result
-    ) {
-        val arguments = call.arguments as? Map<String, Any>
-        val points = arguments?.get("wayPoints") as HashMap<Int, Any>
-
-        for (item in points) {
-            val point = item.value as HashMap<*, *>
-            val name = point["Name"] as String
-            val latitude = point["Latitude"] as Double
-            val longitude = point["Longitude"] as Double
-            val isSilent = point["IsSilent"] as Boolean
-            wayPoints.add(Waypoint(name, latitude, longitude, isSilent))
-        }
-        NavigationLauncher.addWayPoints(currentActivity, wayPoints)
-    }
 
     override fun onListen(args: Any?, events: EventChannel.EventSink?) {
         eventSink = events
@@ -242,7 +45,6 @@ class FlutterMapboxNavigationPlugin : FlutterPlugin, MethodCallHandler,
 
     override fun onDetachedFromEngine(binding: FlutterPlugin.FlutterPluginBinding) {
         currentActivity = null
-        channel.setMethodCallHandler(null)
         progressEventChannel.setStreamHandler(null)
     }
 
@@ -261,7 +63,7 @@ class FlutterMapboxNavigationPlugin : FlutterPlugin, MethodCallHandler,
         if (platformViewRegistry != null && binaryMessenger != null && currentActivity != null) {
             platformViewRegistry?.registerViewFactory(
                 viewId,
-                EmbeddedNavigationViewFactory(binaryMessenger!!, currentActivity!!)
+                EmbeddedNavigationViewFactory(binaryMessenger!!)
             )
         }
     }

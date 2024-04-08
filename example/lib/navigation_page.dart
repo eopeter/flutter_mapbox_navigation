@@ -21,6 +21,7 @@ class NavigationPage extends ConsumerStatefulWidget {
 
 class _NavigationPageState extends ConsumerState<NavigationPage> {
   late final NavigationViewModel viewModel;
+  final GlobalKey<ScaffoldState> scaffoldKey = GlobalKey();
 
   @override
   void initState() {
@@ -32,6 +33,7 @@ class _NavigationPageState extends ConsumerState<NavigationPage> {
   @override
   Widget build(BuildContext context) {
     return MapBoxNavigationView(
+        key: scaffoldKey,
         options: viewModel.getNavigationOptions(),
         onRouteEvent: (e) => {
           if (e.eventType == MapBoxEvent.navigation_cancelled) {
