@@ -9,7 +9,6 @@ import com.eopeter.fluttermapboxnavigation.activity.NavigationLauncher
 import com.eopeter.fluttermapboxnavigation.factory.EmbeddedNavigationViewFactory
 import com.eopeter.fluttermapboxnavigation.models.Waypoint
 import com.mapbox.api.directions.v5.DirectionsCriteria
-import com.mapbox.api.directions.v5.models.DirectionsRoute
 import io.flutter.embedding.engine.plugins.FlutterPlugin
 import io.flutter.embedding.engine.plugins.activity.ActivityAware
 import io.flutter.embedding.engine.plugins.activity.ActivityPluginBinding
@@ -99,14 +98,13 @@ class FlutterMapboxNavigationPlugin : FlutterPlugin, MethodCallHandler,
                 NavigationLauncher.stopNavigation(currentActivity)
             }
             "enableOfflineRouting" -> {
-                downloadRegionForOfflineRouting(call, result)
+                downloadRegionForOfflineRouting(result)
             }
             else -> result.notImplemented()
         }
     }
 
     private fun downloadRegionForOfflineRouting(
-        call: MethodCall,
         result: Result
     ) {
         result.error("TODO", "Not Implemented in Android", "will implement soon")
@@ -115,7 +113,7 @@ class FlutterMapboxNavigationPlugin : FlutterPlugin, MethodCallHandler,
     private fun checkPermissionAndBeginNavigation(
         call: MethodCall
     ) {
-        val arguments = call.arguments as? Map<String, Any>
+        val arguments = call.arguments as? Map<*, *>
 
         val navMode = arguments?.get("mode") as? String
         if (navMode != null) {
@@ -199,18 +197,15 @@ class FlutterMapboxNavigationPlugin : FlutterPlugin, MethodCallHandler,
     }
 
     private fun checkPermissionAndBeginNavigation(wayPoints: List<Waypoint>) {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            val haspermission =
-                currentActivity?.checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION)
-            if (haspermission != PackageManager.PERMISSION_GRANTED) {
-                //_activity.onRequestPermissionsResult((a,b,c) => onRequestPermissionsResult)
-                currentActivity?.requestPermissions(
-                    arrayOf(Manifest.permission.ACCESS_FINE_LOCATION),
-                    PERMISSION_REQUEST_CODE
-                )
-                beginNavigation(wayPoints)
-            } else
-                beginNavigation(wayPoints)
+        val haspermission =
+            currentActivity?.checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION)
+        if (haspermission != PackageManager.PERMISSION_GRANTED) {
+            //_activity.onRequestPermissionsResult((a,b,c) => onRequestPermissionsResult)
+            currentActivity?.requestPermissions(
+                arrayOf(Manifest.permission.ACCESS_FINE_LOCATION),
+                PERMISSION_REQUEST_CODE
+            )
+            beginNavigation(wayPoints)
         } else
             beginNavigation(wayPoints)
     }
@@ -272,37 +267,9 @@ class FlutterMapboxNavigationPlugin : FlutterPlugin, MethodCallHandler,
     }
 
     override fun onDetachedFromActivityForConfigChanges() {
+        print("onDetachedFromActivityForConfigChanges")
         // To change body of created functions use File | Settings | File Templates.
     }
 
-    fun onRequestPermissionsResult(
-        requestCode: Int,
-        permissions: Array<out String>,
-        grantResults: IntArray
-    ) {
-        when (requestCode) {
-            367 -> {
-                for (permission in permissions) {
-                    if (permission == Manifest.permission.ACCESS_FINE_LOCATION) {
-                        val haspermission = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                            currentActivity?.checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION)
-                        } else {
-                            TODO("VERSION.SDK_INT < M")
-                        }
-                        if (haspermission == PackageManager.PERMISSION_GRANTED) {
-                            if (wayPoints.isNotEmpty())
-                                beginNavigation(wayPoints)
-                        }
-                        // Not all permissions granted. Show some message and return.
-                        return
-                    }
-                }
-
-                // All permissions are granted. Do the work accordingly.
-            }
-        }
-        // super.onRequestPermissionsResult(requestCode, permissions, grantResults)
-    }
 }
 
-private const val MAPBOX_ACCESS_TOKEN_PLACEHOLDER = "YOUR_MAPBOX_ACCESS_TOKEN_GOES_HERE"

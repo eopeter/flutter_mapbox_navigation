@@ -44,14 +44,14 @@ class MainPage extends StatelessWidget {
       body: Center(
         child: ElevatedButton(
           onPressed: () {
-            // MapBoxNavigation.instance.startNavigation(wayPoints: wayPoints);
+           //  MapBoxNavigation.instance.startNavigation(wayPoints: wayPoints);
             Navigator.push(
-              context,
-              MaterialPageRoute(
-                  builder: (context) => CustomerNavigationPage(
-                      params: CustomerNavigationParam(
-                          lat: 51.5257831, lon: -0.0849654))),
-            );
+               context,
+               MaterialPageRoute(
+                   builder: (context) => CustomerNavigationPage(
+                       params: CustomerNavigationParam(
+                           lat: 51.5257831, lon: -0.0849654))),
+             );
           },
           child: const Text('Navigate'),
         ),

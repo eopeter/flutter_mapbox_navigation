@@ -7,6 +7,7 @@ import com.eopeter.fluttermapboxnavigation.R
 import com.eopeter.fluttermapboxnavigation.databinding.NavigationActivityBinding
 import com.eopeter.fluttermapboxnavigation.models.views.EmbeddedNavigationMapView
 import com.eopeter.fluttermapboxnavigation.utilities.PluginUtilities
+import com.mapbox.navigation.dropin.NavigationView
 import io.flutter.plugin.common.BinaryMessenger
 import io.flutter.plugin.common.StandardMessageCodec
 import io.flutter.plugin.platform.PlatformView
@@ -18,12 +19,15 @@ class EmbeddedNavigationViewFactory(
 ) : PlatformViewFactory(StandardMessageCodec.INSTANCE) {
     override fun create(context: Context, viewId: Int, args: Any?): PlatformView {
         val inflater = LayoutInflater.from(context)
-        val binding = NavigationActivityBinding.inflate(inflater)
+        val navigationView: NavigationView =
+            inflater.inflate(R.layout.navigation_activity, null, false)
+                .findViewById(R.id.navigationView)
+
         val accessToken = PluginUtilities.getResourceFromContext(context, "mapbox_access_token")
         val view = EmbeddedNavigationMapView(
             context,
             activity,
-            binding,
+            navigationView,
             messenger,
             viewId,
             args,

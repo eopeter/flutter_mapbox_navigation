@@ -11,6 +11,7 @@ import com.mapbox.geojson.Point
 import com.mapbox.maps.MapView
 import com.mapbox.maps.plugin.gestures.OnMapClickListener
 import com.mapbox.maps.plugin.gestures.gestures
+import com.mapbox.navigation.dropin.NavigationView
 import com.mapbox.navigation.dropin.map.MapViewObserver
 import io.flutter.plugin.common.BinaryMessenger
 import io.flutter.plugin.common.EventChannel
@@ -21,12 +22,12 @@ import org.json.JSONObject
 class EmbeddedNavigationMapView(
     context: Context,
     activity: Activity,
-    binding: NavigationActivityBinding,
+    navigationView: NavigationView,
     binaryMessenger: BinaryMessenger,
     vId: Int,
     args: Any?,
     accessToken: String
-) : PlatformView, TurnByTurn(context, activity, binding, accessToken) {
+) : PlatformView, TurnByTurn(context, activity, navigationView, accessToken) {
     private val viewId: Int = vId
     private val messenger: BinaryMessenger = binaryMessenger
     private val arguments = args as Map<*, *>
@@ -42,23 +43,23 @@ class EmbeddedNavigationMapView(
         initNavigation()
 
         if(!(this.arguments?.get("longPressDestinationEnabled") as Boolean)) {
-            this.binding.navigationView.customizeViewOptions {
+            this.navigationView.customizeViewOptions {
                 enableMapLongClickIntercept = false;
             }
         }
 
         if((this.arguments?.get("enableOnMapTapCallback") as Boolean)) {
-            this.binding.navigationView.registerMapObserver(onMapClick)
+            this.navigationView.registerMapObserver(onMapClick)
         }
     }
 
     override fun getView(): View {
-        return binding.root
+        return this.navigationView
     }
 
     override fun dispose() {
         if((this.arguments?.get("enableOnMapTapCallback") as Boolean)) {
-            this.binding.navigationView.unregisterMapObserver(onMapClick)
+            this.navigationView.unregisterMapObserver(onMapClick)
         }
         unregisterObservers()
     }

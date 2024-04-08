@@ -46,6 +46,7 @@ import com.mapbox.navigation.core.trip.session.LocationObserver
 import com.mapbox.navigation.core.trip.session.OffRouteObserver
 import com.mapbox.navigation.core.trip.session.RouteProgressObserver
 import com.mapbox.navigation.core.trip.session.VoiceInstructionsObserver
+import com.mapbox.navigation.dropin.NavigationView
 import com.mapbox.navigation.dropin.map.MapViewObserver
 import com.mapbox.navigation.dropin.navigationview.NavigationViewListener
 import com.mapbox.navigation.utils.internal.ifNonNull
@@ -55,10 +56,10 @@ class NavigationActivity : AppCompatActivity() {
     private var addWayPointsBroadcastReceiver: BroadcastReceiver? = null
     private var points: MutableList<Waypoint> = mutableListOf()
     private var waypointSet: WaypointSet = WaypointSet()
-    private var canResetRoute: Boolean = false
     private var accessToken: String? = null
     private var lastLocation: Location? = null
     private var isNavigationInProgress = false
+    private val navigationView : NavigationView by lazy { findViewById(R.id.navigationView) }
 
     private val navigationStateListener = object : NavigationViewListener() {
         override fun onFreeDrive() {
@@ -85,10 +86,9 @@ class NavigationActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setTheme(R.style.Theme_AppCompat_NoActionBar)
-        binding = NavigationActivityBinding.inflate(layoutInflater)
-        setContentView(binding.root)
-        binding.navigationView.addListener(navigationStateListener)
-        binding.navigationView.registerMapObserver(onMapClick)
+        setContentView(R.layout.navigation_activity)
+        navigationView.addListener(navigationStateListener)
+        navigationView.registerMapObserver(onMapClick)
         accessToken =
             PluginUtilities.getResourceFromContext(this.applicationContext, "mapbox_access_token")
 
@@ -101,18 +101,18 @@ class NavigationActivity : AppCompatActivity() {
             .attach(this)
 
         if (FlutterMapboxNavigationPlugin.longPressDestinationEnabled) {
-            binding.navigationView.registerMapObserver(onMapLongClick)
-            binding.navigationView.customizeViewOptions {
+            navigationView.registerMapObserver(onMapLongClick)
+            navigationView.customizeViewOptions {
                 enableMapLongClickIntercept = false
             }
         }
 
         if (FlutterMapboxNavigationPlugin.enableOnMapTapCallback) {
-            binding.navigationView.registerMapObserver(onMapClick)
+            navigationView.registerMapObserver(onMapClick)
         }
         val act = this
         // Add custom view binders
-        binding.navigationView.customizeViewBinders {
+        navigationView.customizeViewBinders {
             infoPanelEndNavigationButtonBinder =
                 CustomInfoPanelEndNavButtonBinder(act)
         }
@@ -165,17 +165,17 @@ class NavigationActivity : AppCompatActivity() {
         if (styleUrlDay == null) styleUrlDay = Style.MAPBOX_STREETS
         if (styleUrlNight == null) styleUrlNight = Style.DARK
         // set map style
-        binding.navigationView.customizeViewStyles {}
+        navigationView.customizeViewStyles {}
 
         // set map style
-        binding.navigationView.customizeViewOptions {
+        navigationView.customizeViewOptions {
             mapStyleUriDay = styleUrlDay
             mapStyleUriNight = styleUrlNight
         }
 
         if (FlutterMapboxNavigationPlugin.enableFreeDriveMode) {
-            binding.navigationView.api.routeReplayEnabled(FlutterMapboxNavigationPlugin.simulateRoute)
-            binding.navigationView.api.startFreeDrive()
+            navigationView.api.routeReplayEnabled(FlutterMapboxNavigationPlugin.simulateRoute)
+            navigationView.api.startFreeDrive()
             return
         }
 
@@ -191,20 +191,21 @@ class NavigationActivity : AppCompatActivity() {
         closeNavigation()
     }
 
+    @Deprecated("Deprecated in Java")
     override fun onBackPressed() {
         closeNavigation()
         super.onBackPressed()
         finish()
     }
 
-    fun closeNavigation() {
+    private fun closeNavigation() {
         if (FlutterMapboxNavigationPlugin.longPressDestinationEnabled) {
-            binding.navigationView.unregisterMapObserver(onMapLongClick)
+            navigationView.unregisterMapObserver(onMapLongClick)
         }
         if (FlutterMapboxNavigationPlugin.enableOnMapTapCallback) {
-            binding.navigationView.unregisterMapObserver(onMapClick)
+            navigationView.unregisterMapObserver(onMapClick)
         }
-        binding.navigationView.removeListener(navigationStateListener)
+        navigationView.removeListener(navigationStateListener)
 
         MapboxNavigationApp.current()?.unregisterBannerInstructionsObserver(this.bannerInstructionObserver)
         MapboxNavigationApp.current()?.unregisterVoiceInstructionsObserver(this.voiceInstructionObserver)
@@ -213,13 +214,6 @@ class NavigationActivity : AppCompatActivity() {
         MapboxNavigationApp.current()?.unregisterLocationObserver(locationObserver)
         MapboxNavigationApp.current()?.unregisterRouteProgressObserver(routeProgressObserver)
         MapboxNavigationApp.current()?.unregisterArrivalObserver(arrivalObserver)
-    }
-
-    fun tryCancelNavigation() {
-        if (isNavigationInProgress) {
-            isNavigationInProgress = false
-            sendEvent(MapBoxEvents.NAVIGATION_CANCELLED)
-        }
     }
 
     private fun requestRoutes(waypointSet: WaypointSet) {
@@ -260,107 +254,12 @@ class NavigationActivity : AppCompatActivity() {
                         sendEvent(MapBoxEvents.ROUTE_BUILD_NO_ROUTES_FOUND)
                         return
                     }
-                    binding.navigationView.api.routeReplayEnabled(FlutterMapboxNavigationPlugin.simulateRoute)
-                    binding.navigationView.api.startActiveGuidance(routes)
+                    navigationView.api.routeReplayEnabled(FlutterMapboxNavigationPlugin.simulateRoute)
+                    navigationView.api.startActiveGuidance(routes)
                 }
             }
         )
     }
-
-
-    // MultiWaypoint Navigation
-    private fun addWaypoint(destination: Point, name: String?) {
-        val originLocation = lastLocation
-        val originPoint = originLocation?.let {
-            Point.fromLngLat(it.longitude, it.latitude)
-        } ?: return
-
-        // we always start a route from the current location
-        if (addedWaypoints.isEmpty) {
-            addedWaypoints.add(Waypoint(originPoint))
-        }
-
-        if (!name.isNullOrBlank()) {
-            // When you add named waypoints, the string you use here inside "" would be shown in `Maneuver` and played in `Voice` instructions.
-            // In this example waypoint names will be visible in the logcat.
-            addedWaypoints.add(Waypoint(name, destination))
-        } else {
-            // When you add silent waypoints, make sure it is followed by a regular or named waypoint, otherwise silent waypoint is treated as a regular waypoint
-            addedWaypoints.add(Waypoint(destination, true))
-        }
-
-        // execute a route request
-        // it's recommended to use the
-        // applyDefaultNavigationOptions and applyLanguageAndVoiceUnitOptions
-        // that make sure the route request is optimized
-        // to allow for support of all of the Navigation SDK features
-        MapboxNavigationApp.current()!!.requestRoutes(
-            routeOptions = RouteOptions
-                .builder()
-                .applyDefaultNavigationOptions()
-                .applyLanguageAndVoiceUnitOptions(this)
-                .coordinatesList(addedWaypoints.coordinatesList())
-                .waypointIndicesList(addedWaypoints.waypointsIndices())
-                .waypointNamesList(addedWaypoints.waypointsNames())
-                .alternatives(true)
-                .build(),
-            callback = object : NavigationRouterCallback {
-                override fun onRoutesReady(
-                    routes: List<NavigationRoute>,
-                    routerOrigin: RouterOrigin
-                ) {
-                    sendEvent(
-                        MapBoxEvents.ROUTE_BUILT,
-                        Gson().toJson(routes.map { it.directionsRoute.toJson() })
-                    )
-                    binding.navigationView.api.routeReplayEnabled(true)
-                    binding.navigationView.api.startActiveGuidance(routes)
-                }
-
-                override fun onFailure(
-                    reasons: List<RouterFailure>,
-                    routeOptions: RouteOptions
-                ) {
-                    sendEvent(MapBoxEvents.ROUTE_BUILD_FAILED)
-                }
-
-                override fun onCanceled(routeOptions: RouteOptions, routerOrigin: RouterOrigin) {
-                    sendEvent(MapBoxEvents.ROUTE_BUILD_CANCELLED)
-                }
-            }
-        )
-    }
-
-    // Resets the current route
-    private fun resetCurrentRoute() {
-//        if (mapboxNavigation.getRoutes().isNotEmpty()) {
-//            mapboxNavigation.setRoutes(emptyList()) // reset route
-//            addedWaypoints.clear() // reset stored waypoints
-//        }
-    }
-
-    private fun setRouteAndStartNavigation(routes: List<DirectionsRoute>) {
-        // set routes, where the first route in the list is the primary route that
-        // will be used for active guidance
-        // mapboxNavigation.setRoutes(routes)
-    }
-
-    private fun clearRouteAndStopNavigation() {
-        // clear
-        // mapboxNavigation.setRoutes(listOf())
-    }
-
-
-    /**
-     * Helper class that keeps added waypoints and transforms them to the [RouteOptions] params.
-     */
-    private val addedWaypoints = WaypointSet()
-
-
-    /**
-     * Bindings to the Navigation Activity.
-     */
-    private lateinit var binding: NavigationActivityBinding// MapboxActivityTurnByTurnExperienceBinding
 
 
     /**

@@ -45,6 +45,12 @@ class MapBoxNavigationView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     if (Platform.isAndroid) {
+
+      // return AndroidView(
+      //     viewType: 'FlutterMapboxNavigationView',
+      //     onPlatformViewCreated: _onPlatformViewCreated,
+      //     creationParams: options!.toMap(),
+      //     creationParamsCodec: _decoder);
       // using Hybrid Composition
       return PlatformViewLink(
         viewType: viewType,
@@ -56,12 +62,14 @@ class MapBoxNavigationView extends StatelessWidget {
           );
         },
         onCreatePlatformView: (params) {
-          return PlatformViewsService.initExpensiveAndroidView(
+
+          return PlatformViewsService.initSurfaceAndroidView(
             id: params.id,
             viewType: viewType,
             layoutDirection: TextDirection.ltr,
             creationParams: options!.toMap(),
-            creationParamsCodec: const StandardMessageCodec(),
+            creationParamsCodec: _decoder,
+
             onFocus: () {
               params.onFocusChanged(true);
             },
@@ -73,7 +81,7 @@ class MapBoxNavigationView extends StatelessWidget {
       );
     } else if (Platform.isIOS) {
       return UiKitView(
-        viewType: 'FlutterMapboxNavigationView',
+        viewType: viewType,
         onPlatformViewCreated: _onPlatformViewCreated,
         creationParams: options!.toMap(),
         creationParamsCodec: _decoder,
