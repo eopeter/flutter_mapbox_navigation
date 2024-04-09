@@ -2,8 +2,8 @@ PODS:
   - Flutter (1.0.0)
   - flutter_mapbox_navigation (0.2.2):
     - Flutter
-    - MapboxCoreNavigation (~> 2.11)
-    - MapboxNavigation (~> 2.11)
+    - MapboxCoreNavigation (~> 2.13)
+    - MapboxNavigation (~> 2.13)
   - geolocator_apple (1.2.0):
     - Flutter
   - MapboxCommon (23.8.6)
@@ -65,7 +65,7 @@ EXTERNAL SOURCES:
 
 SPEC CHECKSUMS:
   Flutter: e0871f40cf51350855a761d2e70bf5af5b9b5de7
-  flutter_mapbox_navigation: 7a7b3dfb825cfebf97cce89db6d2f3ae7e12b0c6
+  flutter_mapbox_navigation: ea07fc9b0d94483cb6cd2a4e7a5d2f7e42eb4e4f
   geolocator_apple: 6cbaf322953988e009e5ecb481f07efece75c450
   MapboxCommon: 90f76693dc02438acbb5ea9a5b266a4c0eb1c875
   MapboxCoreMaps: 7b07d1ca8c454a4381daf09df901b9d6bf90bce0

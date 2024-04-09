@@ -4,20 +4,16 @@ import com.google.gson.JsonArray
 import com.google.gson.JsonObject
 import com.mapbox.api.directions.v5.models.RouteLeg
 
-class MapBoxRouteLeg {
+class MapBoxRouteLeg(leg: RouteLeg) {
 
-    val profileIdentifier: String? = null
     val name: String? = null
     private var distance: Double?
     private var expectedTravelTime: Double?
-    val source: MapBoxLocation = MapBoxLocation("", 0.0, 0.0)
-    val destination: MapBoxLocation = MapBoxLocation("", 0.0, 0.0)
     private var steps: MutableList<MapBoxRouteStep> = mutableListOf()
 
-    constructor(leg: RouteLeg) {
+    init {
         distance = leg.distance()
         expectedTravelTime = leg.duration()
-
         for (step in leg.steps()!!) {
             steps.add(MapBoxRouteStep(step))
         }

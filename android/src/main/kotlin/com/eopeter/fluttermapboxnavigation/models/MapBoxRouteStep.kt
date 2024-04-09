@@ -3,9 +3,9 @@ package com.eopeter.fluttermapboxnavigation.models
 import com.google.gson.JsonObject
 import com.mapbox.api.directions.v5.models.LegStep
 
-class MapBoxRouteStep(private val step: LegStep) {
+class MapBoxRouteStep(step: LegStep) {
 
-    private val instructions: String = "" //step.bannerInstructions()[0]?.primary().toString()
+    private val instructions: String = ""
     private val distance: Double = step.distance()
     private val expectedTravelTime: Double = step.duration()
 

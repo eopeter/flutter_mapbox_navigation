@@ -30,7 +30,6 @@ class EmbeddedNavigationViewFactory(
                 context,
                 navigationView,
                 messenger,
-                viewId,
                 accessToken
             )
         }

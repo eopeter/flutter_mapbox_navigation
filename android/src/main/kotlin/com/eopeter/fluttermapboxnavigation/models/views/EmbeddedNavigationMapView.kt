@@ -10,7 +10,6 @@ import com.eopeter.fluttermapboxnavigation.models.MapBoxEvents
 import com.eopeter.fluttermapboxnavigation.models.MapBoxRouteProgressEvent
 import com.eopeter.fluttermapboxnavigation.models.Waypoint
 import com.eopeter.fluttermapboxnavigation.models.WaypointSet
-import com.eopeter.fluttermapboxnavigation.utilities.CustomInfoPanelEndNavButtonBinder
 import com.eopeter.fluttermapboxnavigation.utilities.PluginUtilities
 import com.google.gson.Gson
 import com.mapbox.api.directions.v5.DirectionsCriteria
@@ -53,26 +52,16 @@ class EmbeddedNavigationMapView(
     private val context: Context,
     private val navigationView: NavigationView,
     binaryMessenger: BinaryMessenger,
-    vId: Int,
-//    args: Any?,
     accessToken: String
 ) : PlatformView,
     MethodChannel.MethodCallHandler,
     EventChannel.StreamHandler {
-    var viewId: Int = vId
     private val messenger: BinaryMessenger = binaryMessenger
-//    private val arguments = args as Map<*, *>
     private var lastLocation: Location? = null
 
     fun start(viewId: Int) {
         initFlutterChannelHandlers(viewId)
         initNavigation()
-
-//        if (!(this.arguments["longPressDestinationEnabled"] as Boolean)) {
-//            this.navigationView.customizeViewOptions {
-//                enableMapLongClickIntercept = false;
-//            }
-//        }
         registerObservers()
     }
 
@@ -81,10 +70,7 @@ class EmbeddedNavigationMapView(
     }
 
     override fun dispose() {
-//        if ((this.arguments["enableOnMapTapCallback"] as Boolean)) {
-//            this.navigationView.unregisterMapObserver(onMapClick)
-//        }
-//        unregisterObservers()
+        unregisterObservers()
     }
 
     /**
@@ -212,10 +198,6 @@ class EmbeddedNavigationMapView(
                         simulateRoute
                     )
                     navigationView.api.startRoutePreview(routes)
-                    navigationView.customizeViewBinders {
-                        this.infoPanelEndNavigationButtonBinder =
-                            CustomInfoPanelEndNavButtonBinder()
-                    }
                 }
 
                 override fun onFailure(
@@ -236,9 +218,9 @@ class EmbeddedNavigationMapView(
     }
 
     private fun clearRoute() {
-        this.currentRoutes = null
         val navigation = MapboxNavigationApp.current()
         navigation?.stopTripSession()
+        this.currentRoutes = null
         PluginUtilities.sendEvent(MapBoxEvents.NAVIGATION_CANCELLED)
     }
 
@@ -400,7 +382,6 @@ class EmbeddedNavigationMapView(
     private fun unregisterObservers() {
 
         finishNavigation()
-        // unregister event listeners to prevent leaks or unnecessary resource consumption
         MapboxNavigationApp.current()
             ?.unregisterBannerInstructionsObserver(this.bannerInstructionObserver)
         MapboxNavigationApp.current()
@@ -436,7 +417,6 @@ class EmbeddedNavigationMapView(
     private var initialLatitude: Double? = null
     private var initialLongitude: Double? = null
 
-    // val wayPoints: MutableList<Point> = mutableListOf()
     private var navigationMode = DirectionsCriteria.PROFILE_DRIVING_TRAFFIC
     var simulateRoute = false
     private var mapStyleUrlDay: String? = null

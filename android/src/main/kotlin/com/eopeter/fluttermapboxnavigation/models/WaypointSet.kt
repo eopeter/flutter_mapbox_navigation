@@ -12,8 +12,6 @@ class WaypointSet {
 
     private val waypoints = mutableListOf<Waypoint>()
 
-    val isEmpty get() = waypoints.isEmpty()
-
     fun add(waypoint: Waypoint) {
         waypoints.add(waypoint)
     }
@@ -54,10 +52,8 @@ class WaypointSet {
     }
 
     private fun List<Waypoint>.isSilentWaypoint(index: Int) =
-        //this[index].type == WaypointType.Silent && canWaypointBeSilent(index)
         this[index].isSilent && canWaypointBeSilent(index)
 
-    // the first and the last waypoint can't be silent
     private fun List<Waypoint>.canWaypointBeSilent(index: Int): Boolean {
         val isLastWaypoint = index == this.size - 1
         val isFirstWaypoint = index == 0
