@@ -236,6 +236,7 @@ public class FlutterMapboxNavigationView : NavigationFactory, FlutterPlatformVie
 
         routeOptions.distanceMeasurementSystem = _voiceUnits == "imperial" ? .imperial : .metric
         routeOptions.locale = Locale(identifier: _language)
+        routeOptions.language = _language
         routeOptions.includesAlternativeRoutes = _alternatives
         self.routeOptions = routeOptions
 

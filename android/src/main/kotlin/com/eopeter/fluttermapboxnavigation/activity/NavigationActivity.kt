@@ -1,6 +1,7 @@
 package com.eopeter.fluttermapboxnavigation.activity
 
 import android.content.BroadcastReceiver
+import androidx.core.content.ContextCompat
 import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
@@ -356,6 +357,7 @@ class NavigationActivity : AppCompatActivity() {
                 .coordinatesList(addedWaypoints.coordinatesList())
                 .waypointIndicesList(addedWaypoints.waypointsIndices())
                 .waypointNamesList(addedWaypoints.waypointsNames())
+                .language(FlutterMapboxNavigationPlugin.navigationLanguage)
                 .alternatives(true)
                 .build(),
             callback = object : NavigationRouterCallback {

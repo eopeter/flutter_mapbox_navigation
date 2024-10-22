@@ -306,6 +306,7 @@ public class NavigationFactory : NSObject, FlutterStreamHandler
         
         options.distanceMeasurementSystem = _voiceUnits == "imperial" ? .imperial : .metric
         options.locale = Locale(identifier: _language)
+        options.language = _language
         options.includesAlternativeRoutes = _alternatives
         _options = options
     }
