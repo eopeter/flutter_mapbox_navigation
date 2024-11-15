@@ -209,24 +209,30 @@ public class NavigationFactory : NSObject, FlutterStreamHandler
     }
     
     func parseFlutterArguments(arguments: NSDictionary?) {
-        _language = arguments?["language"] as? String ?? _language
-        _voiceUnits = arguments?["units"] as? String ?? _voiceUnits
-        _simulateRoute = arguments?["simulateRoute"] as? Bool ?? _simulateRoute
-        _isOptimized = arguments?["isOptimized"] as? Bool ?? _isOptimized
-        _allowsUTurnAtWayPoints = arguments?["allowsUTurnAtWayPoints"] as? Bool
-        _navigationMode = arguments?["mode"] as? String ?? "drivingWithTraffic"
-        _showReportFeedbackButton = arguments?["showReportFeedbackButton"] as? Bool ?? _showReportFeedbackButton
-        _showEndOfRouteFeedback = arguments?["showEndOfRouteFeedback"] as? Bool ?? _showEndOfRouteFeedback
-        _enableOnMapTapCallback = arguments?["enableOnMapTapCallback"] as? Bool ?? _enableOnMapTapCallback
-        _mapStyleUrlDay = arguments?["mapStyleUrlDay"] as? String
-        _mapStyleUrlNight = arguments?["mapStyleUrlNight"] as? String
-        _zoom = arguments?["zoom"] as? Double ?? _zoom
-        _bearing = arguments?["bearing"] as? Double ?? _bearing
-        _tilt = arguments?["tilt"] as? Double ?? _tilt
-        _animateBuildRoute = arguments?["animateBuildRoute"] as? Bool ?? _animateBuildRoute
-        _longPressDestinationEnabled = arguments?["longPressDestinationEnabled"] as? Bool ?? _longPressDestinationEnabled
-        _alternatives = arguments?["alternatives"] as? Bool ?? _alternatives
+    _language = arguments?["language"] as? String ?? _language
+    _voiceUnits = arguments?["units"] as? String ?? _voiceUnits
+    _simulateRoute = arguments?["simulateRoute"] as? Bool ?? _simulateRoute
+    _isOptimized = arguments?["isOptimized"] as? Bool ?? _isOptimized
+    _allowsUTurnAtWayPoints = arguments?["allowsUTurnAtWayPoints"] as? Bool
+    _navigationMode = arguments?["mode"] as? String ?? "drivingWithTraffic"
+    _showReportFeedbackButton = arguments?["showReportFeedbackButton"] as? Bool ?? _showReportFeedbackButton
+    _showEndOfRouteFeedback = arguments?["showEndOfRouteFeedback"] as? Bool ?? _showEndOfRouteFeedback
+    _enableOnMapTapCallback = arguments?["enableOnMapTapCallback"] as? Bool ?? _enableOnMapTapCallback
+    _mapStyleUrlDay = arguments?["mapStyleUrlDay"] as? String
+    _mapStyleUrlNight = arguments?["mapStyleUrlNight"] as? String
+    _zoom = arguments?["zoom"] as? Double ?? _zoom
+    _bearing = arguments?["bearing"] as? Double ?? _bearing
+    _tilt = arguments?["tilt"] as? Double ?? _tilt
+    _animateBuildRoute = arguments?["animateBuildRoute"] as? Bool ?? _animateBuildRoute
+    _longPressDestinationEnabled = arguments?["longPressDestinationEnabled"] as? Bool ?? _longPressDestinationEnabled
+    _alternatives = arguments?["alternatives"] as? Bool ?? _alternatives
+
+    // Parse padding
+    if let paddingArgs = arguments?["padding"] as? [Double], paddingArgs.count == 4 {
+        _padding = UIEdgeInsets(top: paddingArgs[0], left: paddingArgs[1], bottom: paddingArgs[2], right: paddingArgs[3])
     }
+}
+
     
     
     func continueNavigationWithWayPoints(wayPoints: [Waypoint])

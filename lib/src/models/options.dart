@@ -215,12 +215,15 @@ class MapBoxOptions {
     }
     if (isOptimized != null) optionsMap['isOptimized'] = isOptimized;
 
-    addIfNonNull('padding', <double?>[
-      padding?.top,
-      padding?.left,
-      padding?.bottom,
-      padding?.right,
-    ]);
+    if (padding != null) {
+  optionsMap['padding'] = [
+    padding?.top ?? 10.0,    // Default top padding
+    padding?.left ?? 20.0,   // Default left padding
+    padding?.bottom ?? 10.0, // Default bottom padding
+    padding?.right ?? 20.0,  // Default right padding
+  ];
+}
+
 
     addIfNonNull('showReportFeedbackButton', showReportFeedbackButton);
     addIfNonNull('showEndOfRouteFeedback', showEndOfRouteFeedback);

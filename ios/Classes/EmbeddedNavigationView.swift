@@ -105,54 +105,57 @@ public class FlutterMapboxNavigationView : NavigationFactory, FlutterPlatformVie
     }
 
     
-    private func setupMapView()
-    {
-        navigationMapView = NavigationMapView(frame: frame)
-        navigationMapView.delegate = self
+private func setupMapView() {
+    navigationMapView = NavigationMapView(frame: frame)
+    navigationMapView.delegate = self
 
-        if(self.arguments != nil)
-        {
-           
-            parseFlutterArguments(arguments: arguments)
-            
-            if(_mapStyleUrlDay != nil)
-            {
-                navigationMapView.mapView.mapboxMap.style.uri = StyleURI.init(url: URL(string: _mapStyleUrlDay!)!)
-            }
+    if let arguments = self.arguments {
+        parseFlutterArguments(arguments: arguments)
 
-            var currentLocation: CLLocation!
-
-            locationManager.requestWhenInUseAuthorization()
-
-            if(CLLocationManager.authorizationStatus() == .authorizedWhenInUse ||
-                CLLocationManager.authorizationStatus() == .authorizedAlways) {
-                currentLocation = locationManager.location
-
-            }
-
-            let initialLatitude = arguments?["initialLatitude"] as? Double ?? currentLocation?.coordinate.latitude
-            let initialLongitude = arguments?["initialLongitude"] as? Double ?? currentLocation?.coordinate.longitude
-            if(initialLatitude != nil && initialLongitude != nil)
-            {
-                moveCameraToCoordinates(latitude: initialLatitude!, longitude: initialLongitude!)
-            }
-
+        if let mapStyleUrlDay = _mapStyleUrlDay {
+            navigationMapView.mapView.mapboxMap.style.uri = StyleURI(url: URL(string: mapStyleUrlDay)!)
         }
 
-        if _longPressDestinationEnabled
-        {
-            let gesture = UILongPressGestureRecognizer(target: self, action: #selector(handleLongPress(_:)))
-            gesture.delegate = self
-            navigationMapView?.addGestureRecognizer(gesture)
+        // Apply the parsed padding
+        if let padding = _padding {
+            navigationMapView.mapView.ornaments.options.compass.margins = CGPoint(x: padding.left, y: padding.top)
+            navigationMapView.mapView.ornaments.options.scaleBar.margins = CGPoint(x: padding.left, y: padding.bottom)
         }
-        
-        if _enableOnMapTapCallback {
-            let onTapGesture = UITapGestureRecognizer(target: self, action: #selector(handleTap(_:)))
-            onTapGesture.numberOfTapsRequired = 1
-            onTapGesture.delegate = self
-            navigationMapView?.addGestureRecognizer(onTapGesture)
+
+        var currentLocation: CLLocation!
+        locationManager.requestWhenInUseAuthorization()
+
+        if CLLocationManager.authorizationStatus() == .authorizedWhenInUse || CLLocationManager.authorizationStatus() == .authorizedAlways {
+            currentLocation = locationManager.location
+        }
+
+        let initialLatitude = arguments["initialLatitude"] as? Double ?? currentLocation?.coordinate.latitude
+        let initialLongitude = arguments["initialLongitude"] as? Double ?? currentLocation?.coordinate.longitude
+        if let initialLatitude = initialLatitude, let initialLongitude = initialLongitude {
+            moveCameraToCoordinates(latitude: initialLatitude, longitude: initialLongitude)
         }
     }
+
+    if _longPressDestinationEnabled {
+        let gesture = UILongPressGestureRecognizer(target: self, action: #selector(handleLongPress(_:)))
+        gesture.delegate = self
+        navigationMapView.addGestureRecognizer(gesture)
+    }
+    
+    if _enableOnMapTapCallback {
+        let onTapGesture = UITapGestureRecognizer(target: self, action: #selector(handleTap(_:)))
+        onTapGesture.numberOfTapsRequired = 1
+        onTapGesture.delegate = self
+        navigationMapView.addGestureRecognizer(onTapGesture)
+    }
+
+    // Apply padding to the map view using constraints
+    if let padding = _padding {
+        constraintsWithPaddingBetween(holderView: self.navigationMapView, topView: navigationMapView, padding: padding.top)
+    }
+}
+
+
 
     func clearRoute(arguments: NSDictionary?, result: @escaping FlutterResult)
     {

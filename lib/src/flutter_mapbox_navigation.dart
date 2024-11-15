@@ -14,22 +14,24 @@ class MapBoxNavigation {
   /// get current instance of this class
   static MapBoxNavigation get instance => _instance;
 
-  MapBoxOptions _defaultOptions = MapBoxOptions(
-    zoom: 15,
-    tilt: 0,
-    bearing: 0,
-    enableRefresh: false,
-    alternatives: true,
-    voiceInstructionsEnabled: true,
-    bannerInstructionsEnabled: true,
-    allowsUTurnAtWayPoints: true,
-    mode: MapBoxNavigationMode.drivingWithTraffic,
-    units: VoiceUnits.imperial,
-    simulateRoute: false,
-    animateBuildRoute: true,
-    longPressDestinationEnabled: true,
-    language: 'en',
-  );
+  MapBoxOptions _defaultPptions = MapBoxOptions(
+                                zoom: 20,
+                                tilt: 10,
+                                bearing: 10,
+                                enableRefresh: true,
+                                alternatives: true,
+                                voiceInstructionsEnabled: true,
+                                bannerInstructionsEnabled: true,
+                                allowsUTurnAtWayPoints: true,
+                                mode: MapBoxNavigationMode.driving,
+                                units: VoiceUnits.imperial,
+                                simulateRoute: true,
+                                animateBuildRoute: true,
+                                longPressDestinationEnabled: true,
+                                language: 'en',
+                                padding: const EdgeInsets.only(
+                                    top: 20), // top, left, bottom, right
+                              );
 
   /// setter to set default options
   void setDefaultOptions(MapBoxOptions options) {

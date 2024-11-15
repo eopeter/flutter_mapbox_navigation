@@ -72,12 +72,16 @@ class MapBoxNavigationView extends StatelessWidget {
         },
       );
     } else if (Platform.isIOS) {
-      return UiKitView(
-        viewType: 'FlutterMapboxNavigationView',
-        onPlatformViewCreated: _onPlatformViewCreated,
-        creationParams: options!.toMap(),
-        creationParamsCodec: _decoder,
-      );
+      return Padding(
+  padding: const EdgeInsets.fromLTRB(10.0, 20.0, 10.0, 20.0), // Add your desired padding here
+  child: UiKitView(
+    viewType: 'FlutterMapboxNavigationView',
+    onPlatformViewCreated: _onPlatformViewCreated,
+    creationParams: options,
+    creationParamsCodec: _decoder,
+  ),
+)
+;
     } else {
       return Container();
     }
