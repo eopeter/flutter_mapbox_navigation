@@ -20,10 +20,11 @@ migrate_working_dir/
 # VS Code which you may wish to be included in version control, so this line
 # is commented out by default.
 #.vscode/
+.vscode/ # Ensuring .vscode is ignored
 
 # Flutter/Dart/Pub related
 # Libraries should not include pubspec.lock, per https://dart.dev/guides/libraries/private-files#pubspeclock.
-pubspec.lock
+pubspec.lock # For a library, pubspec.lock should be ignored
 
 **/doc/api/
 .dart_tool/

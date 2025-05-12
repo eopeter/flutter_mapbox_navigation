@@ -84,7 +84,7 @@ class NavigationActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setTheme(R.style.Theme_AppCompat_NoActionBar)
+        setTheme(R.style.NavigationActivityTheme)
         binding = NavigationActivityBinding.inflate(layoutInflater)
         setContentView(binding.root)
         binding.navigationView.addListener(navigationStateListener)
