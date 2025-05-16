@@ -9,6 +9,10 @@
         <item name="colorAccent">@color/colorAccent</item>
     </style>
 
+    <style name="NavigationActivityTheme" parent="Theme.AppCompat.NoActionBar">
+        <!-- You can add item overrides here if needed -->
+    </style>
+
     <style name="MapboxCustomTripProgressStyle" parent="MapboxStyleTripProgressView">
         <item name="tripProgressTextColor">#7B3CEA</item>
         <item name="tripProgressViewBackgroundColor">#EEEEEE</item>
