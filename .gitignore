@@ -36,3 +36,4 @@ example/android/app/src/main/res/values/strings.xml
 
 # FVM Version Cache
 .fvm/
+.fvmrc
