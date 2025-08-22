@@ -439,6 +439,10 @@ extension NavigationFactory : NavigationViewControllerDelegate {
         return _shouldReRoute
     }
     
+    public func navigationViewController(_ navigationViewController: NavigationViewController, didRerouteFrom location: CLLocation) {
+        sendEvent(eventType: MapBoxEventType.user_off_route)
+    }
+    
     public func navigationViewController(_ navigationViewController: NavigationViewController, didSubmitArrivalFeedback feedback: EndOfRouteFeedback) {
         
         if(_eventSink != nil)
